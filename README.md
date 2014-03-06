@@ -1,4 +1,4 @@
 custom-mvc-framework
 ====================
 
-Basic PHP MVC custom-made framework with bootstrap
+PHP MVC custom-made framework with bootstrap

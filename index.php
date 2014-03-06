@@ -12,7 +12,7 @@ define( 'SITE_ROOT' , 'http://localhost/custom-mvc-framework/?' );
  *      redirect: redirect user to start/main/previous (?)
  *      display : display the dreaded '404 Page not found'
  */
-define('PAGE_NOT_FOUND', 'redirect');
+define('PAGE_NOT_FOUND', 'display');
 
 // DB access
 define('DB_ADDRESS',  '127.0.0.1');
@@ -20,8 +20,8 @@ define('DB_USER',     'root');
 define('DB_PASSWORD', 'B1Kou2;Tc');
 define('DB_NAME',     'myFramework');
 
-define('ALL_EOL', "</br>\n");
-define('WEB_EOL', "</br>");
+define('ALL_EOL', "<br>\n");
+define('WEB_EOL', "<br>");
 
 // Fetch the router
 require_once( 'libraries/router.php' );

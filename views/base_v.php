@@ -50,7 +50,7 @@ class Base_View {
         
         // Default header/footer
         $this->header = 'header';
-        $this->footer = 'footer';
+        $this->footer = 'footer2';
     }
 
     /**

@@ -1,0 +1,4 @@
+body {
+    /* to avoid the header to overlag on the body */
+    padding-top: 50px;
+}

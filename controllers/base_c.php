@@ -37,7 +37,6 @@ abstract class Base_Controller
         static::$view->render();
     }
 
-    /** process: core method, has to be implemented in inherited classes
-     */
-    abstract static public function process();
+    // Core method that does nothing here and need to be overwritten by children class
+    static public function process() {}
 }

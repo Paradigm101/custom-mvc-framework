@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <!-- CSS for every screen -->
+        <!-- metas and title -->
+        <meta charset="utf-8">
+        <meta name="description" content="My first website using a custom made PHP MVC framework and Bootstrap 3">
+        <title><?=  $data['title'] ?></title>
+
+        <!-- CSS for all pages -->
         <link type="text/css" rel="stylesheet" href="views/css/base.css" />
-        
-        <!-- CSS for this screen -->
+
+        <!-- CSS for the specific page -->
         <link type="text/css" rel="stylesheet" href="views/css/<?= $data['page'] ?>.css" />
 
         <!-- CSS for header/footer -->
-<?php if ( $data[ 'header' ] ) { ?>
+<?      if ( $data[ 'header' ] ) { ?>
             <link type="text/css" rel="stylesheet" href="views/css/commun/<?= $data[ 'header' ] ?>.css" />
-<?php } ?>
-<?php if ( $data[ 'footer' ] ) { ?>
+<?      } ?>
+<?      if ( $data[ 'footer' ] ) { ?>
             <link type="text/css" rel="stylesheet" href="views/css/commun/<?= $data[ 'footer' ] ?>.css" />
-<?php } ?>
+<?      } ?>
 
         <!-- BOOTSTRAP -->
         <!-- Latest compiled and minified CSS -->
@@ -21,7 +26,5 @@
         <!-- Optional theme -->
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
         <!-- BOOTSTRAP -->
-
-        <title><?=  $data['title'] ?></title>
     </head>
     <body>

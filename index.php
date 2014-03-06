@@ -6,7 +6,7 @@
 // TBD load globals from a txt file (manage environment?)
 
 // TBD: SITE_ROOT is the webserver (for redirection)
-define( 'SITE_ROOT' , 'http://localhost/myFramework/?' );
+define( 'SITE_ROOT' , 'http://localhost/custom-mvc-framework/?' );
 
 /* Options in case a page is not found
  *      redirect: redirect user to start/main/previous (?)

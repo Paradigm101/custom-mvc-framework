@@ -1,4 +1,4 @@
-<header class="navbar navbar-inverse navbar-fixed-top" role="banner">
+<footer class="navbar navbar-inverse navbar-fixed-bottom">
     <div class="container">
         <nav role="navigation">
           <div class="container-fluid">
@@ -15,7 +15,7 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
               <ul class="nav navbar-nav">
                 <li class="active"><a href="#">Link</a></li>
                 <li><a href="#">Link</a></li>
@@ -60,4 +60,4 @@
           </div><!-- /.container-fluid -->
         </nav>
     </div>
-</header>
+</footer>

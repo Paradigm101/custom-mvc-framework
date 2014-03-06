@@ -12,14 +12,10 @@ class Base_View {
     private $render;
 
     // Header management
-    protected function isHeader() {
-        return true;
-    }
+    protected $header;
 
     // Footer management
-    protected function isFooter() {
-        return true;
-    }
+    protected $footer;
 
     public function setTitle( $title )
     {
@@ -51,6 +47,10 @@ class Base_View {
             exit();
         }
         $this->render = $templateFile;
+        
+        // Default header/footer
+        $this->header = 'header';
+        $this->footer = 'footer';
     }
 
     /**
@@ -61,17 +61,21 @@ class Base_View {
         // Parse data variables into local variables
         $data = $this->data;
 
+        // Add header/footer
+        $data[ 'header' ] = $this->header;
+        $data[ 'footer' ] = $this->footer;
+
         // What is always on top
         include( 'views/templates/commun/top_t.php');
 
-        if (static::isHeader())
-            include( 'views/templates/commun/header_t.php');
+        if ( $this->header )
+            include( 'views/templates/commun/' . $this->header . '_t.php');
 
         // Get template
         include( $this->render );
 
-        if (static::isFooter())
-            include( 'views/templates/commun/footer_t.php');
+        if ( $this->footer )
+            include( 'views/templates/commun/' . $this->footer . '_t.php');
 
         // What is always on bottom
         include( 'views/templates/commun/bottom_t.php');

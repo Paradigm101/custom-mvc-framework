@@ -37,13 +37,30 @@
     </div><!-- end row bigCallout -->
 
     
+    <!-- Feature Heading -->
     <div class="row" id="featuresHeading">
-        
+        <div class="col-12">
+            <h2>More Features</h2>
+            <p class="lead"><?= LOREM ?><p>
+        </div>
     </div><!-- end row featureHeading -->
 
 
     <div class="row" id="features">
         
+        <div class="col-sm-4">
+            <div class="panel">
+                
+            </div>
+        </div>
+        
+        <div class="col-sm-4">
+            
+        </div>
+        
+        <div class="col-sm-4">
+            
+        </div>
     </div><!-- end row features -->
 
     

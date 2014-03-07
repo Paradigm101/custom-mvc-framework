@@ -24,4 +24,4 @@ define('ALL_EOL', "<br>\n");
 define('WEB_EOL', "<br>");
 
 // Fetch the router
-require_once( 'libraries/router.php' );
+require_once( 'router.php' );

@@ -7,17 +7,19 @@
         <title><?=  $data['title'] ?></title>
 
         <!-- CSS for all pages -->
-        <link type="text/css" rel="stylesheet" href="views/css/base.css" />
+        <link type="text/css" rel="stylesheet" href="includes/css/base.css" />
 
-        <!-- CSS for the specific page -->
-        <link type="text/css" rel="stylesheet" href="views/css/<?= $data['page'] ?>.css" />
+        <!-- CSS for this page -->
+<?      foreach( $data['templates'] as $template ) { ?>
+        <link type="text/css" rel="stylesheet" href="includes/css/<?= $template ?>.css" />
+<?      } ?>
 
         <!-- CSS for header/footer -->
 <?      if ( $data[ 'header' ] ) { ?>
-            <link type="text/css" rel="stylesheet" href="views/css/commun/<?= $data[ 'header' ] ?>.css" />
+            <link type="text/css" rel="stylesheet" href="includes/css/commun/<?= $data[ 'header' ] ?>.css" />
 <?      } ?>
 <?      if ( $data[ 'footer' ] ) { ?>
-            <link type="text/css" rel="stylesheet" href="views/css/commun/<?= $data[ 'footer' ] ?>.css" />
+            <link type="text/css" rel="stylesheet" href="includes/css/commun/<?= $data[ 'footer' ] ?>.css" />
 <?      } ?>
 
         <!-- BOOTSTRAP -->

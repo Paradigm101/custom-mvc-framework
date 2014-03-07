@@ -82,6 +82,7 @@ if ( !$page || !file_exists( "controllers/" . $page . '_c.php' ) )
             Error_Library::launch('Page not found');
             exit();
 
+        // TBD: manage a redirection with POST data
         case 'redirect':
         default:
             header('Location: ' . SITE_ROOT . 'page=main' );

@@ -6,14 +6,5 @@ footer {
     background: #333;
     color: #EEE;
     font-size: 11px;
-    padding: 20px;
-}
-
-/* ----------------------------------------------------
-    Typography
----------------------------------------------------- */
-
-ul.unstyled {
-    list-style: none;
-    padding: 0;
+    /*padding: 20px;*/
 }

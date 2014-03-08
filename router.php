@@ -57,6 +57,8 @@ function exceptions_error_handler( $severity, $message, $filename, $lineno )
     }
 }
 
+Log_Library::trace(  );
+
 // Manage Ajax first
 $page = Urlparser_Library::getRequestParam('page');
 if ( $page == 'ajax' )

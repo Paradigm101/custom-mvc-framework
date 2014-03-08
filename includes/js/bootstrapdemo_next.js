@@ -15,4 +15,14 @@ $(document).ready(function(){
     
     // Closing my success alert
     $('#closeAlert').click( toggleAlert );
+    
+    // Popover
+    $('a.pop').click(function(event){
+        event.preventDefault();
+    });
+    
+    $('a.pop').popover();
+    
+    $('[rel="tooltip"]').tooltip();
 });
+

@@ -6,3 +6,15 @@
 #features {
     text-align: center;
 }
+
+#inputMessage {
+    margin-bottom: 15px;
+}
+
+/* ----------------------------------------------------
+    Global Style
+    ---------------------------------------------------- */
+
+.tabbable img.thumbnail {
+    margin: 0 20px 10px 0;
+}

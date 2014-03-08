@@ -24,16 +24,18 @@ abstract class Base_Controller
     // Main method, called by the router
     static public function launch()
     {
-        // LSB for model/view
+        // LSB for Model
         $modelName = str_replace( '_Controller', '_Model', get_called_class());
         static::$model = new $modelName();
 
+        // LSB for View
         $viewName = str_replace( '_Controller', '_View', get_called_class());
         static::$view = new $viewName();
 
         // Launch main process
         static::process();
 
+        // Display the page
         static::$view->render();
     }
 

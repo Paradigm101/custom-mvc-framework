@@ -13,10 +13,10 @@
 
         <!-- Javascript for header/footer -->
 <?      if ( $data[ 'header' ] ) { ?>
-            <link type="text/javascript" src="includes/js/commun/<?= $data[ 'header' ] ?>.js" />
+        <script type="text/javascript" src="includes/js/commun/<?= $data[ 'header' ] ?>.js"></script>
 <?      } ?>
 <?      if ( $data[ 'footer' ] ) { ?>
-            <link type="text/javascript" src="includes/js/commun/<?= $data[ 'footer' ] ?>.js" />
+        <script type="text/javascript" src="includes/js/commun/<?= $data[ 'footer' ] ?>.js"></script>
 <?      } ?>
 
         <!-- BOOTSTRAP -->

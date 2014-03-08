@@ -3,7 +3,8 @@
 /**
  * Entry point for GET and POST data
  * 
- * TBD: manage security, avoid SQL injection, etc...
+ * TBD: manage security, avoid SQL injection, ...
+ * TBD: manage arrays
  */
 abstract class Urlparser_Library
 {
@@ -16,7 +17,7 @@ abstract class Urlparser_Library
                     return null;
                 return $_GET[ $param ];
                 break;
-            
+
             case 'post':
                 if ( !array_key_exists($param, $_POST))
                     return null;

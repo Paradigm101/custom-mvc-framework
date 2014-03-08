@@ -17,7 +17,7 @@ define('PAGE_NOT_FOUND', 'display');
 // DB access
 define('DB_ADDRESS',  '127.0.0.1');
 define('DB_USER',     'root');
-define('DB_PASSWORD', 'B1Kou2;Tc');
+define('DB_PASSWORD', 'root');
 define('DB_NAME',     'myFramework');
 
 define('ALL_EOL', "<br>\n");

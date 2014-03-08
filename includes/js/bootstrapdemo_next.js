@@ -1,6 +1,6 @@
 
 // When page is loaded
-$(document).ready(function(){
+$(function(){
 
     // How to toggle my success alert
     var toggleAlert = function(event) {

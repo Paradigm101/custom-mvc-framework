@@ -1,18 +1,18 @@
 <?php
 
 /**
- * Log services
+ * Log services: show or trace
  */
 abstract class Log_Library {
 
     static private function getEOL( $isWeb ) {
         return ( $isWeb ? ALL_EOL : PHP_EOL );
     }
-    
+
     // Log data according to type
     static private function coreLog( $param, $title, $isWeb = false ) {
 
-        // Doing the main job
+        // Specific display according to data type
         switch ( strtolower( gettype( $param ) ) ) {
             
             case 'array':
@@ -69,22 +69,14 @@ abstract class Log_Library {
     }
 
     // Show log in the browser
-    static public function show( $param = null, $title = null, $maxDepth = null, $details = null ) {
-
-        // Default title
-        if ( $title === null )
-            $title = 'SHOW';
+    static public function show( $param = null, $title = null ) {
 
         // Launch the big thing
         echo static::coreLog( $param, $title, true /* IsWeb */ );
     }
 
     // Log data in file
-    static public function trace( $param = null, $title = null, $maxDepth = null, $details = null ) {
-
-        // Default title
-        if ($title === null)
-            $title = 'TRACE';
+    static public function trace( $param = null, $title = null ) {
 
         // Launch the big thing
         file_put_contents('dump.txt', static::coreLog($param, $title), FILE_APPEND);

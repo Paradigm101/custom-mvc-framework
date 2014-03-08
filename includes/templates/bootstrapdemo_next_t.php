@@ -28,8 +28,8 @@
                 <p>This is as standard paragraph. <?= LOREM ?></p>
 
                 <!-- Buttons -->
-                <a href="" class="btn btn-large btn-primary" id="openAlert">Click a nice big button</a>
-                <a href="" class="btn btn-large btn-link">Or a secondary link</a>
+                <a href="" class="btn btn-large btn-primary" id="openAlert">Click to toggle success message</a>
+                <a href="" class="btn btn-large btn-link">Or a secondary link that does reload the page</a>
 
             </div><!-- end well -->
             
@@ -41,11 +41,11 @@
     <div class="row" id="featuresHeading">
         <div class="col-12">
             <h2>More Features</h2>
-            <p class="lead"><?= LOREM ?><p>
+            <p class="lead">Those 3 exclusive feature for your pleasure.<p>
         </div><!-- end col 12 -->
     </div><!-- end row featureHeading -->
 
-
+    <!-- Features -->
     <div class="row" id="features">
         
         <div class="col-sm-4">
@@ -98,20 +98,22 @@
         
     </div><!-- end features -->
 
-
+    <!-- More info -->
     <div class="row" id="moreInfo">
+        
+        <!-- First half row -->
         <div class="col-sm-6">
             <h3>Neat Tabbable Content</h3>
             <div class="tabbable">
                 
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#tab1" data-toggle="tab">Section 1</a></li>
-                    <li><a href="#tab2" data-toggle="tab">Section 2</a></li>
+                    <li class="active"><a href="#tab1" data-toggle="tab">Location</a></li>
+                    <li><a href="#tab2" data-toggle="tab">Pic &AMP; Mod</a></li>
                 </ul><!-- end tab nav/menu -->
 
                 <div class="tab-content">
                     <div class="tab-pane active" id ="tab1">
-                        <h4><span class="glyphicon glyphicon-map-marker"></span> Our location <small>More like our favourite surf spot</small></h4>
+                        <h4><span class="glyphicon glyphicon-map-marker"></span> Our location <small>More like where is Roger?</small></h4>
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2887.343539288194!2d-79.38940469470533!3d43.64102038886619!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34d7b66a4a51%3A0xe210b2f6fe0b1405!2sRogers+Centre!5e0!3m2!1sen!2sca!4v1394248101362" width="100%" height="200" frameborder="0" style="border:0"></iframe>
                         <p><?= LOREM ?></p>
                         <p><?= LOREM ?></p>
@@ -119,13 +121,15 @@
 
                     <div class="tab-pane" id ="tab2">
                         <h4><span class="glyphicon glyphicon-map-marker"></span> A Left Floated Picture <small>Using Placehold.it</small></h4>
-                        <img src="http://placehold.it/140" class="thumbnail pull-left">
+                        <img src="http://placehold.it/140" class="img-thumbnail pull-left">
                         <p><?= LOREM ?></p>
                         <p><?= LOREM ?></p>
                         <hr>
                         <a href="#myModal" role="button" class="btn btn-warning" data-toggle="modal">
                             <span class="glyphicon glyphicon-hand-up"></span> Click for a Modal Window
                         </a>
+                        
+                        <!-- Modal window -->
                         <div class="modal fade" id="myModal">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -181,10 +185,11 @@
             </div><!-- end tabbable -->
         </div><!-- end col-sm-6 -->
         
+        <!-- Second half row -->
         <div class="col-sm-6">
             <h3>Some more info</h3>
             <p><?= LOREM ?></p>
-            <h4>List group</h4>
+            <h4>What to eat? (List group)</h4>
             <div class="list-group">
                 <a href="http://en.wikipedia.org/wiki/Kale" class="list-group-item" target="_blank">
                     <h4 class="list-group-item-heading">Kale</h4>
@@ -203,6 +208,7 @@
             <h5>A small heading</h5>
             <p><?= LOREM ?></p>
         </div><!-- end col-sm-6 -->
+        
     </div><!-- end row moreInfo -->
 
     

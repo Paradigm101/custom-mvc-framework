@@ -1,6 +1,14 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
+// When page is loaded
+$(function(){
 
+    $('#signupButton').click( function (e) {
+        e.preventDefault();
+        $('#signupForm').submit();
+    });
+
+    $('#signupForm').submit(function(e){
+        e.preventDefault();
+        alert('Sign in form submited!');
+    });
+});

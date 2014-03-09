@@ -22,6 +22,9 @@ function __autoload( $className ) {
         case 'view' :
             $file = 'views/' . strtolower( $fileName ) . '_v.php';
             break;
+        case 'ajax' :
+            $file = 'ajax/' . strtolower( $fileName ) . '_a.php';
+            break;
         case 'library' :
             $file = 'libraries/' . strtolower( $fileName ) . '.php';
             break;
@@ -65,22 +68,34 @@ $page = Urlparser_Library::getRequestParam('page');
 if ( $page == 'ajax' )
 {
     $action = Urlparser_Library::getRequestParam('action');
-    if (!$action)
-    {
-        Error_Library::launch( 'No action define for this ajax!' );
+    // TBD: manage wrong ajax action
+    if (!$action) {
+
+        Log_Library::trace('Ajax requested with no action specified');
         exit();
     }
 
-    // Launch ajax  TBD
-    Error_Library::launch( 'Ajax action : ' . $action );
+    // Ajax action not recognize
+    if ( !file_exists( "ajax/" . $action . '_a.php' ) ) {
+
+        Log_Library::trace("Unknown Ajax action requested (file doesn't exists) : [$action]");
+        exit();
+    }
+
+    // Launch AJAX
+    $class = ucfirst( $action ) . '_Ajax';
+    $class::launch();
+
+    // And leave
     exit();
 }
 
+// This is not an ajax. This is a page!
 // Manage 'page not found'
 if ( !$page || !file_exists( "controllers/" . $page . '_c.php' ) )
 {
-    switch (PAGE_NOT_FOUND)
-    {
+    switch (PAGE_NOT_FOUND) {
+
         case 'display':
             Error_Library::launch('Page not found');
             exit();

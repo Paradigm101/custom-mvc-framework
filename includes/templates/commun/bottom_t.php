@@ -1,7 +1,7 @@
 
         <!-- script in the end to display the page as fast as possible -->
         <!-- JQuery -->
-        <script type="text/javascript" src="includes/js/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="includes/js/commun/jquery-2.1.0.js"></script>
 
         <!-- Javascript for every page -->
         <script type="text/javascript" src="includes/js/base.js"></script>

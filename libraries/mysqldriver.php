@@ -19,7 +19,7 @@ class Mysqldriver_Library extends Database_Library
 
     // Last query
     private $query;
-    
+
     // Constructor
     public function __construct()
     {
@@ -145,8 +145,7 @@ class Mysqldriver_Library extends Database_Library
          *      returned object if SELECT, SHOW, DESCRIBE or EXPLAIN
          *      true else
          */
-        try
-        {
+        try {
             $result = mysqli_query( $this->connection, $query );
         }
         // Unknown exception
@@ -183,24 +182,24 @@ class Mysqldriver_Library extends Database_Library
     {
         // Case nothing to fetch
         if ( $this->rows == 0 )
-        {
-            switch ( $type )
-            {
-                case 'array':
-                    return array();
-                case 'object':
-                default:
-                    return new stdClass();
-            }
-        }
+            return null;
 
         // Fetching
         $toReturn = null;
         switch ( $type )
         {
             case 'array':
-                $toReturn = mysqli_fetch_array( $this->result );
+                
+                // Retrieve badly formatted data
+                $tmpArray = mysqli_fetch_array( $this->result );
+
+                // Convert data for better usage
+                $i = 0;
+                foreach( $tmpArray as $key => $value )
+                    if ( $i++ % 2 )
+                        $toReturn[ $key ] = $value;
                 break;
+
             case 'object':
             default:
                 $toReturn = mysqli_fetch_object( $this->result );

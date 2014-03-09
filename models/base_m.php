@@ -1,66 +1,66 @@
 <?php
 
-define('MC_ERROR_STATUS_NO_ERROR', 0);
-define('MC_ERROR_STATUS_UNKOWN', 1);
-define('MC_ERROR_STATUS_DUPLICATE_ENTRY', 2);
+define('BASE_ERROR_STATUS_NO_ERROR', 0);
+define('BASE_ERROR_STATUS_UNKOWN', 1);
+define('BASE_ERROR_STATUS_DUPLICATE_ENTRY', 2);
+define('BASE_ERROR_STATUS_NULL_VALUE', 3);
 
 /**
  * Mother class for all models
  */
 abstract class Base_Model {
 
-    /**
-     * Holds instance of database connection
-     */
-    protected $db;
+    // Holds instance of database connection
+    private $db;
 
-    // Error from model (TBD:protected good?)
+    // Error from model
     protected $error;
 
     public function __construct() {
-        $this->db    = new Mysqldriver_Library();
-        $this->error = MC_ERROR_STATUS_NO_ERROR;
+
+        // Dynamic driver (we never know ...
+        $className = ucfirst(DB_TYPE) . 'driver_Library';
+
+        $this->db    = new $className();
+        $this->error = BASE_ERROR_STATUS_NO_ERROR;
     }
 
     // Error management for controller
-    public function getLastError()
-    {
+    public function getLastError() {
         return $this->error;
     }
 
-    // TBD: protected good?
-    protected function query( $query )
-    {
+    // DB data access for controller
+    public function getLastDBError() {
+        return $this->db->getLastError();
+    }
+
+    // DB data access for controller
+    public function getLastQuery() {
+        return $this->db->getLastQuery();
+    }
+
+    // The big thing
+    protected function query( $query ) {
+
         // Doing the job
         $success = $this->db->queryDB( $query );
 
-        // Return DB id
-        if ( $success )
-        {
-            $this->error = MC_ERROR_STATUS_NO_ERROR;
+        // Success: retire
+        if ( $success ) {
+            $this->error = BASE_ERROR_STATUS_NO_ERROR;
             return true;
         }
 
         // Error management
         //      duplicate entry
+        //      unknown error
         if ( strpos($this->getLastDBError(), 'Duplicate entry') !== false )
-            $this->error = MC_ERROR_STATUS_DUPLICATE_ENTRY;
+            $this->error = BASE_ERROR_STATUS_DUPLICATE_ENTRY;
         else
-            $this->error = MC_ERROR_STATUS_UNKOWN;
+            $this->error = BASE_ERROR_STATUS_UNKOWN;
 
         // Problem
         return false;
-    }
-
-    // DB data access for controller
-    public function getLastDBError()
-    {
-        return $this->db->getLastError();
-    }
-
-    // DB data access for controller
-    public function getLastQuery()
-    {
-        return $this->db->getLastQuery();
     }
 }

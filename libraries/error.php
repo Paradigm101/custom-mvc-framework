@@ -6,7 +6,7 @@ abstract class Error_Library
     {
         // Set error message
         Error_Controller::setMessage($message);
-        
+
         // Launch error screen
         Error_Controller::launch();
     }

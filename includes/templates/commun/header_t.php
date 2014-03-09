@@ -1,6 +1,6 @@
 
 <!-- Sign-up modal -->
-<div class="modal fade dark" id="signupModal">
+<div class="modal fade" id="signupModal">
     <div class="modal-dialog">
         <div class="modal-content">
 
@@ -38,6 +38,10 @@
                       </div>
                     </div>
                   </form><!-- end form -->
+
+                  <!-- User message -->
+                  <hr>
+                  <div id="signupFeedback">orem ipsum dolor sit amet, consectetur adipisicing elit, sed do</div>
             </div><!-- end signup body -->
 
             <!-- footer -->

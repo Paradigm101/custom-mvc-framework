@@ -79,6 +79,6 @@ abstract class Log_Library {
     static public function trace( $param = null, $title = null ) {
 
         // Launch the big thing
-        file_put_contents('dump.txt', static::coreLog($param, $title), FILE_APPEND);
+        file_put_contents(LOG_FILE, static::coreLog($param, $title), FILE_APPEND);
     }
 }

@@ -1,11 +1,13 @@
 <?php
 /**
- * Description: unique entry point for the whole website (hopefully)
+ * Description: unique entry point for the whole website
  */
 // Load globals
+//-------------
 require_once('config.php');
 
-// Automatically includes files containing classes that are called
+// Autoload
+//---------
 function __autoload( $className ) {
 
     // Parse out filename where class should be located
@@ -51,24 +53,24 @@ function __autoload( $className ) {
     }
 }
 
-// TBD: manage errors
 // Error handler
-set_error_handler( 'exceptions_error_handler' );
+//--------------
+set_error_handler( function ( $severity, $message, $filename, $lineno ) {
 
-function exceptions_error_handler( $severity, $message, $filename, $lineno )
-{
-    if ( error_reporting() & $severity )
-    {
-        throw new ErrorException( $message, 0, $severity, $filename, $lineno );
+    if ( error_reporting() & $severity ) {
+
+        file_put_contents(LOG_FILE, "[SYSTEM] Exception catched on line [$lineno] of file [$filename] : $message\n", FILE_APPEND);
+        Throw new ErrorException( $message, 0, $severity, $filename, $lineno );
     }
-}
+});
 
 // Manage Ajax first
+//------------------
 $page = Urlparser_Library::getRequestParam('page');
-if ( $page == 'ajax' )
-{
+if ( $page == 'ajax' ) {
+
     $action = Urlparser_Library::getRequestParam('action');
-    // TBD: manage wrong ajax action
+    // Wrong ajax action
     if (!$action) {
 
         Log_Library::trace('Ajax requested with no action specified');
@@ -90,8 +92,8 @@ if ( $page == 'ajax' )
     exit();
 }
 
-// This is not an ajax. This is a page!
 // Manage 'page not found'
+//------------------------
 if ( !$page || !file_exists( "controllers/" . $page . '_c.php' ) )
 {
     switch (PAGE_NOT_FOUND) {
@@ -100,16 +102,16 @@ if ( !$page || !file_exists( "controllers/" . $page . '_c.php' ) )
             Error_Library::launch('Page not found');
             exit();
 
-        // TBD: manage a redirection with POST data
+        // TBD: manage a redirection with POST data?
         case 'redirect':
         default:
             header('Location: ' . SITE_ROOT . 'page=main' );
-//            http_post_data(SITE_ROOT, array('page'=>'main')); // TBD: add pecl_http module
     }
 }
 
-// Get controller class and launch it
+// Display page: Get controller class and launch it
 $class = ucfirst( $page ) . '_Controller';
 $class::launch();
 
 // END
+//----

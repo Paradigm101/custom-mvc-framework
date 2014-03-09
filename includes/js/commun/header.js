@@ -16,22 +16,32 @@ $(function(){
         
         $.ajax({
             type: "POST",
-            url: "?page=ajax&action=signup",
+            url: "",
             data: {
-                email: $('#inputEmail').val(),
-                username: $('#inputUsername').val(),
-                password: $('#inputPassword').val(),
+                page:      'ajax',
+                action:    'signup',
+                email:     $('#inputEmail').val(),
+                username:  $('#inputUsername').val(),
+                password:  $('#inputPassword').val(),
                 password2: $('#inputPassword2').val()
             },
             success: function(data) {
-                if ( data.userId == 0 )
-                    $('#signupFeedback').html(data.error);
-                else
-                    $('#signupFeedback').html('Signed in!');
-            },
-            error: function(xhr, desc, err) {
-                console.log(xhr);
-                console.log("Details: " + desc + "\nError:" + err);
+                var message = '';
+
+                // Problem managed by system
+                if ( data.error ) {
+                    message = data.error;
+                }
+                // User added
+                else if ( data.userId ) {
+                    message = 'You are now signed in, welcome!';
+                }
+                // Exception, unknown problem
+                else {
+                    message = 'Something wrong happened, try again later.';
+                }
+
+                $('#signupFeedback').html('<strong>' + message + '</strong>');
             }
         });
     });

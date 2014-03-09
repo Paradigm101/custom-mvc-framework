@@ -21,12 +21,11 @@ abstract class Base_View {
     protected function addTemplate( $template ) {
 
         // Carefull : storing template name instead of template file
-        // for front simplification
+        // for front-end simplification
         $this->templates[] = $template;
     }
 
-    public function setTitle( $title )
-    {
+    public function setTitle( $title ) {
         $this->assign('title', $title);
     }
 

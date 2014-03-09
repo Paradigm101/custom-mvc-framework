@@ -11,7 +11,7 @@ define('BASE_ERROR_STATUS_NULL_VALUE', 3);
 abstract class Base_Model {
 
     // Holds instance of database connection
-    private $db;
+    protected $db;
 
     // Error from model
     protected $error;
@@ -55,10 +55,16 @@ abstract class Base_Model {
         // Error management
         //      duplicate entry
         //      unknown error
-        if ( strpos($this->getLastDBError(), 'Duplicate entry') !== false )
+        if ( strpos($this->getLastDBError(), 'Duplicate entry') !== false ) {
             $this->error = BASE_ERROR_STATUS_DUPLICATE_ENTRY;
-        else
+        }
+        else if ( strpos($this->getLastDBError(), 'cannot be null') !== false ) {
+            $this->error = BASE_ERROR_STATUS_NULL_VALUE;
+        }
+        else {
             $this->error = BASE_ERROR_STATUS_UNKOWN;
+            Log_Library::trace($this->getLastDBError(), 'BASE_ERROR_STATUS_UNKOWN');
+        }
 
         // Problem
         return false;

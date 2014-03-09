@@ -41,7 +41,7 @@
 
                   <!-- User message -->
                   <hr>
-                  <div id="signupFeedback">orem ipsum dolor sit amet, consectetur adipisicing elit, sed do</div>
+                  <div class="text-center" id="signupFeedback"></div>
             </div><!-- end signup body -->
 
             <!-- footer -->

@@ -12,7 +12,7 @@ abstract class Urlparser_Library
 
         if ( array_key_exists($param, $_GET))
             return $_GET[ $param ];
-        
+
         return null;
     }
 
@@ -20,7 +20,7 @@ abstract class Urlparser_Library
 
         if ( array_key_exists($param, $_POST))
             return $_POST[ $param ];
-        
+
         return null;
     }
 

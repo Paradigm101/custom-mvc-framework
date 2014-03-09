@@ -29,6 +29,6 @@ abstract class Base_Controller {
         static::$view->render();
     }
 
-    // Core method that does nothing here and need to be overwritten by children class
+    // Core method that does nothing
     static protected function process() {}
 }

@@ -9,32 +9,43 @@ abstract class Signup_Ajax extends Base_Ajax {
         $password  = Urlparser_Library::getRequestParam('password');
         $password2 = Urlparser_Library::getRequestParam('password2');
 
-        // Check same passwords TBD
+        // Check same passwords
         if ( $password != $password2 ) {
-            Log_Library::trace('Different password');
-            exit();
+            static::addAnswer('error',  'The passwords you entered are different.');
+            return;
+        }
+
+        // Verify that email is not empty
+        if ( !$email ) {
+            static::addAnswer('error',  'Email has to be set.');
+            return;
+        }
+
+        // Verify that username is not empty
+        if ( !$username ) {
+            static::addAnswer('error',  'Username has to be set.');
+            return;
         }
 
         // Try and sign in the new user
-        $error = '';
         if ( ($userId = static::$model->addUser( $email, $username, $password ) ) == 0 ) {
 
+            // Retrieve error if needed
             switch(static::$model->getLastError()) {
+
+                // User already exists
                 case BASE_ERROR_STATUS_DUPLICATE_ENTRY:
-                    $error = 'email already exists in our database';
+                    static::addAnswer('error',  'This email already exists in our system.');
                     break;
-                case BASE_ERROR_STATUS_NULL_VALUE:
-                    $error = 'email or username is empty';
-                    break;
-                case BASE_ERROR_STATUS_UNKOWN:
+
+                // Unexpected error
                 default:
-                    $error = 'something wrong happened, try again later';
-                    break;
+                    static::addAnswer('error',  'Something wrong happened, try again later.');
             }
         }
-
-        header("content-type:application/json");
-        echo json_encode(array( 'userId' => $userId,
-                                'error'  => $error ));
+        // Everthing went well, send userId
+        else {
+            static::addAnswer('userId', $userId);
+        }
     }
 }

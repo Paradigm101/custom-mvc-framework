@@ -23,10 +23,10 @@
 <?      } ?>
 
         <!-- BOOTSTRAP -->
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <!-- main CSS -->
+        <link type="text/css" rel="stylesheet" href="includes/css/commun/bootstrap.css">
         <!-- Optional theme -->
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-        <!-- BOOTSTRAP -->
+        <link type="text/css" rel="stylesheet" href="includes/css/commun/bootstrap-theme.css">
+        <!-- end BOOTSTRAP -->
     </head>
     <body>

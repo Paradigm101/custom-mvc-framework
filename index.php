@@ -4,7 +4,7 @@
  */
 // Load globals
 //-------------
-require_once('config.php');
+require 'config.php';
 
 // Autoload
 //---------
@@ -18,18 +18,23 @@ function __autoload( $className ) {
         case 'controller' :
             $file = 'controllers/' . strtolower( $fileName ) . '_c.php';
             break;
+        
         case 'model' :
             $file = 'models/' . strtolower( $fileName ) . '_m.php';
             break;
+        
         case 'view' :
             $file = 'views/' . strtolower( $fileName ) . '_v.php';
             break;
+        
         case 'ajax' :
             $file = 'ajax/' . strtolower( $fileName ) . '_a.php';
             break;
+        
         case 'library' :
             $file = 'libraries/' . strtolower( $fileName ) . '.php';
             break;
+        
         default:
             Error_Library::launch("Unknown class type ($classType) for $className");
             exit();
@@ -43,7 +48,7 @@ function __autoload( $className ) {
     }
 
     // file exists: fetch it
-    require_once( $file );
+    require_once $file;
 
     // Unknow class
     if ( !class_exists ( $className ) )
@@ -64,12 +69,16 @@ set_error_handler( function ( $severity, $message, $filename, $lineno ) {
     }
 });
 
+// Retrieve page
+$page = Urlparser_Library::getRequestParam('page');
+
 // Manage Ajax first
 //------------------
-$page = Urlparser_Library::getRequestParam('page');
 if ( $page == 'ajax' ) {
 
+    // Retrieve action
     $action = Urlparser_Library::getRequestParam('action');
+    
     // Wrong ajax action
     if (!$action) {
 
@@ -94,8 +103,8 @@ if ( $page == 'ajax' ) {
 
 // Manage 'page not found'
 //------------------------
-if ( !$page || !file_exists( "controllers/" . $page . '_c.php' ) )
-{
+if ( !$page || !file_exists( "controllers/" . $page . '_c.php' ) ) {
+
     switch (PAGE_NOT_FOUND) {
 
         case 'display':

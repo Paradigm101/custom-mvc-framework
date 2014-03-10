@@ -72,31 +72,31 @@ abstract class Base_View {
         $data[ 'templates' ] = $this->templates;
         
         // What is always on top
-        include( 'includes/templates/commun/top_t.php');
+        require 'templates/commun/top_t.php';
 
         // Add header if needed
         if ( $this->header )
-            include( 'includes/templates/commun/' . $this->header . '_t.php');
+            require 'templates/commun/' . $this->header . '_t.php';
 
         // Add template(s)
         foreach( $this->templates as $template ) {
 
             // Check file exists
-            if ( !file_exists( $templateFile = 'includes/templates/' . $template . '_t.php' ) ) {
+            if ( !file_exists( $templateFile = 'templates/' . $template . '_t.php' ) ) {
 
                 Error_Library::launch( "Template file doesn't exists : $templateFile" );
                 exit();
             }
 
             // Core job: finally include template(s)
-            include( $templateFile );
+            require $templateFile;
         }
 
         // Add footer if needed
         if ( $this->footer )
-            include( 'includes/templates/commun/' . $this->footer . '_t.php');
+            require 'templates/commun/' . $this->footer . '_t.php';
 
         // What is always on bottom
-        include( 'includes/templates/commun/bottom_t.php');
+        require 'templates/commun/bottom_t.php';
     }
 }

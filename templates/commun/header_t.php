@@ -54,6 +54,7 @@
     </div><!-- end dialog -->
 </div><!-- end myModal -->
 
+<!-- header -->
 <header class="navbar navbar-inverse navbar-fixed-top" role="banner">
     <div class="container">
         <nav role="navigation">
@@ -86,7 +87,10 @@
                 <li><a href="#signupModal" data-toggle="modal"><span class="glyphicon glyphicon-user"></span> Sign up</a></li>
 
                 <!-- Log-in modal (Not logged in) -->
-                <li><a href="#"><span class="glyphicon glyphicon-ok"></span> Log In</a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-ok"></span> Log In</a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">A nice modal to Log in</a></li>
+                    </ul></li>
 
                 <!-- Account Management (logged in) -->
                 <li class="dropdown">

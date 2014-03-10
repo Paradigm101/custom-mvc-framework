@@ -166,7 +166,7 @@
                                                 <label class="col-lg-2 control-label" for="inputMessage">Message</label>
                                                 <div class="col-lg-10">
                                                     <textarea class="form-control" id="inputMessage" placeHolder="Message" row="3"></textarea>
-                                                    <button class="btn btn-success pull-right">Save</button>
+                                                    <button class="btn btn-success pull-right" id="bsDemoSaveBtn">Save</button>
                                                 </div>
                                             </div><!-- end third group -->
                                         </form><!-- end form -->
@@ -174,11 +174,12 @@
 
                                     <div class="modal-footer">
                                         <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
-                                        <button class="btn btn-primary" type="button">Save chamges</button>
+                                        <button class="btn btn-primary" type="button">Save changes</button>
                                     </div>
                                 </div><!-- end content -->
                             </div><!-- end dialog -->
                         </div><!-- end myModal -->
+                        
                     </div><!-- end tab 2 -->
                 </div><!-- end tab content -->
                 

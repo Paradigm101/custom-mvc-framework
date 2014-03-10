@@ -1,7 +1,7 @@
 <?php
 
 abstract class Signup_Ajax extends Base_Ajax {
-    
+
     static protected function process() {
 
         $email     = Urlparser_Library::getRequestParam('email');

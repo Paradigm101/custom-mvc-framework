@@ -3,11 +3,11 @@
 $(function(){
 
     // How to toggle my success alert
-    var toggleAlert = function(event) {
+    var toggleAlert = function(e) {
 
-        event.preventDefault();
+        e.preventDefault();
 
-        $('#successAlert').slideToggle();        
+        $('#successAlert').slideToggle();
     };
 
     // Opening my success alert
@@ -17,12 +17,18 @@ $(function(){
     $('#closeAlert').click( toggleAlert );
     
     // Popover
-    $('a.pop').click(function(event){
-        event.preventDefault();
+    $('a.pop').click(function(e){
+        e.preventDefault();
     });
     
+    // Popover management
     $('a.pop').popover();
     
+    // Tooltip management
     $('[rel="tooltip"]').tooltip();
+    
+    // Avoid fake submit button to break anything
+    $('#bsDemoSaveBtn').click(function(e){
+            e.preventDefault();
+    });
 });
-

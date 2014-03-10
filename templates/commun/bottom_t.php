@@ -1,7 +1,7 @@
 
         <!-- script in the end to display the page as fast as possible -->
         <!-- JQuery -->
-        <script type="text/javascript" src="includes/js/commun/jquery-2.1.0.js"></script>
+        <script type="text/javascript" src="includes/js/commun/jquery.js"></script>
 
         <!-- Javascript for every page -->
         <script type="text/javascript" src="includes/js/base.js"></script>
@@ -20,7 +20,7 @@
 <?      } ?>
 
         <!-- BOOTSTRAP -->
-        <!-- Latest compiled and minified JavaScript -->
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <!-- Main JavaScript -->
+        <script type="text/javascript" src="includes/js/commun/bootstrap.js"></script>
     </body>
 </html>

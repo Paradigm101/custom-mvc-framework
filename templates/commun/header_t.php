@@ -1,3 +1,17 @@
+<!-- Sign-up OK modal -->
+<div class="modal fade" id="signupOkModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-center">
+        <div class="modal-content">
+
+            <!-- body -->
+            <div class="modal-body text-center">
+                Congratulations, you are now signed in. Welcome!
+            </div><!-- end body -->
+
+        </div><!-- end content -->
+    </div><!-- end dialog -->
+</div><!-- end myModal -->
+
 
 <!-- Sign-up modal -->
 <div class="modal fade" id="signupModal">
@@ -7,7 +21,7 @@
             <!-- signup header -->
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Sign-up Form</h4>
+                <h4 class="modal-title">New? Sign-up Here!</h4>
             </div><!-- end signup header -->
 
             <!-- signup body -->
@@ -54,6 +68,50 @@
     </div><!-- end dialog -->
 </div><!-- end myModal -->
 
+
+<!-- Log-in modal -->
+<div class="modal fade" id="loginModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- signup header -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Welcome back!</h4>
+            </div><!-- end signup header -->
+
+            <!-- signup body -->
+            <div class="modal-body">
+                <form role="form" class="form-horizontal" id="loginForm">
+                    <div class="form-group">
+                      <label class="col-sm-4 control-label" for="inputEmail2">Email address</label>
+                      <div class="col-sm-8">
+                        <input type="email" class="form-control" id="inputEmail2" placeholder="Enter email">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-4 control-label" for="inputPassword2">Enter Password</label>
+                      <div class="col-sm-8">
+                        <input type="password" class="form-control" id="inputPassword2" placeholder="Enter password">
+                      </div>
+                    </div>
+                  </form><!-- end form -->
+
+                  <!-- User message -->
+                  <hr>
+                  <div class="text-center" id="loginFeedback"></div>
+            </div><!-- end signup body -->
+
+            <!-- footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="loginButton">Log-in</button>
+            </div><!-- end footer -->
+
+        </div><!-- end content -->
+    </div><!-- end dialog -->
+</div><!-- end myModal -->
+
 <!-- header -->
 <header class="navbar navbar-inverse navbar-fixed-top" role="banner">
     <div class="container">
@@ -87,10 +145,7 @@
                 <li><a href="#signupModal" data-toggle="modal"><span class="glyphicon glyphicon-user"></span> Sign up</a></li>
 
                 <!-- Log-in modal (Not logged in) -->
-                <li><a href="#"><span class="glyphicon glyphicon-ok"></span> Log In</a>
-                    <ul class="dropdown-menu">
-                      <li><a href="#">A nice modal to Log in</a></li>
-                    </ul></li>
+                <li><a href="#loginModal" data-toggle="modal"><span class="glyphicon glyphicon-ok"></span> Log In</a>
 
                 <!-- Account Management (logged in) -->
                 <li class="dropdown">

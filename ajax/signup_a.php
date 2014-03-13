@@ -8,7 +8,7 @@ abstract class Signup_Ajax extends Base_Ajax {
         $username  = Urlparser_Library::getRequestParam('username');
         $password  = Urlparser_Library::getRequestParam('password');
         $password2 = Urlparser_Library::getRequestParam('password2');
-
+        
         // Check same passwords
         if ( $password != $password2 ) {
             static::addAnswer('error',  'The passwords you entered are different.');

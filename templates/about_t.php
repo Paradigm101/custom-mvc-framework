@@ -1,5 +1,5 @@
 
-<!-- Main template -->
+<!-- About template: insert resume from google doc -->
 <div class="container">
-    <iframe src="https://drive.google.com/file/d/0BwevTboQIS5JUGpLUWNneXVmd0k/edit?" style="width:1100px; height:800px; " frameborder="0"></iframe>
+    <iframe src="https://drive.google.com/file/d/0BwevTboQIS5JUGpLUWNneXVmd0k/edit?usp=sharing" alt="Google doc is unavailable at the moment!" style="width:1100px; height:800px; " frameborder="0"></iframe>
 </div>

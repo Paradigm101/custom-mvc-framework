@@ -7,6 +7,8 @@ class Bootstrapdemo_View extends Base_View {
         $this->addTemplate( 'bootstrapdemo_carousel' );
         $this->addTemplate( 'bootstrapdemo_next' );
         $this->addTemplate( 'bootstrapdemo_end' );
+        
+        $this->setTitle( 'Bootstrap' );
     }
     
 }

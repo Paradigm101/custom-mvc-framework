@@ -18,7 +18,6 @@ $(function(){
         }
     });
 
-    
     // Sign-up OK modal: user can hit enter to leave
     $('#signupOkModal').keypress(function(e) {
         if (e.which == '13') {
@@ -27,14 +26,22 @@ $(function(){
         }
     });
 
+    // Log-in OK modal: user can hit enter to leave
+    $('#loginOkModal').keypress(function(e) {
+        if (e.which == '13') {
+            e.preventDefault();
+            $(this).modal('hide');
+        }
+    });
+
     // Sign-up Modal: Give focus to first element
     $('#signupModal').on('shown.bs.modal', function() {
-        $('#inputEmail').focus();
+        $('#inputEmailSU').focus();
     });
 
     // Log-in Modal: Give focus to first element
     $('#loginModal').on('shown.bs.modal', function() {
-        $('#inputEmail2').focus();
+        $('#inputEmailLI').focus();
     });
 
     // Sign-up Modal: user can hit enter to submit
@@ -78,10 +85,10 @@ $(function(){
             data: {
                 page:      'ajax',
                 action:    'signup',
-                email:     $('#inputEmail').val(),
-                username:  $('#inputUsername').val(),
-                password:  $('#inputPassword').val(),
-                password2: $('#inputPassword2').val()
+                email:     $('#inputEmailSU').val(),
+                username:  $('#inputUsernameSU').val(),
+                password:  $('#inputPasswordSU').val(),
+                password2: $('#inputPassword2SU').val()
             },
             success: function(data) {
                 var message = '';
@@ -94,6 +101,9 @@ $(function(){
                 else if ( data.userId ) {
                     $('#signupModal').modal('hide');
                     $('#signupOkModal').modal('show');
+                    setTimeout(function(){
+                        $('#signupOkModal').modal('hide');
+                    }, 3000);
                 }
                 // Exception, unknown problem
                 else {
@@ -116,8 +126,8 @@ $(function(){
             data: {
                 page:      'ajax',
                 action:    'login',
-                email:     $('#inputEmail2').val(),
-                password:  $('#inputPassword2').val()
+                email:     $('#inputEmailLI').val(),
+                password:  $('#inputPasswordLI').val()
             },
             success: function(data) {
 
@@ -128,6 +138,10 @@ $(function(){
                 // User loged in
                 else {
                     $('#loginModal').modal('hide');
+                    $('#loginOkModal').modal('show');
+                    setTimeout(function(){
+                        $('#loginOkModal').modal('hide');
+                    }, 3000);
                 }
             }
         });

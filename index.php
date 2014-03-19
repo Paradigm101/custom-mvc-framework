@@ -1,14 +1,14 @@
 <?php
 /**
- * Description: unique entry point for the whole website
+ * Unique entry point for the whole website
  */
-// Load globals
+// Globals
 //-------------
 require 'config.php';
 
 // Autoload
 //---------
-function __autoload( $className ) {
+spl_autoload_register( function ( $className ) {
 
     // Parse out filename where class should be located
     list($fileName, $classType) = explode('_', $className);
@@ -56,7 +56,7 @@ function __autoload( $className ) {
         Error_Library::launch("Class does not exist : $className in $file");
         exit();
     }
-}
+});
 
 // Error handler
 //--------------

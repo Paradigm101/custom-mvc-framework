@@ -1,3 +1,18 @@
+<!-- Log-in OK modal -->
+<div class="modal fade" id="loginOkModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-center">
+        <div class="modal-content">
+
+            <!-- body -->
+            <div class="modal-body text-center">
+                Welcome back!
+            </div><!-- end body -->
+
+        </div><!-- end content -->
+    </div><!-- end dialog -->
+</div><!-- end modal login ok -->
+
+
 <!-- Sign-up OK modal -->
 <div class="modal fade" id="signupOkModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-center">
@@ -5,12 +20,12 @@
 
             <!-- body -->
             <div class="modal-body text-center">
-                Congratulations, you are now signed in. Welcome!
+                Congratulations, you have now signed up. Welcome!
             </div><!-- end body -->
 
         </div><!-- end content -->
     </div><!-- end dialog -->
-</div><!-- end myModal -->
+</div><!-- end modal sign-up ok -->
 
 
 <!-- Sign-up modal -->
@@ -28,27 +43,27 @@
             <div class="modal-body">
                 <form role="form" class="form-horizontal" id="signupForm">
                     <div class="form-group">
-                      <label class="col-sm-4 control-label" for="inputEmail">Email address</label>
+                      <label class="col-sm-4 control-label" for="inputEmailSU">Email address</label>
                       <div class="col-sm-8">
-                        <input type="email" class="form-control" id="inputEmail" placeholder="Enter email">
+                        <input type="email" class="form-control" id="inputEmailSU" placeholder="Enter email">
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="col-sm-4 control-label" for="inputUsername">Username</label>
+                      <label class="col-sm-4 control-label" for="inputUsernameSU">Username</label>
                       <div class="col-sm-8">
-                        <input type="text" class="form-control" id="inputUsername" placeholder="Enter username">
+                        <input type="text" class="form-control" id="inputUsernameSU" placeholder="Enter username">
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="col-sm-4 control-label" for="inputPassword">Enter Password</label>
+                      <label class="col-sm-4 control-label" for="inputPasswordSU">Enter Password</label>
                       <div class="col-sm-8">
-                        <input type="password" class="form-control" id="inputPassword" placeholder="Enter password">
+                        <input type="password" class="form-control" id="inputPasswordSU" placeholder="Enter password">
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="col-sm-4 control-label" for="inputPassword2">Enter Password again</label>
+                      <label class="col-sm-4 control-label" for="inputPassword2SU">Enter Password again</label>
                       <div class="col-sm-8">
-                        <input type="password" class="form-control" id="inputPassword2" placeholder="Enter password again">
+                        <input type="password" class="form-control" id="inputPassword2SU" placeholder="Enter password again">
                       </div>
                     </div>
                   </form><!-- end form -->
@@ -84,15 +99,15 @@
             <div class="modal-body">
                 <form role="form" class="form-horizontal" id="loginForm">
                     <div class="form-group">
-                      <label class="col-sm-4 control-label" for="inputEmail2">Email address</label>
+                      <label class="col-sm-4 control-label" for="inputEmailLI">Email address</label>
                       <div class="col-sm-8">
-                        <input type="email" class="form-control" id="inputEmail2" placeholder="Enter email">
+                        <input type="email" class="form-control" id="inputEmailLI" placeholder="Enter email">
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="col-sm-4 control-label" for="inputPassword2">Enter Password</label>
+                      <label class="col-sm-4 control-label" for="inputPasswordLI">Enter Password</label>
                       <div class="col-sm-8">
-                        <input type="password" class="form-control" id="inputPassword2" placeholder="Enter password">
+                        <input type="password" class="form-control" id="inputPasswordLI" placeholder="Enter password">
                       </div>
                     </div>
                   </form><!-- end form -->

@@ -18,16 +18,11 @@ $(function(){
         }
     });
 
+    // ***************
+    // *** Sign-up ***
+    // ***************
     // Sign-up OK modal: user can hit enter to leave
     $('#signupOkModal').keypress(function(e) {
-        if (e.which == '13') {
-            e.preventDefault();
-            $(this).modal('hide');
-        }
-    });
-
-    // Log-in OK modal: user can hit enter to leave
-    $('#loginOkModal').keypress(function(e) {
         if (e.which == '13') {
             e.preventDefault();
             $(this).modal('hide');
@@ -39,11 +34,6 @@ $(function(){
         $('#inputEmailSU').focus();
     });
 
-    // Log-in Modal: Give focus to first element
-    $('#loginModal').on('shown.bs.modal', function() {
-        $('#inputEmailLI').focus();
-    });
-
     // Sign-up Modal: user can hit enter to submit
     $('#signupModal').keypress(function(e) {
         if (e.which == '13') {
@@ -52,26 +42,11 @@ $(function(){
         }
     });
 
-    // Log-in Modal: user can hit enter to submit
-    $('#loginModal').keypress(function(e) {
-        if (e.which == '13') {
-            e.preventDefault();
-            $('#loginForm').submit();
-        }
-    });
-
     // Sign-up Button: Click to submit
     $('#signupButton').click( function (e) {
 
         e.preventDefault();
         $('#signupForm').submit();
-    });
-
-    // Log-in Button: Click to submit
-    $('#loginpButton').click( function (e) {
-
-        e.preventDefault();
-        $('#loginForm').submit();
     });
 
     // Sign-up form is being submitted
@@ -83,12 +58,12 @@ $(function(){
             type: "POST",
             url: "",
             data: {
-                page:      'ajax',
-                action:    'signup',
-                email:     $('#inputEmailSU').val(),
-                username:  $('#inputUsernameSU').val(),
-                password:  $('#inputPasswordSU').val(),
-                password2: $('#inputPassword2SU').val()
+                request_type:   'ajax',
+                request_name:   'signup',
+                email:          $('#inputEmailSU').val(),
+                username:       $('#inputUsernameSU').val(),
+                password:       $('#inputPasswordSU').val(),
+                password2:      $('#inputPassword2SU').val()
             },
             success: function(data) {
                 var message = '';
@@ -115,19 +90,50 @@ $(function(){
         });
     });
 
+    // **************
+    // *** Log-in ***
+    // **************
+    // Log-in OK modal: user can hit enter to leave
+    $('#loginOkModal').keypress(function(e) {
+        if (e.which == '13') {
+            e.preventDefault();
+            $(this).modal('hide');
+        }
+    });
+
+    // Log-in Modal: Give focus to first element
+    $('#loginModal').on('shown.bs.modal', function() {
+        $('#inputEmailLI').focus();
+    });
+
+    // Log-in Modal: user can hit enter to submit
+    $('#loginModal').keypress(function(e) {
+        if (e.which == '13') {
+            e.preventDefault();
+            $('#loginForm').submit();
+        }
+    });
+
+    // Log-in Button: Click to submit
+    $('#loginButton').click( function (e) {
+
+        e.preventDefault();
+        $('#loginForm').submit();
+    });
+
     // Log-in form is being submitted
     $('#loginForm').submit(function(e){
-
+        
         e.preventDefault();
         
         $.ajax({
             type: "POST",
             url: "",
             data: {
-                page:      'ajax',
-                action:    'login',
-                email:     $('#inputEmailLI').val(),
-                password:  $('#inputPasswordLI').val()
+                request_type:   'ajax',
+                request_name:   'login',
+                email:          $('#inputEmailLI').val(),
+                password:       $('#inputPasswordLI').val()
             },
             success: function(data) {
 

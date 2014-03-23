@@ -13,9 +13,9 @@
             <div class="col-sm-2">
                 <h6>Navigation</h6>
                 <ul class="unstyled">
-                    <li><a href="?page=main">Main</a></li>
-                    <li><a href="?page=bootstrapdemo">Bootstrap</a></li>
-                    <li><a href="?page=about">About</a></li>
+                    <li><a href="?request_type=page&request_name=main">Main</a></li>
+                    <li><a href="?request_type=page&request_name=bootstrapdemo">Bootstrap</a></li>
+                    <li><a href="?request_type=page&request_name=about">About</a></li>
                 </ul>
             </div><!-- end col-sm-2 -->
             <div class="col-sm-2">

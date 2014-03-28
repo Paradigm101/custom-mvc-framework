@@ -49,7 +49,7 @@ set_error_handler( function ( $severity, $message, $filename, $lineno ) {
     }
 });
 
-// Manage page not found
+// Manage page/type not found
 if ( !($name = ucfirst(strtolower(Urlparser_Library_Controller::getRequestParam('request_name')))) ||
      !($type = ucfirst(strtolower(Urlparser_Library_Controller::getRequestParam('request_type')))) ) {
 
@@ -58,11 +58,15 @@ if ( !($name = ucfirst(strtolower(Urlparser_Library_Controller::getRequestParam(
         $name = 'main';
         $type = 'page';
     }
-    
+
     // Redirect to main page
     $name = 'main';
     $type = 'page';
 }
+
+// TBD: manage controller doesn't exists
+
+// TBD: manage security: SQL injection, script injection, crossplateform forgery, etc...
 
 // Launch controller
 //------------------

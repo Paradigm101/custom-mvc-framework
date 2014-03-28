@@ -12,11 +12,11 @@
 
 .mySlide { background: center; }
 
-#slide1 { background-image: url('../images/carousel_medium_01.jpg'); }
+#slide1 { background-image: url('../image/carousel_medium_01.jpg'); }
 
-#slide2 { background-image: url('../images/carousel_medium_02.jpg'); }
+#slide2 { background-image: url('../image/carousel_medium_02.jpg'); }
 
-#slide3 { background-image: url('../images/carousel_medium_03.jpg'); }
+#slide3 { background-image: url('../image/carousel_medium_03.jpg'); }
 
 /* ----------------------------------------------
    Media Queries
@@ -35,11 +35,11 @@
 
     #myCarousel .item { height: 310px; }
     
-    #slide1 { background-image: url('../images/carousel_small_01.jpg'); }
+    #slide1 { background-image: url('../image/carousel_small_01.jpg'); }
 
-    #slide2 { background-image: url('../images/carousel_small_02.jpg'); }
+    #slide2 { background-image: url('../image/carousel_small_02.jpg'); }
 
-    #slide3 { background-image: url('../images/carousel_small_03.jpg'); }
+    #slide3 { background-image: url('../image/carousel_small_03.jpg'); }
 }
 
 /* Large desktop */
@@ -51,9 +51,9 @@
 
     #myCarousel .item { height: 500px; }
     
-    #slide1 { background-image: url('../images/carousel_large_01.jpg'); }
+    #slide1 { background-image: url('../image/carousel_large_01.jpg'); }
 
-    #slide2 { background-image: url('../images/carousel_large_02.jpg'); }
+    #slide2 { background-image: url('../image/carousel_large_02.jpg'); }
 
-    #slide3 { background-image: url('../images/carousel_large_03.jpg'); }
+    #slide3 { background-image: url('../image/carousel_large_03.jpg'); }
 }

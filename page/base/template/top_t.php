@@ -7,26 +7,26 @@
         <title><?=  $data['title'] ?></title>
 
         <!-- CSS for all pages -->
-        <link type="text/css" rel="stylesheet" href="includes/css/base.css" />
+        <link type="text/css" rel="stylesheet" href="page/base/css/base.css" />
 
         <!-- CSS for this page -->
 <?      foreach( $data['templates'] as $template ) { ?>
-        <link type="text/css" rel="stylesheet" href="includes/css/<?= $template ?>.css" />
+        <link type="text/css" rel="stylesheet" href="page/<?= $data['page'] ?>/css/<?= $template ?>.css" />
 <?      } ?>
 
         <!-- CSS for header/footer -->
 <?      if ( $data[ 'header' ] ) { ?>
-            <link type="text/css" rel="stylesheet" href="includes/css/commun/<?= $data[ 'header' ] ?>.css" />
+            <link type="text/css" rel="stylesheet" href="page/<?= $data['header'] ?>/css/<?= $data['header'] ?>.css" />
 <?      } ?>
 <?      if ( $data[ 'footer' ] ) { ?>
-            <link type="text/css" rel="stylesheet" href="includes/css/commun/<?= $data[ 'footer' ] ?>.css" />
+            <link type="text/css" rel="stylesheet" href="page/<?= $data['footer'] ?>/css/<?= $data['footer'] ?>.css" />
 <?      } ?>
 
         <!-- BOOTSTRAP -->
         <!-- main CSS -->
-        <link type="text/css" rel="stylesheet" href="includes/css/commun/bootstrap.css">
+        <link type="text/css" rel="stylesheet" href="page/bootstrap/css/bootstrap.css">
         <!-- Optional theme -->
-        <link type="text/css" rel="stylesheet" href="includes/css/commun/bootstrap-theme.css">
+        <link type="text/css" rel="stylesheet" href="page/bootstrap/css/bootstrap-theme.css">
         <!-- end BOOTSTRAP -->
     </head>
     <body>

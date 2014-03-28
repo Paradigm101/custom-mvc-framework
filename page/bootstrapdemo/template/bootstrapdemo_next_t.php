@@ -56,7 +56,7 @@
                 </div><!-- end heading -->
 
                 <div class="panel-body">
-                    <img src="includes/images/badge_html5.jpg" alt="HTML5" class="img-circle">
+                    <img src="page/bootstrapdemo/image/badge_html5.jpg" alt="HTML5" class="img-circle">
                     <p>HTML5 is a markup language used for structuring and presenting content for the World Wide Web and a core technology of the Internet.</p>
                     <a href="http://en.wikipedia.org/wiki/HTML5" target="_blank" class="btn btn-warning btn-block">HTML5 on wikipedia</a>
                 </div><!-- end body -->
@@ -72,7 +72,7 @@
                 </div><!-- end heading -->
                 
                 <div class="panel-body">
-                    <img src="includes/images/badge_css3.jpg" alt="CSS3" class="img-circle">
+                    <img src="page/bootstrapdemo/image/badge_css3.jpg" alt="CSS3" class="img-circle">
                     <p>Cascading Style Sheets is a style sheet language used for describing the look and formatting of a document written in a markup language.</p>
                     <a href="http://en.wikipedia.org/wiki/CSS" target="_blank" class="btn btn-danger btn-block">CSS3 on wikipedia</a>
                 </div><!-- end body -->
@@ -88,7 +88,7 @@
                 </div><!-- end heading -->
                 
                 <div class="panel-body">
-                    <img src="includes/images/badge_bootstrap.jpg" alt="Bootstrap 3" class="img-circle">
+                    <img src="page/bootstrapdemo/image/badge_bootstrap.jpg" alt="Bootstrap 3" class="img-circle">
                     <p>Bootstrap is a free collection of tools for creating websites and web applications. It contains HTML and CSS-based design templates.</p>
                     <a href="http://en.wikipedia.org/wiki/Bootstrap_%28front-end_framework%29" target="_blank" class="btn btn-info btn-block">Bootstrap on wikipedia</a>
                 </div><!-- end body -->

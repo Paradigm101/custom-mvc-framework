@@ -17,6 +17,9 @@ abstract class Base_Page_View {
     // Footer management
     protected $footer;
     
+    // Page name
+    private $page;
+    
     // Add a template to the page
     protected function addTemplate( $template ) {
 
@@ -33,6 +36,13 @@ abstract class Base_Page_View {
      * Receives assignments from controller and stores in local data array
      */
     public function assign( $name , $value ) {
+
+        // Reserved data
+        if ( $name == 'templates' ||
+             $name == 'page' ) {
+            Throw new Exception('Error: trying to assign protected field in View!');
+        }
+
         $this->data[ $name ] = $value;
     }
 
@@ -42,14 +52,13 @@ abstract class Base_Page_View {
         $this->render = array();
         $this->data   = array();
 
-        $page = strtolower( str_replace( '_Page_View', '', get_called_class()) );
+        $this->page = strtolower( str_replace( '_Page_View', '', get_called_class()) );
 
         // Setting title
-        $this->assign('page', $page);
-        $this->assign('title', ucfirst($page));
+        $this->assign('title', ucfirst( $this->page ));
 
         // Add main template file to render list IN THE FIRST POSITION
-        $this->addTemplate( $page );
+        $this->addTemplate( $this->page );
 
         // Default header/footer
         $this->header = 'header';
@@ -68,22 +77,25 @@ abstract class Base_Page_View {
         $data[ 'header' ] = $this->header;
         $data[ 'footer' ] = $this->footer;
 
+        // Page name
+        $data[ 'page' ] = $this->page;
+        
         // To manage CSS/Javascript inclusion
         $data[ 'templates' ] = $this->templates;
 
         // What is always on top
-        require 'templates/commun/top_t.php';
+        require 'page/base/template/top_t.php';
 
         // Add header if needed
         if ( $this->header ) {
-            require 'templates/commun/' . $this->header . '_t.php';
+            require 'page/' . $this->header . '/template/' . $this->header . '_t.php';
         }
 
         // Add template(s)
         foreach( $this->templates as $template ) {
 
             // Check file exists
-            if ( !file_exists( $templateFile = 'page/' . str_replace( '_Page_View', '', get_called_class()) . '/' . $template . '_t.php' ) ) {
+            if ( !file_exists( $templateFile = 'page/' . $this->page . '/template/' . $template . '_t.php' ) ) {
 
                 $errorMsg = "Template file doesn't exists : $templateFile";
                 Log_Library_Controller::trace( '[SYSTEM] ' . $errorMsg );
@@ -97,10 +109,10 @@ abstract class Base_Page_View {
 
         // Add footer if needed
         if ( $this->footer ) {
-            require 'templates/commun/' . $this->footer . '_t.php';
+            require 'page/' . $this->footer . '/template/' . $this->footer . '_t.php';
         }
 
         // What is always on bottom
-        require 'templates/commun/bottom_t.php';
+        require 'page/base/template/bottom_t.php';
     }
 }

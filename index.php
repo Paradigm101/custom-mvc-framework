@@ -49,9 +49,22 @@ set_error_handler( function ( $severity, $message, $filename, $lineno ) {
     }
 });
 
+// Manage page not found
+if ( !($name = ucfirst(strtolower(Urlparser_Library_Controller::getRequestParam('request_name')))) ||
+     !($type = ucfirst(strtolower(Urlparser_Library_Controller::getRequestParam('request_type')))) ) {
+
+    // TBD manage various cases API/Page/Ajax + use wrappers + log in dump if strange request
+    if ( PAGE_NOT_FOUND == 'error' ) {
+        $name = 'main';
+        $type = 'page';
+    }
+    
+    // Redirect to main page
+    $name = 'main';
+    $type = 'page';
+}
+
 // Launch controller
 //------------------
-$class = ucfirst( strtolower(Urlparser_Library_Controller::getRequestParam('request_name')) ) . '_'
-       . ucfirst( strtolower(Urlparser_Library_Controller::getRequestParam('request_type')) ) . '_'
-       . 'Controller';
+$class = $name . '_' . $type . '_Controller';
 $class::launch();

@@ -141,7 +141,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="?page=main">Brand</a>
+              <a class="navbar-brand" href="?request_type=page&request_name=main">Brand</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->

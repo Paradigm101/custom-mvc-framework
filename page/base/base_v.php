@@ -16,9 +16,6 @@ abstract class Base_Page_View {
 
     // Footer management
     protected $footer;
-
-    // Where to load the templates
-    private $templateFolder;
     
     // Add a template to the page
     protected function addTemplate( $template ) {
@@ -44,8 +41,6 @@ abstract class Base_Page_View {
         
         $this->render = array();
         $this->data   = array();
-
-        $this->templateFolder = 'page/' . str_replace( '_Page_View', '', get_called_class());
 
         $page = strtolower( str_replace( '_Page_View', '', get_called_class()) );
 
@@ -88,7 +83,7 @@ abstract class Base_Page_View {
         foreach( $this->templates as $template ) {
 
             // Check file exists
-            if ( !file_exists( $templateFile = $this->templateFolder . '/' . $template . '_t.php' ) ) {
+            if ( !file_exists( $templateFile = 'page/' . str_replace( '_Page_View', '', get_called_class()) . '/' . $template . '_t.php' ) ) {
 
                 $errorMsg = "Template file doesn't exists : $templateFile";
                 Log_Library_Controller::trace( '[SYSTEM] ' . $errorMsg );

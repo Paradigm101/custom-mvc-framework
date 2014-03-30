@@ -3,6 +3,9 @@
 /**
  * Unique entry point for the whole website
  */
+// TBD: .htaccess
+// TBD: manage security: SQL injection, script injection, crossplateform forgery, etc...
+
 // Globals
 //-------------
 require 'config.php';
@@ -49,26 +52,64 @@ set_error_handler( function ( $severity, $message, $filename, $lineno ) {
     }
 });
 
-// Manage page/type not found
-if ( !($name = ucfirst(strtolower(Urlparser_Library_Controller::getRequestParam('request_name')))) ||
-     !($type = ucfirst(strtolower(Urlparser_Library_Controller::getRequestParam('request_type')))) ) {
+// Default request type: page
+if ( !($type = strtolower(Urlparser_Library_Controller::getRequestParam('request_type'))) ) {
 
-    // TBD manage various cases API/Page/Ajax + use wrappers + log in dump if strange request
-    if ( PAGE_NOT_FOUND == 'error' ) {
-        $name = 'main';
-        $type = 'page';
-    }
-
-    // Redirect to main page
-    $name = 'main';
     $type = 'page';
 }
 
-// TBD: manage controller doesn't exists
+// Unknown type
+if ( !(in_array($type, array('page', 'ajax', 'api'))) ) {
 
-// TBD: manage security: SQL injection, script injection, crossplateform forgery, etc...
+    Log_Library_Controller::trace("Unknown request type '$type'");
+    exit();
+}
 
-// Launch controller
-//------------------
-$class = $name . '_' . $type . '_Controller';
+// Get request name
+$name = strtolower(Urlparser_Library_Controller::getRequestParam('request_name'));
+
+// Request name not found
+if ( !$name ) {
+
+    // Default page
+    if ( $type == 'page' ) {
+        $name = 'main';
+    }
+    else {
+        Error_Library_Controller::launch("No $type name set!", $type);
+        exit();
+    }
+}
+
+// File doesn't exist
+if ( !( file_exists( $file = $type . '/' . $name . '/' . $name . '_c.php' ) ) ) {
+
+    // Trace the missing file
+    Log_Library_Controller::trace("File doesn't exist '$file' for request '$name' of type '$type'");
+    
+    // Launch the error
+    Error_Library_Controller::launch("No $type name set!", $type);
+    
+    // And leave
+    exit();
+}
+
+// File exists, fetch it
+require $file;
+
+// Controller doesn't exist
+if ( !( class_exists( $class = ucfirst($name) . '_' . ucfirst($type) . '_Controller' ) ) ) {
+
+    // Trace the missing class
+    Log_Library_Controller::trace("Controller '$class' doesn't exist in file '$file'");
+    
+    // Launch the error
+    Error_Library_Controller::launch("Something wrong happened, try again later", $type);
+    
+    // And leave
+    exit();
+}
+
+// Doing the work!
+//----------------
 $class::launch();

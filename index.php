@@ -54,7 +54,7 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
         // Getting error type
         $error_type = "";
 
-        if ($severity & E_ERROR)                $error_type = "ERROR";
+        if ($severity & E_ERROR)                $error_type = "ERROR"; 
         if ($severity & E_WARNING)              $error_type = "WARNING";
         if ($severity & E_PARSE)                $error_type = "PARSE";
         if ($severity & E_NOTICE)               $error_type = "NOTICE";

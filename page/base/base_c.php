@@ -11,8 +11,6 @@ abstract class Base_Page_Controller {
     // View
     static protected $view;
 
-    protected $spe_view;
-
     // Main method, called by the router
     static public function launch() {
 

@@ -54,26 +54,31 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
         // Getting error type
         $error_type = "";
 
-        if ($severity & E_ERROR)                $error_type = "ERROR";
-        if ($severity & E_WARNING)              $error_type = "WARNING";
-        if ($severity & E_PARSE)                $error_type = "PARSE";
-        if ($severity & E_NOTICE)               $error_type = "NOTICE";
-        if ($severity & E_CORE_ERROR)           $error_type = "CORE_ERROR";
-        if ($severity & E_CORE_WARNING)         $error_type = "CORE_WARNING";
-        if ($severity & E_COMPILE_ERROR)        $error_type = "COMPILE_ERROR";
-        if ($severity & E_COMPILE_WARNING)      $error_type = "COMPILE_WARNING";
-        if ($severity & E_USER_ERROR)           $error_type = "USER_ERROR";
-        if ($severity & E_USER_WARNING)         $error_type = "USER_WARNING";
-        if ($severity & E_USER_NOTICE)          $error_type = "USER_NOTICE";
-        if ($severity & E_STRICT)               $error_type = "STRICT";
-        if ($severity & E_RECOVERABLE_ERROR)    $error_type = "RECOVERABLE_ERROR";
-        if ($severity & E_DEPRECATED)           $error_type = "DEPRECATED";
-        if ($severity & E_USER_DEPRECATED)      $error_type = "USER_DEPRECATED";
+        if ($severity & E_ERROR)                $error_type .= "ERROR|";
+        if ($severity & E_WARNING)              $error_type .= "WARNING|";
+        if ($severity & E_PARSE)                $error_type .= "PARSE|";
+        if ($severity & E_NOTICE)               $error_type .= "NOTICE|";
+        if ($severity & E_CORE_ERROR)           $error_type .= "CORE_ERROR|";
+        if ($severity & E_CORE_WARNING)         $error_type .= "CORE_WARNING|";
+        if ($severity & E_COMPILE_ERROR)        $error_type .= "COMPILE_ERROR|";
+        if ($severity & E_COMPILE_WARNING)      $error_type .= "COMPILE_WARNING|";
+        if ($severity & E_USER_ERROR)           $error_type .= "USER_ERROR|";
+        if ($severity & E_USER_WARNING)         $error_type .= "USER_WARNING|";
+        if ($severity & E_USER_NOTICE)          $error_type .= "USER_NOTICE|";
+        if ($severity & E_STRICT)               $error_type .= "STRICT|";
+        if ($severity & E_RECOVERABLE_ERROR)    $error_type .= "RECOVERABLE_ERROR|";
+        if ($severity & E_DEPRECATED)           $error_type .= "DEPRECATED|";
+        if ($severity & E_USER_DEPRECATED)      $error_type .= "USER_DEPRECATED|";
 
         // Unknown error
         if ( $error_type == "" ) {
 
             $error_type = "UNKNOWN";
+        }
+        // Formating error type: remove last character '|'
+        else {
+            
+            $error_type = substr( $error_type, 0, -1);
         }
 
         // Add date
@@ -149,8 +154,8 @@ if ( !( class_exists( $class = ucfirst($name) . '_' . ucfirst($type) . '_Control
 
 // Start user session
 //-------------------
-session_start();
+Session_Library_Controller::initSession();
 
-// Doing the work!
-//----------------
+// Launch request creation
+//------------------------
 $class::launch();

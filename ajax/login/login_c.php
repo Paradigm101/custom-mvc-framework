@@ -13,10 +13,18 @@ abstract class Login_Ajax_Controller extends Base_Ajax_Controller {
             return;
         }
 
-        // Try and log-in the new user
-        if ( ( static::$model->loginUser( $email, $password ) ) == null ) {
+        // TBD: Manage user already logged in
+
+        // Retrieving user id, No data: wrong user/password
+        if ( ( $id_user = static::$model->checkPassword( $email, $password ) ) == null ) {
 
             static::addAnswer('error', 'Wrong email and/or password.');
+            return;
         }
+
+        // Register session
+        static::$model->storeSession( $id_user, session_id() );
+
+        // TBD: Reload the page (or do it in front?)
     }
 }

@@ -141,7 +141,7 @@ $(function(){
                 if ( data.error ) {
                     $('#loginFeedback').html('<strong>' + data.error + '</strong>');
                 }
-                // User loged in
+                // User logged in
                 else {
                     $('#loginModal').modal('hide');
                     $('#loginOkModal').modal('show');

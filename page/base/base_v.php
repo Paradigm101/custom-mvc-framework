@@ -24,12 +24,11 @@ abstract class Base_Page_View {
     // Add a template to the page
     protected function addTemplate( $template ) {
 
-        // Carefull : storing template name instead of template file
-        // for front-end simplification
+        // Carefull : storing template name instead of template file for front-end simplification
         $this->templates[] = $template;
     }
 
-    public function setTitle( $title ) {
+    protected function setTitle( $title ) {
         $this->assign('title', $title);
     }
 
@@ -47,7 +46,7 @@ abstract class Base_Page_View {
         $this->data[ $name ] = $value;
     }
 
-    // Accept a template to load
+    // At creation, set parameters: template, header/footer, title, ...
     public function __construct() {
         
         $this->render = array();

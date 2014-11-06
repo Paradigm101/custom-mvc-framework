@@ -19,12 +19,12 @@ abstract class Log_Library_Controller {
             case 'object':
                 if ( $isWeb ) {
                     ob_start();
-                    var_dump(Tools_Library::safeClone( $param ) );
+                    var_dump(Tools_Library_Controller::safeClone( $param ) );
                     $content = ob_get_contents();
                     ob_end_clean();
                 }
                 else {
-                    $content = print_r(Tools_Library::safeClone( $param ), true );
+                    $content = print_r(Tools_Library_Controller::safeClone( $param ), true );
                 }
                 break;
 

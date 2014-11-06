@@ -3,6 +3,7 @@
 class Bootstrapdemo_Page_View extends Base_Page_View {
 
     public function __construct() {
+
         parent::__construct();
 
         // Add specific templates
@@ -10,7 +11,7 @@ class Bootstrapdemo_Page_View extends Base_Page_View {
         $this->addTemplate( 'bootstrapdemo_next' );
         $this->addTemplate( 'bootstrapdemo_end' );
 
-        // Change title
+        // Set page title
         $this->setTitle( 'Bootstrap' );
     }
 }

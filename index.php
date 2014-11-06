@@ -43,13 +43,50 @@ spl_autoload_register( function ( $className ) {
 
 // Error handler
 //--------------
-set_error_handler( function ( $severity, $message, $filename, $lineno ) {
+// Adding E_STRICT for PHP version < 5.4
+error_reporting( E_ALL | E_STRICT );
 
+set_error_handler( function ( $severity, $message, $filename, $lineno, $context ) {
+
+    // If error needs to be reported
     if ( error_reporting() & $severity ) {
 
-        file_put_contents(LOG_FILE, "[SYSTEM] Exception catched on line '$lineno' of file '$filename', message '$message'\n", FILE_APPEND);
-        Throw new ErrorException( $message, 0, $severity, $filename, $lineno );
+        // Getting error type
+        $error_type = "";
+
+        if ($severity & E_ERROR)                $error_type = "ERROR";
+        if ($severity & E_WARNING)              $error_type = "WARNING";
+        if ($severity & E_PARSE)                $error_type = "PARSE";
+        if ($severity & E_NOTICE)               $error_type = "NOTICE";
+        if ($severity & E_CORE_ERROR)           $error_type = "CORE_ERROR";
+        if ($severity & E_CORE_WARNING)         $error_type = "CORE_WARNING";
+        if ($severity & E_COMPILE_ERROR)        $error_type = "COMPILE_ERROR";
+        if ($severity & E_COMPILE_WARNING)      $error_type = "COMPILE_WARNING";
+        if ($severity & E_USER_ERROR)           $error_type = "USER_ERROR";
+        if ($severity & E_USER_WARNING)         $error_type = "USER_WARNING";
+        if ($severity & E_USER_NOTICE)          $error_type = "USER_NOTICE";
+        if ($severity & E_STRICT)               $error_type = "STRICT";
+        if ($severity & E_RECOVERABLE_ERROR)    $error_type = "RECOVERABLE_ERROR";
+        if ($severity & E_DEPRECATED)           $error_type = "DEPRECATED";
+        if ($severity & E_USER_DEPRECATED)      $error_type = "USER_DEPRECATED";
+
+        // Unknown error
+        if ( $error_type == "" ) {
+
+            $error_type = "UNKNOWN";
+        }
+
+        // Add date
+        $comps = explode(' ', microtime());
+        $micro = sprintf('%06d', $comps[0] * 1000000);
+        $date = date('H:i:s') . ":$micro";
+
+        // Store error
+        file_put_contents(LOG_FILE, "[$date] [$error_type] '$message' in $filename (L.$lineno)\n", FILE_APPEND);
     }
+
+    // Don't execute PHP internal error manager: show must go on!
+    return;
 });
 
 // Default request type: page
@@ -87,8 +124,8 @@ if ( !( file_exists( $file = $type . '/' . $name . '/' . $name . '_c.php' ) ) ) 
     // Trace the missing file
     Log_Library_Controller::trace("File doesn't exist '$file' for request '$name' of type '$type'");
     
-    // Launch the error
-    Error_Library_Controller::launch("No $type name set!", $type);
+    // Launch the user error page
+    Error_Library_Controller::launch("Something wrong happened, try again later", $type);
     
     // And leave
     exit();
@@ -102,13 +139,17 @@ if ( !( class_exists( $class = ucfirst($name) . '_' . ucfirst($type) . '_Control
 
     // Trace the missing class
     Log_Library_Controller::trace("Controller '$class' doesn't exist in file '$file'");
-    
-    // Launch the error
+
+    // Launch the user error page
     Error_Library_Controller::launch("Something wrong happened, try again later", $type);
-    
+
     // And leave
     exit();
 }
+
+// Start user session
+//-------------------
+session_start();
 
 // Doing the work!
 //----------------

@@ -28,7 +28,7 @@ abstract class Base_Ajax_Controller {
 
         // Launch main process
         static::process();
-        
+
         // Send answer to client
         static::sendAnswer();
     }

@@ -149,10 +149,10 @@
 
               <!-- Menu -->
               <ul class="nav navbar-nav">
-                <li class="<?= ( $data[ 'page' ] == 'main' ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=main">Home</a></li>
+                <li class="<?= ( $data[ 'page' ] == 'main'          ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=main">Home</a></li>
                 <li class="<?= ( $data[ 'page' ] == 'bootstrapdemo' ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=bootstrapdemo">Bootstrap</a></li>
-                <li class="<?= ( $data[ 'page' ] == 'about' ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=about">About</a></li>
-                <li class="<?= ( $data[ 'page' ] == 'error' ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=error">Error</a></li>
+                <li class="<?= ( $data[ 'page' ] == 'session'       ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=session">Session</a></li>
+                <li class="<?= ( $data[ 'page' ] == 'about'         ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=about">About</a></li>
               </ul>
 
               <!-- On the right side: Sign up/Log in OR (TBD) Account management / Notification -->

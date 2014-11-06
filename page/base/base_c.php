@@ -11,9 +11,11 @@ abstract class Base_Page_Controller {
     // View
     static protected $view;
 
+    protected $spe_view;
+
     // Main method, called by the router
-    static public function launch()
-    {
+    static public function launch() {
+
         // LSB for Model
         $modelName = str_replace( '_Controller', '_Model', get_called_class());
         static::$model = new $modelName();

@@ -90,6 +90,28 @@ $(function(){
         });
     });
 
+    // ***************
+    // *** Log-out ***
+    // ***************
+    // Log-out Button
+    $('#logoutButton').click( function (e) {
+
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: {
+                request_type:   'ajax',
+                request_name:   'logout'
+            },
+            success: function() {
+                
+                // TBD reload the page
+                alert('logout done');
+            }
+        });
+    });
+
     // **************
     // *** Log-in ***
     // **************
@@ -148,6 +170,8 @@ $(function(){
                     setTimeout(function(){
                         $('#loginOkModal').modal('hide');
                     }, 3000);
+                    
+                    // TBD: reload the page
                 }
             }
         });

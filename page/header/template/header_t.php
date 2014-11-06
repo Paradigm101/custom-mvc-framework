@@ -33,13 +33,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <!-- signup header -->
+            <!-- Sign-up header -->
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">New? Sign-up Here!</h4>
-            </div><!-- end signup header -->
+            </div><!-- end Sign-up header -->
 
-            <!-- signup body -->
+            <!-- Sign-up body -->
             <div class="modal-body">
                 <form role="form" class="form-horizontal" id="signupForm">
                     <div class="form-group">
@@ -71,7 +71,7 @@
                   <!-- User message -->
                   <hr>
                   <div class="text-center" id="signupFeedback"></div>
-            </div><!-- end signup body -->
+            </div><!-- end Sign-up body -->
 
             <!-- footer -->
             <div class="modal-footer">
@@ -89,13 +89,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <!-- signup header -->
+            <!-- Log-in header -->
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Welcome back!</h4>
-            </div><!-- end signup header -->
+            </div><!-- end Log-in header -->
 
-            <!-- signup body -->
+            <!-- Log-in body -->
             <div class="modal-body">
                 <form role="form" class="form-horizontal" id="loginForm">
                     <div class="form-group">
@@ -115,7 +115,7 @@
                   <!-- User message -->
                   <hr>
                   <div class="text-center" id="loginFeedback"></div>
-            </div><!-- end signup body -->
+            </div><!-- end Log-in body -->
 
             <!-- footer -->
             <div class="modal-footer">
@@ -126,6 +126,7 @@
         </div><!-- end content -->
     </div><!-- end dialog -->
 </div><!-- end myModal -->
+
 
 <!-- header -->
 <header class="navbar navbar-inverse navbar-fixed-top" role="banner">
@@ -172,7 +173,7 @@
                       <li><a href="#"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
                       <li><a href="#"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
                       <li class="divider"></li>
-                      <li><a href="#"><span class="glyphicon glyphicon-off"></span> Sign out</a></li>
+                      <li><a id="logoutButton" href="#"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
                     </ul>
                 </li>
 

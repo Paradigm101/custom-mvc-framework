@@ -34,6 +34,5 @@ abstract class Session_Library_Controller {
 
         // Set user id if any
         static::$id_user = static::$model->getUserForSession( session_id() );
-        Log_Library_Controller::trace( static::$id_user );
     }
 }

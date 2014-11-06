@@ -1,5 +1,4 @@
-nbproject/private/
-/nbproject/private/*
-/nbproject/*
+nbproject/
 dump.txt
 config.php
+database_create.sql

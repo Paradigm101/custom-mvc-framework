@@ -1,6 +1,6 @@
 <?php
 
-class Login_Ajax_Model extends Base_Library_Model {
+class Login_Ajax_Model extends Base_Ajax_Model {
 
     // Log-in user
     public function loginUser( $email, $password ) {

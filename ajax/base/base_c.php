@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mother class for all ajax
+ * Mother class for all ajax controllers
  */
 abstract class Base_Ajax_Controller {
 

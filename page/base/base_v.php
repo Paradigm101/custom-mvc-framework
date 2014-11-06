@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Mother class of every view
+ * Mother class of every Page view
+ * (i.e. every view bcuz only pages have a view)
  */
 abstract class Base_Page_View {
 

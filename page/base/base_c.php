@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mother class for all controllers
+ * Mother class for all Page controllers
  */
 abstract class Base_Page_Controller {
 

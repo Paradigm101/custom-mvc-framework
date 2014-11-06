@@ -1,12 +1,12 @@
 <?php
 
-define('BASE_ERROR_STATUS_NO_ERROR', 0);
-define('BASE_ERROR_STATUS_UNKOWN', 1);
+define('BASE_ERROR_STATUS_NO_ERROR',        0);
+define('BASE_ERROR_STATUS_UNKOWN',          1);
 define('BASE_ERROR_STATUS_DUPLICATE_ENTRY', 2);
-define('BASE_ERROR_STATUS_NULL_VALUE', 3);
+define('BASE_ERROR_STATUS_NULL_VALUE',      3);
 
 /**
- * Mother class for all models
+ * Mother class for all models (Page, Ajax, API, ...)
  */
 abstract class Base_Library_Model {
 
@@ -18,7 +18,7 @@ abstract class Base_Library_Model {
 
     public function __construct() {
 
-        // Dynamic driver (we never know ...
+        // Dynamic driver (we never know ...)
         $className = ucfirst(DB_TYPE) . 'driver_Library_Controller';
 
         $this->db    = new $className();

@@ -10,7 +10,7 @@ abstract class Session_Library_Controller {
 
     // user ID
     static protected $id_user;
-    
+
     // Get user id for this session (if exists)
     static public function getCurrentUserId() {
 

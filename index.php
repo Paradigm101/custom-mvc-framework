@@ -94,6 +94,10 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
     return;
 });
 
+// Start user session
+//-------------------
+Session_Library_Controller::initSession();
+
 // Default request type: page
 if ( !($type = strtolower(Urlparser_Library_Controller::getRequestParam('request_type'))) ) {
 
@@ -128,10 +132,10 @@ if ( !( file_exists( $file = $type . '/' . $name . '/' . $name . '_c.php' ) ) ) 
 
     // Trace the missing file
     Log_Library_Controller::trace("File doesn't exist '$file' for request '$name' of type '$type'");
-    
+
     // Launch the user error page
-    Error_Library_Controller::launch("Something wrong happened, try again later", $type);
-    
+    Error_Library_Controller::launch("The page you are trying to access doesn't exist", $type);
+
     // And leave
     exit();
 }
@@ -151,10 +155,6 @@ if ( !( class_exists( $class = ucfirst($name) . '_' . ucfirst($type) . '_Control
     // And leave
     exit();
 }
-
-// Start user session
-//-------------------
-Session_Library_Controller::initSession();
 
 // Launch request creation
 //------------------------

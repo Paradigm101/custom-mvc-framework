@@ -164,10 +164,10 @@
 
               <!-- Menu -->
               <ul class="nav navbar-nav">
-                <li class="<?= ( $data[ 'page' ] == 'main'          ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=main">Home</a></li>
-                <li class="<?= ( $data[ 'page' ] == 'bootstrapdemo' ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=bootstrapdemo">Bootstrap</a></li>
-                <li class="<?= ( $data[ 'page' ] == 'session'       ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=session">Session</a></li>
-                <li class="<?= ( $data[ 'page' ] == 'about'         ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=about">About</a></li>
+                <li><a href="?request_type=page&request_name=main">Home</a></li>
+                <li><a href="?request_type=page&request_name=bootstrapdemo">Bootstrap</a></li>
+                <li><a href="?request_type=page&request_name=session">Session</a></li>
+                <li><a href="?request_type=page&request_name=about">About</a></li>
               </ul>
 
               <!-- Sign up/Log in OR Account management / Notification -->
@@ -187,16 +187,16 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-home"></span> My Account <strong class="caret"></strong></a>
                         <ul class="dropdown-menu">
-                          <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                          <li><a href="#"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
-                          <li><a href="#"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
+                          <li><a href="?request_type=page&request_name=settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                          <li><a href="?request_type=page&request_name=profile"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
+                          <li><a href="?request_type=page&request_name=inbox"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
                           <li class="divider"></li>
                           <li><a id="logoutButton" href="#"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
                         </ul>
                     </li>
 
                     <!-- Notification -->
-                    <li><a href="#"><span class="glyphicon glyphicon-globe"></span></a></li>
+                    <li><a href="?request_type=page&request_name=notification"><span class="glyphicon glyphicon-globe"></span></a></li>
                 <?php } ?>
 
               </ul>

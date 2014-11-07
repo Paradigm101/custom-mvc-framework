@@ -4,6 +4,7 @@ define('BASE_ERROR_STATUS_NO_ERROR',        0);
 define('BASE_ERROR_STATUS_UNKOWN',          1);
 define('BASE_ERROR_STATUS_DUPLICATE_ENTRY', 2);
 define('BASE_ERROR_STATUS_NULL_VALUE',      3);
+define('BASE_ERROR_STATUS_NO_TABLE',        4);
 
 /**
  * Mother class for all models (Page, Ajax, API, ...)
@@ -53,17 +54,22 @@ abstract class Base_Library_Model {
         }
 
         // Error management
-        //      duplicate entry
-        //      unknown error
         if ( strpos($this->getLastDBError(), 'Duplicate entry') !== false ) {
+            
             $this->error = BASE_ERROR_STATUS_DUPLICATE_ENTRY;
         }
         else if ( strpos($this->getLastDBError(), 'cannot be null') !== false ) {
+            
             $this->error = BASE_ERROR_STATUS_NULL_VALUE;
+        }
+        else if ( ( strpos($this->getLastDBError(), 'Table') !== false ) &&
+                  ( strpos($this->getLastDBError(), "doesn't exist") !== false ) ) {
+
+            $this->error = BASE_ERROR_STATUS_NO_TABLE;
         }
         else {
             $this->error = BASE_ERROR_STATUS_UNKOWN;
-            Log_Library::trace($this->getLastDBError(), 'BASE_ERROR_STATUS_UNKOWN');
+            Log_Library_Controller::trace($this->getLastDBError(), 'BASE_ERROR_STATUS_UNKOWN');
         }
 
         // Problem

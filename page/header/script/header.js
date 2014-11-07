@@ -105,9 +105,15 @@ $(function(){
                 request_name:   'logout'
             },
             success: function() {
-                
-                // TBD reload the page
-                alert('logout done');
+
+                $('#logoutOkModal').modal('show');
+
+                // After 3 seconds, hide modal and refresh page
+                setTimeout(function(){
+
+                    $('#logoutOkModal').modal('hide');
+                    location.reload();
+                }, 3000);
             }
         });
     });
@@ -167,11 +173,16 @@ $(function(){
                 else {
                     $('#loginModal').modal('hide');
                     $('#loginOkModal').modal('show');
+
+                    // After 3 seconds
                     setTimeout(function(){
+                        
+                        // Hide modal
                         $('#loginOkModal').modal('hide');
+                        
+                        // Then reload page
+                        location.reload();
                     }, 3000);
-                    
-                    // TBD: reload the page
                 }
             }
         });

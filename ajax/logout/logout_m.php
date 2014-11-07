@@ -9,6 +9,6 @@ class Logout_Ajax_Model extends Base_Ajax_Model {
         $id_session = $this->db->getQuotedValue(session_id());
 
         // Retrieve previous user session
-        $this->query( "DELETE sessions WHERE id_session = $id_session");
+        $this->query( "DELETE FROM sessions WHERE id_session = $id_session" );
     }
 }

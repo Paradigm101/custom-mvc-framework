@@ -8,5 +8,6 @@ abstract class Session_Page_Controller extends Base_Page_Controller {
     static protected function process() {
 
         static::$view->assign('session_id', session_id());
+        static::$view->assign('IsLoggedIn', Session_Library_Controller::isUserLoggedIn() ? 'YES' : 'NO' );
     }
 }

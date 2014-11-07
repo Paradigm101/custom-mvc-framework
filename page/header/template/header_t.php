@@ -12,6 +12,20 @@
     </div><!-- end dialog -->
 </div><!-- end modal login ok -->
 
+<!-- Log-out OK modal -->
+<div class="modal fade" id="logoutOkModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-center">
+        <div class="modal-content">
+
+            <!-- body -->
+            <div class="modal-body text-center">
+                Good bye!
+            </div><!-- end body -->
+
+        </div><!-- end content -->
+    </div><!-- end dialog -->
+</div><!-- end modal logout ok -->
+
 
 <!-- Sign-up OK modal -->
 <div class="modal fade" id="signupOkModal" tabindex="-1">
@@ -160,7 +174,9 @@
               <ul class="nav navbar-nav navbar-right">
 
                 <!-- Sign-up modal (Not logged in) -->
-                <li><a href="#signupModal" data-toggle="modal"><span class="glyphicon glyphicon-user"></span> Sign up</a></li>
+                <?php if ( !Session_Library_Controller::isUserLoggedIn() ) { ?>
+                    <li><a href="#signupModal" data-toggle="modal"><span class="glyphicon glyphicon-user"></span> Sign up</a></li>
+                <?php } ?>
 
                 <!-- Log-in modal (Not logged in) -->
                 <li><a href="#loginModal" data-toggle="modal"><span class="glyphicon glyphicon-ok"></span> Log In</a>

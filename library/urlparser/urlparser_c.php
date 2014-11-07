@@ -41,8 +41,8 @@ abstract class Urlparser_Library_Controller
                 break;
 
             default:
-                Log_Library::trace( 'Unknow server request method : ' . $_SERVER['REQUEST_METHOD'] );
-                Log_Library::trace( $_SERVER );
+                Log_Library_Controller::trace( 'Unknow server request method : ' . $_SERVER['REQUEST_METHOD'] );
+                Log_Library_Controller::trace( $_SERVER );
         }
         
         return $data;

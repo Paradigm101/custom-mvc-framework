@@ -170,31 +170,35 @@
                 <li class="<?= ( $data[ 'page' ] == 'about'         ? 'active' : '' ) ?>"><a href="?request_type=page&request_name=about">About</a></li>
               </ul>
 
-              <!-- On the right side: Sign up/Log in OR (TBD) Account management / Notification -->
+              <!-- Sign up/Log in OR Account management / Notification -->
               <ul class="nav navbar-nav navbar-right">
 
-                <!-- Sign-up modal (Not logged in) -->
                 <?php if ( !Session_Library_Controller::isUserLoggedIn() ) { ?>
+                  
+                    <!-- Sign-up modal -->
                     <li><a href="#signupModal" data-toggle="modal"><span class="glyphicon glyphicon-user"></span> Sign up</a></li>
+                    
+                    <!-- Log-in modal -->
+                    <li><a href="#loginModal" data-toggle="modal"><span class="glyphicon glyphicon-ok"></span> Log In</a>
+
+                <?php } else { ?>
+
+                    <!-- Account Management -->
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-home"></span> My Account <strong class="caret"></strong></a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                          <li><a href="#"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
+                          <li><a href="#"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
+                          <li class="divider"></li>
+                          <li><a id="logoutButton" href="#"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Notification -->
+                    <li><a href="#"><span class="glyphicon glyphicon-globe"></span></a></li>
                 <?php } ?>
 
-                <!-- Log-in modal (Not logged in) -->
-                <li><a href="#loginModal" data-toggle="modal"><span class="glyphicon glyphicon-ok"></span> Log In</a>
-
-                <!-- Account Management (logged in) -->
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-home"></span> My Account <strong class="caret"></strong></a>
-                    <ul class="dropdown-menu">
-                      <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                      <li><a href="#"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
-                      <li><a href="#"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
-                      <li class="divider"></li>
-                      <li><a id="logoutButton" href="#"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
-                    </ul>
-                </li>
-
-                <!-- Notification (logged in) -->
-                <li><a href="#"><span class="glyphicon glyphicon-globe"></span></a></li>
               </ul>
 
             </div><!-- end navbar-collapse -->

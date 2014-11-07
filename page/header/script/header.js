@@ -108,12 +108,12 @@ $(function(){
 
                 $('#logoutOkModal').modal('show');
 
-                // After 3 seconds, hide modal and refresh page
+                // After 2 seconds, hide modal and refresh page
                 setTimeout(function(){
 
                     $('#logoutOkModal').modal('hide');
                     location.reload();
-                }, 3000);
+                }, 2000);
             }
         });
     });
@@ -174,15 +174,12 @@ $(function(){
                     $('#loginModal').modal('hide');
                     $('#loginOkModal').modal('show');
 
-                    // After 3 seconds
+                    // After 2 seconds, hide modal and reload page
                     setTimeout(function(){
-                        
-                        // Hide modal
+
                         $('#loginOkModal').modal('hide');
-                        
-                        // Then reload page
                         location.reload();
-                    }, 3000);
+                    }, 2000);
                 }
             }
         });

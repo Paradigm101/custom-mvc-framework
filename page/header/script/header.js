@@ -6,13 +6,15 @@ $(function(){
     $(document).keypress(function(e) {
 
         // Ctrl+s : open Signup modal
-        if( e.ctrlKey && e.which == 115 ) {
+        if( e.ctrlKey && e.which == 115 && !IS_USER_LOGGED_IN ) {
+
             $('#signupModal').modal('show');
             return false;
         }
 
         // Ctrl+l : open login modal
-        if( e.ctrlKey && e.which == 108 ) {
+        if( e.ctrlKey && e.which == 108 && !IS_USER_LOGGED_IN ) {
+
             $('#loginModal').modal('show');
             return false;
         }
@@ -23,7 +25,9 @@ $(function(){
     // ***************
     // Sign-up OK modal: user can hit enter to leave
     $('#signupOkModal').keypress(function(e) {
+
         if (e.which == '13') {
+
             e.preventDefault();
             $(this).modal('hide');
         }
@@ -58,12 +62,12 @@ $(function(){
             type: "POST",
             url: "",
             data: {
-                request_type:   'ajax',
-                request_name:   'signup',
-                email:          $('#inputEmailSU').val(),
-                username:       $('#inputUsernameSU').val(),
-                password:       $('#inputPasswordSU').val(),
-                password2:      $('#inputPassword2SU').val()
+                rt:         REQUEST_TYPE_AJAX,  // request type
+                rn:         'signup',           // request name
+                email:      $('#inputEmailSU').val(),
+                username:   $('#inputUsernameSU').val(),
+                password:   $('#inputPasswordSU').val(),
+                password2:  $('#inputPassword2SU').val()
             },
             success: function(data) {
                 var message = '';
@@ -101,8 +105,8 @@ $(function(){
             type: "POST",
             url: "",
             data: {
-                request_type:   'ajax',
-                request_name:   'logout'
+                rt: REQUEST_TYPE_AJAX,  // request type
+                rn: 'logout'            // request name
             },
             success: function() {
 
@@ -131,12 +135,15 @@ $(function(){
 
     // Log-in Modal: Give focus to first element
     $('#loginModal').on('shown.bs.modal', function() {
+
         $('#inputEmailLI').focus();
     });
 
     // Log-in Modal: user can hit enter to submit
     $('#loginModal').keypress(function(e) {
+
         if (e.which == '13') {
+
             e.preventDefault();
             $('#loginForm').submit();
         }
@@ -151,17 +158,17 @@ $(function(){
 
     // Log-in form is being submitted
     $('#loginForm').submit(function(e){
-        
+
         e.preventDefault();
-        
+
         $.ajax({
             type: "POST",
             url: "",
             data: {
-                request_type:   'ajax',
-                request_name:   'login',
-                email:          $('#inputEmailLI').val(),
-                password:       $('#inputPasswordLI').val()
+                rt:         REQUEST_TYPE_AJAX,  // request type
+                rn:         'login',            // request name
+                email:      $('#inputEmailLI').val(),
+                password:   $('#inputPasswordLI').val()
             },
             success: function(data) {
 

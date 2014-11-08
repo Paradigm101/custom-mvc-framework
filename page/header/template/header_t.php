@@ -156,7 +156,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="?request_type=page&request_name=main">Brand</a>
+                <a class="navbar-brand" href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=main">Brand</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -164,10 +164,10 @@
 
               <!-- Menu -->
               <ul class="nav navbar-nav">
-                <li><a href="?request_type=page&request_name=main">Home</a></li>
-                <li><a href="?request_type=page&request_name=bootstrapdemo">Bootstrap</a></li>
-                <li><a href="?request_type=page&request_name=session">Session</a></li>
-                <li><a href="?request_type=page&request_name=about">About</a></li>
+                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=main">Home</a></li>
+                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=bootstrapdemo">Bootstrap</a></li>
+                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=session">Session</a></li>
+                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=about">About</a></li>
               </ul>
 
               <!-- Sign up/Log in OR Account management / Notification -->
@@ -187,16 +187,16 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-home"></span> My Account <strong class="caret"></strong></a>
                         <ul class="dropdown-menu">
-                          <li><a href="?request_type=page&request_name=settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                          <li><a href="?request_type=page&request_name=profile"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
-                          <li><a href="?request_type=page&request_name=inbox"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
+                          <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                          <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=profile"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
+                          <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=inbox"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
                           <li class="divider"></li>
                           <li><a id="logoutButton" href="#"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
                         </ul>
                     </li>
 
                     <!-- Notification -->
-                    <li><a href="?request_type=page&request_name=notification"><span class="glyphicon glyphicon-globe"></span></a></li>
+                    <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=notification"><span class="glyphicon glyphicon-globe"></span></a></li>
                 <?php } ?>
 
               </ul>

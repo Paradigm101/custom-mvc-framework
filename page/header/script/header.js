@@ -2,17 +2,17 @@
 // When page is loaded
 $(function(){
 
-    // Adding Shortcuts to any page with this header
+    // Header shortcuts
     $(document).keypress(function(e) {
 
-        // Ctrl+s : open Signup modal
+        // Ctrl+s : Signup modal
         if( e.ctrlKey && e.which == 115 && !IS_USER_LOGGED_IN ) {
 
             $('#signupModal').modal('show');
             return false;
         }
 
-        // Ctrl+l : open login modal
+        // Ctrl+l : Login modal
         if( e.ctrlKey && e.which == 108 && !IS_USER_LOGGED_IN ) {
 
             $('#loginModal').modal('show');

@@ -167,6 +167,7 @@
                 <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=main">Home</a></li>
                 <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=bootstrapdemo">Bootstrap</a></li>
                 <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=session">Session</a></li>
+                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=table">Table</a></li>
                 <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=about">About</a></li>
               </ul>
 

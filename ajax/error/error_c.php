@@ -1,6 +1,7 @@
 <?php
 
-abstract class Error_Page_Controller extends Base_Page_Controller {
+// Manage Ajax error
+abstract class Error_Ajax_Controller extends Base_Ajax_Controller {
 
     static private $message = 'Error message not initialized';
 
@@ -11,6 +12,6 @@ abstract class Error_Page_Controller extends Base_Page_Controller {
 
     static protected function process() {
 
-        static::assign('message', static::$message);
+        static::addAnswer('error', static::$message);
     }
 }

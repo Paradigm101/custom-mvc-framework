@@ -11,6 +11,6 @@ abstract class Table_Page_Controller extends Base_Page_Controller {
         $table = new Table_Library_Controller();
 
         // Send table to front
-        static::$view->assign('table', $table);
+        static::assign('table', $table);
     }
 }

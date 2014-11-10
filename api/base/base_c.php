@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Mother class for all ajax controllers
+ * Mother class for all api controllers
  */
-abstract class Base_Ajax_Controller {
+abstract class Base_Api_Controller {
 
     // Model
     static protected $model;
@@ -12,8 +12,8 @@ abstract class Base_Ajax_Controller {
     static private $answer;
 
     // Add answer data for client
-    static protected function addAnswer( $key, $value ) {
-        self::$answer[ $key ] = $value;
+    static protected function setAnswer( $answer ) {
+        self::$answer = $answer;
     }
 
     // Main method, called by the router
@@ -23,7 +23,7 @@ abstract class Base_Ajax_Controller {
         $modelName = str_replace( '_Controller', '_Model', get_called_class());
         static::$model = new $modelName();
 
-        // Answer data
+        // Answer data (non-LSB obv)
         self::$answer = array();
 
         // Launch main process
@@ -39,10 +39,7 @@ abstract class Base_Ajax_Controller {
     // Manage data to send back
     static private function sendAnswer() {
 
-        // Using JSON
-        header("content-type:application/json");
-
         // Converting and sending data
-        echo json_encode(self::$answer);
+        Log_Library_Controller::show(self::$answer);
     }
 }

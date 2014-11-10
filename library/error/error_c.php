@@ -1,32 +1,30 @@
 <?php
 
-// TBD
+// Manage error according to the type of request
 abstract class Error_Library_Controller {
 
-    static public function launch( $message = '', $type = REQUEST_TYPE_PAGE ) {
+    static public function launch( $message = '', $request_type = REQUEST_TYPE_PAGE ) {
 
-        switch ( $type ) {
+        switch ( $request_type ) {
 
-            case REQUEST_TYPE_AJAX:
-                // Do stuff
-                break;
-
-            case REQUEST_TYPE_API:
-                // Do stuff
-                break;
-
-            case REQUEST_TYPE_LIBRARY:
-                // Do stuff
-                break;
-
+            // Problem when loading a Page/Ajax/Api
             case REQUEST_TYPE_PAGE:
-                Error_Page_Controller::setMessage($message);
-                Error_Page_Controller::launch();
+            case REQUEST_TYPE_AJAX:
+            case REQUEST_TYPE_API:
+
+                // Getting error management class according to request type
+                $errorClass = 'Error_' . ucfirst(convertRequestTypeToName($request_type)) . '_Controller';
+                
+                // Launch error page for user
+                $errorClass::setMessage($message);
+                $errorClass::launch();
                 break;
 
-            // Wrong type
+            // Other request type: log
+            case REQUEST_TYPE_LIBRARY:
+            case REQUEST_TYPE_TABLE:
             default:
-                // Do stuff
+                Log_Library_Controller::trace($message);
                 break;
         }
     }

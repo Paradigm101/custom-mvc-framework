@@ -12,6 +12,8 @@ function convertRequestTypeToName( $request_type_code ) {
             return 'api';
         case REQUEST_TYPE_LIBRARY:
             return 'library';
+        case REQUEST_TYPE_TABLE:
+            return 'table';
     }
 
     // Unknown type
@@ -30,6 +32,8 @@ function convertRequestTypeToCode( $request_type_name ) {
             return REQUEST_TYPE_API;
         case 'library':
             return REQUEST_TYPE_LIBRARY;
+        case 'table':
+            return REQUEST_TYPE_TABLE;
     }
 
     // Unknown type

@@ -99,20 +99,31 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
 //-------------------
 Session_Library_Controller::initSession();
 
-// Default request type: page
-if ( !($request_type = strtolower(Urlparser_Library_Controller::getRequestParam('rt'))) ) {
+// Get request type (no default)
+//------------------------------
+$request_type      = strtolower(Urlparser_Library_Controller::getRequestParam('rt'));
+$request_type_name = convertRequestTypeToName($request_type);
 
-    $request_type = REQUEST_TYPE_PAGE;
-}
-
-// Unknown type (library not accepted from http request)
+// Unknown or forbidden request type
 if ( !(in_array($request_type, array(REQUEST_TYPE_PAGE, REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
 
-    Log_Library_Controller::trace("Unknown request type '$request_type'");
+    // Error message
+    if ( !$request_type_name ) {
+        $error_message = "Unknown request type [$request_type]";
+    }
+    else {
+        $error_message = "Forbidden request type [$request_type_name]";
+    }
+
+    // Launch error management
+    Error_Library_Controller::launch($error_message, $request_type);
+
+    // Quit
     exit();
 }
 
 // Get request name
+//-----------------
 $request_name = strtolower(Urlparser_Library_Controller::getRequestParam('rn'));
 
 // Request name not found
@@ -128,17 +139,14 @@ if ( !$request_name ) {
     }
 }
 
-// Request type: convert url to name
-$request_type_name = convertRequestTypeToName($request_type);
-
 // File doesn't exist
 if ( !( file_exists( $file = $request_type_name . '/' . $request_name . '/' . $request_name . '_c.php' ) ) ) {
 
-    // Trace the missing file
-    Log_Library_Controller::trace("File doesn't exist '$file' for request '$request_name' of type '$request_type_name'");
-
     // Launch the user error page
-    Error_Library_Controller::launch("The page you are trying to access doesn't exist", $request_type);
+    Error_Library_Controller::launch("The service you are trying to access doesn't exist", $request_type);
+
+    // Trace the missing file for dev
+    Log_Library_Controller::trace("File doesn't exist '$file' for request '$request_name' of type '$request_type_name'");
 
     // And leave
     exit();
@@ -150,11 +158,11 @@ require_once $file;
 // Controller doesn't exist
 if ( !( class_exists( $class = ucfirst($request_name) . '_' . ucfirst($request_type_name) . '_Controller' ) ) ) {
 
-    // Trace the missing class
-    Log_Library_Controller::trace("Controller '$class' doesn't exist in file '$file'");
-
     // Launch the user error page
     Error_Library_Controller::launch("Something wrong happened, try again later", $request_type);
+
+    // Trace the missing class
+    Log_Library_Controller::trace("Controller '$class' doesn't exist in file '$file'");
 
     // And leave
     exit();

@@ -9,32 +9,36 @@ class Table_Library_Controller {
         $header = array('data1', 'data2', 'data3', 'data4', 'data5', 'data6');
 
         // Start table
-        $toDisplay = "<table class=\"table table-striped table-bordered table-hover\">";
+        $toDisplay = "<table class=\"table table-striped table-bordered table-hover\">\n";
 
         // Header
-        $toDisplay .= "<thead><tr><th></th>";
+        $toDisplay .= "<thead>\n"
+                        . "<tr>\n"
+                            . "<th></th>\n";
 
         foreach( $header as $column ) {
-            $toDisplay .= "<th>$column</th>";
+            $toDisplay .= "<th>$column</th>\n";
         }
-        
-        $toDisplay .= "</tr></thead>";
+
+        $toDisplay .= "</tr>\n"
+                . "</thead>\n";
         
         // Row
         for( $i = 0; $i < 30; $i++ ) {
-            
+
             // Start with the checkbox
-            $toDisplay .= "<tr><td><input type=\"checkbox\" id=\"checkbox_" . $i . "\"/></td>";
-            
-            for ( $j = 0; $j < 6; $j++ ) {
-                $toDisplay .= "<td>" . rand(0, 100) . "</td>";
+            $toDisplay .= "<tr>\n"
+                            . "<td><input type=\"checkbox\" id=\"checkbox_$i\" /></td>\n";
+
+            foreach( $header as $key => $column ) {
+                $toDisplay .= "<td>" . ( $key + 1 ) * rand(0, 100) . "</td>\n";
             }
-            
-            $toDisplay .= "</tr>";
+
+            $toDisplay .= "</tr>\n";
         }
         
         // End table
-        $toDisplay .= "</table>";
+        $toDisplay .= "</table>\n";
 
         return $toDisplay;
     }

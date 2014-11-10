@@ -20,7 +20,7 @@ abstract class Base_Page_View {
     
     // Page name
     private $page;
-    
+
     // Add a template to the page
     protected function addTemplate( $template ) {
 
@@ -68,8 +68,8 @@ abstract class Base_Page_View {
     /**
      * Render the output directly to the page
      */
-    public function render()
-    {
+    public function render() {
+
         // Parse data variables into local variables
         $data = $this->data;
 

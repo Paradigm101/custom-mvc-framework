@@ -9,7 +9,20 @@ abstract class Base_Page_Controller {
     static protected $model;
 
     // View
-    static protected $view;
+    static private $view;
+
+    // View setter: LSB
+    static private function setView() {
+
+        $viewName = str_replace( '_Controller', '_View', get_called_class());
+        self::$view = new $viewName();
+    }
+
+    // View access wrapper
+    static protected function assign( $name , $value ) {
+
+        self::$view->assign( $name, $value );
+    }
 
     // Main method, called by the router
     static public function launch() {
@@ -19,14 +32,13 @@ abstract class Base_Page_Controller {
         static::$model = new $modelName();
 
         // LSB for View
-        $viewName = str_replace( '_Controller', '_View', get_called_class());
-        static::$view = new $viewName();
+        self::setView();
 
         // Launch main process
         static::process();
 
         // Display the page
-        static::$view->render();
+        self::$view->render();
     }
 
     // Core method that does nothing

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mother class for all Ajax models
+ * Base for Ajax models, based on Library model
  */
 class Base_Ajax_Model extends Base_Library_Model {
     

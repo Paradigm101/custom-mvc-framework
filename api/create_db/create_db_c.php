@@ -13,8 +13,8 @@ abstract class Create_Db_Api_Controller extends Base_Api_Controller {
         foreach( $tables as $table ) {
 
             // Get table class
-            $className = ucfirst( $table ) . '_Table_Model';
-            
+            $className = ucfirst( $table ) . '_Table_Controller';
+
             // Create table
             if ( $className::createTable() == BTM_KO ) {
 

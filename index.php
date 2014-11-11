@@ -101,7 +101,13 @@ Session_Library_Controller::initSession();
 
 // Get request type (no default)
 //------------------------------
-$request_type      = strtolower(Urlparser_Library_Controller::getRequestParam('rt'));
+$request_type = strtolower(Urlparser_Library_Controller::getRequestParam('rt'));
+
+// Assume that no request type means root of website
+if ( $request_type == null ) {
+    $request_type = REQUEST_TYPE_PAGE;
+}
+
 $request_type_name = convertRequestTypeToName($request_type);
 
 // Unknown or forbidden request type

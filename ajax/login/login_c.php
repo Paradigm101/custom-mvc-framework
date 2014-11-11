@@ -24,7 +24,6 @@ abstract class Login_Ajax_Controller extends Base_Ajax_Controller {
 
         // Register session
         static::$model->storeSession( $id_user, session_id() );
-
-        // TBD: Reload the page (or do it in front?)
     }
 }
+ 

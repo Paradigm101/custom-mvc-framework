@@ -2,19 +2,21 @@
 
 /**
  * Mother class for all Page controllers
+ *      inherited controllers are abstract => only static attributes and methodes
  */
 abstract class Base_Page_Controller {
 
-    // Model
+    // Static Model, inherited controller is abstract
     static protected $model;
 
-    // View
+    // Static View, inherited controller is abstract
     static private $view;
 
-    // View setter: LSB
+    // View setter
     static private function setView() {
 
-        $viewName = str_replace( '_Controller', '_View', get_called_class());
+        // LSB for View name, will based on inherited controller name
+        $viewName = str_replace( '_Controller', '_View', get_called_class());   // LSB
         self::$view = new $viewName();
     }
 
@@ -24,14 +26,14 @@ abstract class Base_Page_Controller {
         self::$view->assign( $name, $value );
     }
 
-    // Main method, called by the router
+    // Entry point, called by the index
     static public function launch() {
 
-        // LSB for Model
+        // LSB for Model name, will based on inherited controller name
         $modelName = str_replace( '_Controller', '_Model', get_called_class());
-        static::$model = new $modelName();
+        self::$model = new $modelName();
 
-        // LSB for View
+        // Set View
         self::setView();
 
         // Launch main process
@@ -41,6 +43,6 @@ abstract class Base_Page_Controller {
         self::$view->render();
     }
 
-    // Core method that does nothing
+    // Core method that does nothing and should be overwritten by children (if needed)
     static protected function process() {}
 }

@@ -21,7 +21,7 @@ abstract class Base_Ajax_Controller {
 
         // LSB for Model
         $modelName = str_replace( '_Controller', '_Model', get_called_class());
-        static::$model = new $modelName();
+        self::$model = new $modelName();
 
         // Answer data
         self::$answer = array();
@@ -30,7 +30,7 @@ abstract class Base_Ajax_Controller {
         static::process();
 
         // Send answer to client
-        static::sendAnswer();
+        self::sendAnswer();
     }
 
     // Core method that does nothing here and need to be overwritten by children class

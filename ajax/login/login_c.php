@@ -26,4 +26,3 @@ abstract class Login_Ajax_Controller extends Base_Ajax_Controller {
         static::$model->storeSession( $id_user, session_id() );
     }
 }
- 

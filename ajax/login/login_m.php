@@ -7,13 +7,13 @@ class Login_Ajax_Model extends Base_Ajax_Model {
     public function checkPassword( $email, $password ) {
 
         // Sanitize data and add quotes
-        $email    = $this->db->getQuotedValue($email);
-        $password = $this->db->getQuotedValue($password);
+        $email    = $this->getQuotedValue($email);
+        $password = $this->getQuotedValue($password);
 
         // Retrieve users with the same email
         $this->query( "SELECT * FROM users WHERE email = $email AND password = $password");
 
-        $user_data = $this->db->fetchNext();
+        $user_data = $this->fetchNext();
 
         // User/password exist
         if ( $user_data ) {
@@ -28,14 +28,14 @@ class Login_Ajax_Model extends Base_Ajax_Model {
     public function storeSession( $id_user, $id_session ) {
 
         // Sanitize data and add quotes
-        $id_user    = $this->db->getQuotedValue($id_user);
-        $id_session = $this->db->getQuotedValue($id_session);
+        $id_user    = $this->getQuotedValue($id_user);
+        $id_session = $this->getQuotedValue($id_session);
 
         // Retrieve previous user session
         $this->query( "SELECT * FROM sessions WHERE id_user = $id_user");
 
         // if there is an old session stored
-        if ( $this->db->fetchNext() ) {
+        if ( $this->fetchNext() ) {
 
             // Update session in DB
             $this->query( "UPDATE sessions SET id_session = $id_session WHERE id_user = $id_user");

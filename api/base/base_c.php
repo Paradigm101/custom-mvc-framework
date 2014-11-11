@@ -13,6 +13,7 @@ abstract class Base_Api_Controller {
 
     // Add answer data for client
     static protected function setAnswer( $answer ) {
+
         self::$answer = $answer;
     }
 
@@ -21,10 +22,10 @@ abstract class Base_Api_Controller {
 
         // LSB for Model
         $modelName = str_replace( '_Controller', '_Model', get_called_class());
-        static::$model = new $modelName();
+        self::$model = new $modelName();
 
-        // Answer data (non-LSB obv)
-        self::$answer = array();
+        // Initialize Answer data
+        self::$answer = 'OK';
 
         // Launch main process
         static::process();
@@ -34,7 +35,10 @@ abstract class Base_Api_Controller {
     }
 
     // Core method that does nothing here and need to be overwritten by children class
-    static protected function process() {}
+    static protected function process() {
+
+        Log_Library_Controller::trace('[SYSTEM] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
+    }
 
     // Manage data to send back
     static private function sendAnswer() {

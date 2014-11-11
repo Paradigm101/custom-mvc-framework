@@ -1,68 +1,67 @@
 <?php
 
+define('BPV_ASSIGN_OK', 1);
+define('BPV_ASSIGN_KO', 2);
+
 /**
  * Mother class of every Page view
  * (i.e. every view bcuz only pages have a view)
+ * this class is abstract but children are meant to be instanciated, hence the '$this->' on properties
  */
 abstract class Base_Page_View {
 
     // Holds variables assigned to template
     private $data;
 
-    // Holds the various templates to display
-    private $templates;
+    // At creation, set parameters: template, header/footer, title, ...
+    public function __construct() {
 
-    // Header management
-    protected $header;
+        // Initialize data and page name
+        $this->data = array();
+        $this->data[ 'page' ] = strtolower( str_replace( '_Page_View', '', get_called_class()) );
 
-    // Footer management
-    protected $footer;
-    
-    // Page name
-    private $page;
+        // Set title
+        $this->data['title'] = ucfirst( $this->data[ 'page' ] );
+
+        // Initialize templates with main file IN THE FIRST POSITION
+        $this->data[ 'templates' ] = array( $this->data[ 'page' ] );
+
+        // Default header/footer
+        $this->data[ 'header' ] = DEFAULT_HEADER;
+        $this->data[ 'footer' ] = DEFAULT_FOOTER;
+    }
 
     // Add a template to the page
     protected function addTemplate( $template ) {
 
         // Carefull : storing template name instead of template file for front-end simplification
-        $this->templates[] = $template;
+        array_push( $this->data[ 'templates' ], $template );
     }
 
+    // Set title
     protected function setTitle( $title ) {
-        $this->assign('title', $title);
+
+        $this->data[ 'title' ] = $title;
     }
 
-    /**
-     * Receives assignments from controller and stores in local data array
-     */
+    // Collect data from controller and child view
     public function assign( $name , $value ) {
 
         // Reserved data
         if ( $name == 'templates' ||
-             $name == 'page' ) {
-            Throw new Exception('Error: trying to assign protected field in View!');
+             $name == 'page'      ||
+             $name == 'title'     ||
+             $name == 'header'    ||
+             $name == 'footer' ) {
+
+        // Log and return KO
+         Log_Library_Controller::trace("[SYSTEM] Trying to assign protected field in View [$name]");
+         return BPV_ASSIGN_KO;
         }
 
+        // Assign and return OK
         $this->data[ $name ] = $value;
-    }
-
-    // At creation, set parameters: template, header/footer, title, ...
-    public function __construct() {
-        
-        $this->render = array();
-        $this->data   = array();
-
-        $this->page = strtolower( str_replace( '_Page_View', '', get_called_class()) );
-
-        // Setting title
-        $this->assign('title', ucfirst( $this->page ));
-
-        // Add main template file to render list IN THE FIRST POSITION
-        $this->addTemplate( $this->page );
-
-        // Default header/footer
-        $this->header = 'header';
-        $this->footer = 'footer_custom';
+        return BPV_ASSIGN_OK;
     }
 
     /**
@@ -70,32 +69,22 @@ abstract class Base_Page_View {
      */
     public function render() {
 
-        // Parse data variables into local variables
+        // Send data to front for templates: To do first!
         $data = $this->data;
-
-        // Add header/footer
-        $data[ 'header' ] = $this->header;
-        $data[ 'footer' ] = $this->footer;
-
-        // Page name
-        $data[ 'page' ] = $this->page;
-        
-        // To manage CSS/Javascript inclusion
-        $data[ 'templates' ] = $this->templates;
 
         // What is always on top
         require 'page/base/template/top_t.php';
 
         // Add header if needed
-        if ( $this->header ) {
-            require 'page/' . $this->header . '/template/' . $this->header . '_t.php';
+        if ( $this->data[ 'header' ] ) {
+            require 'page/' . $this->data[ 'header' ] . '/template/' . $this->data[ 'header' ] . '_t.php';
         }
 
         // Add template(s)
-        foreach( $this->templates as $template ) {
+        foreach( $this->data[ 'templates' ] as $template ) {
 
             // Check file exists
-            if ( !file_exists( $templateFile = 'page/' . $this->page . '/template/' . $template . '_t.php' ) ) {
+            if ( !file_exists( $templateFile = 'page/' . $this->data[ 'page' ] . '/template/' . $template . '_t.php' ) ) {
 
                 $errorMsg = "Template file doesn't exists : $templateFile";
                 Log_Library_Controller::trace( '[SYSTEM] ' . $errorMsg );
@@ -108,8 +97,8 @@ abstract class Base_Page_View {
         }
 
         // Add footer if needed
-        if ( $this->footer ) {
-            require 'page/' . $this->footer . '/template/' . $this->footer . '_t.php';
+        if ( $this->data['footer'] ) {
+            require 'page/' . $this->data['footer'] . '/template/' . $this->data['footer'] . '_t.php';
         }
 
         // What is always on bottom

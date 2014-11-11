@@ -55,6 +55,7 @@ class Mysqldriver_Library_Controller extends Database_Library_Controller {
         $this->error  = '';
     }
 
+    // Specific to each connection type
     public function getQuotedValue( $data ) {
 
         switch ( strtolower( gettype( $data ) ) ) {

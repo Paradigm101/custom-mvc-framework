@@ -5,6 +5,7 @@
  */
 abstract class Session_Page_Controller extends Base_Page_Controller {
 
+    // Main process: assign data to view
     static protected function process() {
 
         static::assign('session_id', session_id());

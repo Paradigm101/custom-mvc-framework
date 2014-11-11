@@ -11,11 +11,11 @@ define('BASE_ERROR_STATUS_NO_TABLE',        4);
  */
 abstract class Base_Library_Model {
 
-    // Holds instance of database connection
-    protected $db;
+    // Instance of database connection
+    private $db;
 
-    // Error from model
-    protected $error;
+    // Error for controller (interpreted from DB)
+    private $error;
 
     public function __construct() {
 
@@ -74,5 +74,28 @@ abstract class Base_Library_Model {
 
         // Problem
         return false;
+    }
+
+    // DB Wrappers
+    //------------
+    protected function getQuotedValue( $data ) {
+        
+        return $this->db->getQuotedValue( $data );
+    }
+    protected function getInsertId() {
+        
+        return $this->db->getInsertId();
+    }
+    protected function getAffectedRows() {
+        
+        return $this->db->getAffectedRows();
+    }
+    protected function fetchNext($type = 'object') {
+        
+        return $this->db->fetchNext($type = 'object');
+    }
+    protected function fetchAll($type = 'object') {
+        
+        return $this->db->fetchAll($type = 'object');
     }
 }

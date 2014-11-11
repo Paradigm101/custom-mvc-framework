@@ -1,16 +1,11 @@
 
-        <!-- script in the end to display the page as fast as possible -->
-        <!-- JQuery -->
-        <script type="text/javascript" src="page/jquery/script/jquery.js"></script>
-
-        <!-- Javascript constant for every page -->
+        <!-- Transfer from PHP to Javascript -->
         <script type="text/javascript">
 
             // Request types
-            var REQUEST_TYPE_PAGE    = <?= REQUEST_TYPE_PAGE ?>;
-            var REQUEST_TYPE_AJAX    = <?= REQUEST_TYPE_AJAX ?>;
-            var REQUEST_TYPE_API     = <?= REQUEST_TYPE_API ?>;
-            var REQUEST_TYPE_LIBRARY = <?= REQUEST_TYPE_LIBRARY ?>;
+            var REQUEST_TYPE_PAGE = <?= REQUEST_TYPE_PAGE ?>;
+            var REQUEST_TYPE_AJAX = <?= REQUEST_TYPE_AJAX ?>;
+            var REQUEST_TYPE_API  = <?= REQUEST_TYPE_API ?>;
 
             // website root
             var SITE_ROOT = '<?= SITE_ROOT ?>';
@@ -18,6 +13,10 @@
             // user logged in?
             var IS_USER_LOGGED_IN = '<?= Session_Library_Controller::isUserLoggedIn() ?>' ? true : false;
         </script>
+
+        <!-- script in the end to display the page as fast as possible -->
+        <!-- JQuery -->
+        <script type="text/javascript" src="page/jquery/script/jquery.js"></script>
 
         <!-- Javascript for every page -->
         <script type="text/javascript" src="page/base/script/base.js"></script>

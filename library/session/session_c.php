@@ -34,5 +34,8 @@ abstract class Session_Library_Controller {
 
         // Set user id if any
         static::$id_user = static::$model->getUserForSession( session_id() );
+
+        // 
+        Menu_Library_Controller::getPageMenu();
     }
 }

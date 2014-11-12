@@ -1,7 +1,7 @@
 <?php
 
 // Table sessions
-class Sessions_Table_Model extends Base_Table_Model {
+class Sessions_TAB extends Base_TAB {
 
     // Table data
     protected function initTable() {

@@ -3,7 +3,7 @@
 /**
  * Managing user session
  */
-abstract class Session_Library_Controller {
+abstract class Session_LIB {
 
     // Model
     static protected $model;
@@ -30,12 +30,9 @@ abstract class Session_Library_Controller {
         session_start();
 
         // Set session model
-        static::$model = new Session_Library_Model();
+        static::$model = new Session_LIB_Model();
 
         // Set user id if any
         static::$id_user = static::$model->getUserForSession( session_id() );
-
-        // 
-        Menu_Library_Controller::getPageMenu();
     }
 }

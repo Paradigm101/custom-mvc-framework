@@ -3,6 +3,6 @@
 /**
  * Manage specific data access for bootstrap demo page
  */
-class Bootstrapdemo_Page_Model extends Base_Page_Model {
+class Bootstrapdemo_PAG_M extends Base_PAG_M {
     
 }

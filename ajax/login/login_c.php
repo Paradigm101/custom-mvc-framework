@@ -1,11 +1,11 @@
 <?php
 
-abstract class Login_Ajax_Controller extends Base_Ajax_Controller {
+abstract class Login_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
-        $email     = Urlparser_Library_Controller::getRequestParam('email');
-        $password  = Urlparser_Library_Controller::getRequestParam('password');
+        $email     = Url_Parser_LIB::getRequestParam('email');
+        $password  = Url_Parser_LIB::getRequestParam('password');
 
         // Verify that email is not empty
         if ( !$email ) {

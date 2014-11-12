@@ -3,6 +3,6 @@
 /**
  * Starting/Main page
  */
-abstract class Main_Page_Controller extends Base_Page_Controller {
+abstract class Main_PAG_C extends Base_PAG_C {
     
 }

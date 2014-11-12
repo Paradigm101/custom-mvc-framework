@@ -3,6 +3,6 @@
 /**
  * Setting page
  */
-abstract class Notification_Page_Controller extends Base_Page_Controller {
+abstract class Notification_PAG_C extends Base_PAG_C {
     
 }

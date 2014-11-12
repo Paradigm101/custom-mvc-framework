@@ -3,7 +3,7 @@
 /**
  * Mother class for all ajax controllers
  */
-abstract class Base_Ajax_Controller {
+abstract class Base_AJA_C {
 
     // Model
     static protected $model;
@@ -20,7 +20,7 @@ abstract class Base_Ajax_Controller {
     static public function launch() {
 
         // LSB for Model
-        $modelName = str_replace( '_Controller', '_Model', get_called_class());
+        $modelName = str_replace( '_C', '_M', get_called_class());
         self::$model = new $modelName();
 
         // Answer data

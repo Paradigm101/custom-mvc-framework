@@ -3,5 +3,5 @@
 /**
  * To display 'about' informations (resume, ...)
  */
-abstract class About_Page_Controller extends Base_Page_Controller {
+abstract class About_PAG_C extends Base_PAG_C {
 }

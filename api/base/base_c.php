@@ -3,7 +3,7 @@
 /**
  * Mother class for all api controllers
  */
-abstract class Base_Api_Controller {
+abstract class Base_API_C {
 
     // Model
     static protected $model;
@@ -21,7 +21,7 @@ abstract class Base_Api_Controller {
     static public function launch() {
 
         // LSB for Model
-        $modelName = str_replace( '_Controller', '_Model', get_called_class());
+        $modelName = str_replace( '_C', '_M', get_called_class());
         self::$model = new $modelName();
 
         // Initialize Answer data
@@ -37,13 +37,13 @@ abstract class Base_Api_Controller {
     // Core method that does nothing here and need to be overwritten by children class
     static protected function process() {
 
-        Log_Library_Controller::trace('[SYSTEM] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
+        Log_LIB::trace('[Base_API_C] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
     }
 
     // Manage data to send back
     static private function sendAnswer() {
 
         // Converting and sending data
-        Log_Library_Controller::show(ALL_EOL . self::$answer);
+        Log_LIB::show(ALL_EOL . self::$answer);
     }
 }

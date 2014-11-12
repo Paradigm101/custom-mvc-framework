@@ -1,5 +1,5 @@
 <?php
 
-class Error_Page_View extends Base_Page_View {
+class Error_PAG_V extends Base_PAG_V {
     
 }

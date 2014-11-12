@@ -1,7 +1,7 @@
 <?php
 
 // Api commande that create the database
-abstract class Delete_Db_Api_Controller extends Base_Api_Controller {
+abstract class Delete_Db_API_C extends Base_API_C {
 
     static protected function process () {
 
@@ -16,7 +16,7 @@ abstract class Delete_Db_Api_Controller extends Base_Api_Controller {
         foreach( $tables as $table ) {
 
             // Get table class
-            $className = ucfirst( $table ) . '_Table_Controller';
+            $className = ucfirst( $table ) . '_TAB';
             $tableCreator = new $className();
 
             // Create table

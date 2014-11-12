@@ -3,7 +3,7 @@
 /**
  * Manage session access to DB
  */
-class Session_Library_Model extends Base_Library_Model {
+class Session_LIB_Model extends Model_Base_LIB {
 
     public function getUserForSession( $id_session ) {
 

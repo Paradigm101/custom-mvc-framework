@@ -1,5 +1,5 @@
 <?php
 
-class Create_Db_Api_Model extends Base_Api_Model {
+class Create_Db_API_M extends Base_API_M {
     
 }

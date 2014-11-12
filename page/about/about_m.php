@@ -3,6 +3,6 @@
 /**
  * Model for the 'about' page
  */
-class About_Page_Model extends Base_Page_Model {
+class About_PAG_M extends Base_PAG_M {
     
 }

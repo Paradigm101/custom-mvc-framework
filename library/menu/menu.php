@@ -1,6 +1,6 @@
 <?php
 
-abstract class Menu_Library_Controller {
+abstract class Menu_LIB {
 
     // Define menu pages (unused for the moment TBD)
     static public function getPageMenu() {

@@ -3,9 +3,10 @@
 /**
  * Description: The MySQL driver provides interaction with a MySQL database
  */
-class Mysqldriver_Library_Controller extends Database_Library_Controller {
+class Driver_LIB_Mysql {
 
     // Connection holds MySQLi resource
+    // TBD: can it be static to share with all implemented drivers?
     private $connection;
 
     // Result holds data retrieved from server (only an object)
@@ -77,11 +78,11 @@ class Mysqldriver_Library_Controller extends Database_Library_Controller {
             case 'object':
             case 'resource':
                 
-                Log_Library_Controller::trace( '[SYSTEM] trying to escape wrong data type for query, type [' . gettype( $data ) . "] data [$data]" );
+                Log_LIB::trace( '[Driver_LIB_Mysql] trying to escape wrong data type for query, type [' . gettype( $data ) . "] data [$data]" );
                 return null;
 
             default:
-                Log_Library_Controller::trace( '[SYSTEM] trying to escape wrong data type for query, unknow type [' . gettype( $data ) . "] data [$data]" );
+                Log_LIB::trace( '[Driver_LIB_Mysql] trying to escape wrong data type for query, unknow type [' . gettype( $data ) . "] data [$data]" );
                 return null;
         }
     }

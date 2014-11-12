@@ -1,5 +1,5 @@
 <?php
 
-class Settings_Page_View extends Base_Page_View {
+class Settings_PAG_V extends Base_PAG_V {
     
 }

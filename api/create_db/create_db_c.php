@@ -1,11 +1,12 @@
 <?php
 
 // Api commande that create the database
-abstract class Create_Db_Api_Controller extends Base_Api_Controller {
+abstract class Create_Db_API_C extends Base_API_C {
 
     static protected function process () {
 
         // Get list of table to create in the good order
+        // TBD: table manager library to get the list and other stuff (foreign keys, etc...)
         $tables = array( 'users',
                          'sessions' );
 
@@ -16,7 +17,7 @@ abstract class Create_Db_Api_Controller extends Base_Api_Controller {
         foreach( $tables as $table ) {
 
             // Get table class
-            $className = ucfirst( $table ) . '_Table_Controller';
+            $className = ucfirst( $table ) . '_TAB';
             $tableCreator = new $className();
 
             // Create table

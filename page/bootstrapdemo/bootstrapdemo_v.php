@@ -1,6 +1,6 @@
 <?php
 
-class Bootstrapdemo_Page_View extends Base_Page_View {
+class Bootstrapdemo_PAG_V extends Base_PAG_V {
 
     public function __construct() {
 

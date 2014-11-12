@@ -11,7 +11,7 @@
             var SITE_ROOT = '<?= SITE_ROOT ?>';
 
             // user logged in?
-            var IS_USER_LOGGED_IN = '<?= Session_Library_Controller::isUserLoggedIn() ?>' ? true : false;
+            var IS_USER_LOGGED_IN = '<?= Session_LIB::isUserLoggedIn() ?>' ? true : false;
         </script>
 
         <!-- script in the end to display the page as fast as possible -->

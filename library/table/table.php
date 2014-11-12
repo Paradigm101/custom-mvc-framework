@@ -1,7 +1,7 @@
 <?php
 
 // Providing a nice table
-class Table_Library_Controller {
+class Table_LIB {
 
     public function display() {
 

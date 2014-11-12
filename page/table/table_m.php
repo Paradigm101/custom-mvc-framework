@@ -3,6 +3,6 @@
 /**
  * Table page model
  */
-class Table_Page_Model extends Base_Page_Model {
+class Table_PAG_M extends Base_PAG_M {
     
 }

@@ -1,7 +1,7 @@
 <?php
 
 // Manage Ajax error
-abstract class Error_Ajax_Controller extends Base_Ajax_Controller {
+abstract class Error_AJA_C extends Base_AJA_C {
 
     static private $message = 'Error message not initialized';
 

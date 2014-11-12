@@ -3,9 +3,11 @@
 /**
  * Log services: show or trace
  */
-abstract class Log_Library_Controller {
+abstract class Log_LIB {
 
+    // Get EOL according to output type
     static private function getEOL( $isWeb ) {
+
         return ( $isWeb ? ALL_EOL : PHP_EOL );
     }
 
@@ -19,12 +21,12 @@ abstract class Log_Library_Controller {
             case 'object':
                 if ( $isWeb ) {
                     ob_start();
-                    var_dump(Tools_Library_Controller::safeClone( $param ) );
+                    var_dump(Tools_LIB::safeClone( $param ) );
                     $content = ob_get_contents();
                     ob_end_clean();
                 }
                 else {
-                    $content = print_r(Tools_Library_Controller::safeClone( $param ), true );
+                    $content = print_r(Tools_LIB::safeClone( $param ), true );
                 }
                 break;
 
@@ -54,8 +56,9 @@ abstract class Log_Library_Controller {
         }
 
         // Manage title
-        if ( $title )
+        if ( $title ) {
             $content = "$title : " . $content;
+        }
 
         // Note: Using a string here to prevent loss of precision
         // in case of "overflow" (PHP converts it to a double)

@@ -1,5 +1,5 @@
 <?php
 
-abstract class Bootstrapdemo_Page_Controller extends Base_Page_Controller {
+abstract class Bootstrapdemo_PAG_C extends Base_PAG_C {
     
 }

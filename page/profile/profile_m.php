@@ -3,6 +3,6 @@
 /**
  * Manage specific data access for main page
  */
-class Profile_Page_Model extends Base_Page_Model {
+class Profile_PAG_M extends Base_PAG_M {
     
 }

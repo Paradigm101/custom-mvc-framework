@@ -3,6 +3,6 @@
 /**
  * View for the 'about' page
  */
-class About_Page_View extends Base_Page_View {
+class About_PAG_V extends Base_PAG_V {
 
 }

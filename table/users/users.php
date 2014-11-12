@@ -1,7 +1,7 @@
 <?php
 
 // Table users
-class Users_Table_Model extends Base_Table_Model {
+class Users_TAB extends Base_TAB {
 
     // Table data
     protected function initTable() {

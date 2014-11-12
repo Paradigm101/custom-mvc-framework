@@ -3,6 +3,6 @@
 /**
  * Setting page
  */
-abstract class Settings_Page_Controller extends Base_Page_Controller {
+abstract class Settings_PAG_C extends Base_PAG_C {
     
 }

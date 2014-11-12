@@ -3,6 +3,6 @@
 /**
  * Mother class for all Api models
  */
-class Base_Api_Model extends Base_Library_Model {
+class Base_API_M extends Model_Base_LIB {
     
 }

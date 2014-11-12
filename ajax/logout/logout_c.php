@@ -1,6 +1,6 @@
 <?php
 
-abstract class Logout_Ajax_Controller extends Base_Ajax_Controller {
+abstract class Logout_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 

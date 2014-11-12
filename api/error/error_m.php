@@ -1,5 +1,5 @@
 <?php
 
-class Error_Api_Model extends Base_Api_Model {
+class Error_API_M extends Base_API_M {
     
 }

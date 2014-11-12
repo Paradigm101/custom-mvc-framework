@@ -22,7 +22,7 @@
  *      getLastError - get error from the last curl send
  *          return empty string if no error
  */
-abstract class Curl_Library_Controller {
+abstract class Curl_LIB {
 
     // Human readable curl errors
     static private $curlErrorCodes = array(  1 => 'CURLE_UNSUPPORTED_PROTOCOL',

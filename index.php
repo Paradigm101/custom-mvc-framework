@@ -12,22 +12,79 @@ require_once 'config.php';
 require_once 'global_functions.php';
 
 // Autoload
-//      className = <requestName>_<requestType>_<classType>
-//      requestName can have underscores
+//      className = <Module>_<RequestType>_<Complement>
+//      Modules can have underscore(s)
+//      Request Type : PAG, AJA, API, LIB, TAB
+//      Complement: if request type is PAG, AJA, API then _M, _V, _C
+//           else can be empty or anything except a request type (PAG, AJA, API, LIB, TAB)
 //---------
 spl_autoload_register( function ( $className ) {
 
-    // Parse out class name to retrieve file and class
-    $exploded    = explode('_', $className);
+    // Parse out class name
+    $exploded = explode('_', $className);
 
-    $classType   = strtolower( array_pop($exploded) );
-    $requestType = strtolower( array_pop($exploded) );
-    $requestName = strtolower( implode('_', $exploded) );
+    // Retrieve last element
+    $last = strtolower( array_pop($exploded) );
+    
+    // If last element is a request type, no complement
+    if ( in_array($last, array('pag', 'aja', 'api', 'lib', 'tab'))) {
+
+        $complement = '';
+        $requestType = $last;
+    }
+    // Last element is the complement and next retrive request type
+    else {
+        $complement  = $last;
+        $requestType = strtolower( array_pop($exploded) );
+    }
+
+    // Retrieve module name (can have underscores)
+    $module = strtolower( implode('_', $exploded) );
+
+    // Convert request type into folder name
+    switch ( $requestType ) {
+        case 'pag': $requestTypeName = 'page';       break;
+        case 'aja': $requestTypeName = 'ajax';       break;
+        case 'api': $requestTypeName = 'api';        break;
+        case 'lib': $requestTypeName = 'library';    break;
+        case 'tab': $requestTypeName = 'table';      break;
+        default:
+            file_put_contents(LOG_FILE, "[AUTOLOAD] Unknown request type [$requestType] for [$className]\n", FILE_APPEND);
+            exit();
+    }
+
+    // Complement
+    switch ( $requestCode = convertRequestTypeToCode( $requestTypeName ) ) {
+        
+        // Case MVC
+        case REQUEST_TYPE_PAGE:
+        case REQUEST_TYPE_AJAX:
+        case REQUEST_TYPE_API:
+            $fileName = $module . '_' . $complement;
+            break;
+
+        // Other case, default file name is module else name is complement
+        case REQUEST_TYPE_LIBRARY:
+        case REQUEST_TYPE_TABLE:
+            if ( $complement ) {
+                $fileName = $complement;
+            }
+            else {
+                $fileName = $module;
+            }
+            break;
+        default:
+            file_put_contents(LOG_FILE, "[AUTOLOAD] Unknown request code [$requestCode] for request [$requestTypeName] in [$className]\n", FILE_APPEND);
+            exit();
+    }
+
+    // File
+    $file = $requestTypeName . '/' . $module . '/' . $fileName . '.php';
 
     // File doesn't exist
-    if ( !file_exists( $file = $requestType . '/' . $requestName . '/' . $requestName . '_' . $classType[0] . '.php' ) ) {
+    if ( !file_exists( $file ) ) {
 
-        file_put_contents(LOG_FILE, "[SYSTEM] File doesn't exists '$file' for '$className'\n", FILE_APPEND);
+        file_put_contents(LOG_FILE, "[AUTOLOAD] File doesn't exists [$file] for [$className]\n", FILE_APPEND);
         exit();
     }
 
@@ -37,7 +94,7 @@ spl_autoload_register( function ( $className ) {
     // File loaded but class still doesn't exists ...
     if ( !class_exists ( $className ) ) {
 
-        file_put_contents(LOG_FILE, "[SYSTEM] Class does not exist '$className' in '$file'\n", FILE_APPEND);
+        file_put_contents(LOG_FILE, "[AUTOLOAD] Class does not exist [$className] in [$file]\n", FILE_APPEND);
         exit();
     }
 });
@@ -82,13 +139,8 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
             $error_type = substr( $error_type, 0, -1);
         }
 
-        // Add date
-        $comps = explode(' ', microtime());
-        $micro = sprintf('%06d', $comps[0] * 1000000);
-        $date = date('H:i:s') . ":$micro";
-
         // Store error
-        file_put_contents(LOG_FILE, "[$date] [$error_type] '$message' in $filename (L.$lineno)\n", FILE_APPEND);
+        file_put_contents(LOG_FILE, "[ERROR_HANDLER] Error type [$error_type] error message [$message] in file [$filename] (L.$lineno)\n", FILE_APPEND);
     }
 
     // Don't execute PHP internal error manager: show must go on!
@@ -97,11 +149,11 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
 
 // Start user session
 //-------------------
-Session_Library_Controller::initSession();
+Session_LIB::initSession();
 
 // Get request type (no default)
 //------------------------------
-$request_type = strtolower(Urlparser_Library_Controller::getRequestParam('rt'));
+$request_type = strtolower(Url_Parser_LIB::getRequestParam('rt'));
 
 // Assume that no request type means root of website
 if ( $request_type == null ) {
@@ -122,7 +174,7 @@ if ( !(in_array($request_type, array(REQUEST_TYPE_PAGE, REQUEST_TYPE_AJAX, REQUE
     }
 
     // Launch error management
-    Error_Library_Controller::launch($error_message, $request_type);
+    Error_LIB::launch($error_message, $request_type);
 
     // Quit
     exit();
@@ -130,7 +182,7 @@ if ( !(in_array($request_type, array(REQUEST_TYPE_PAGE, REQUEST_TYPE_AJAX, REQUE
 
 // Get request name
 //-----------------
-$request_name = strtolower(Urlparser_Library_Controller::getRequestParam('rn'));
+$request_name = strtolower(Url_Parser_LIB::getRequestParam('rn'));
 
 // Request name not found
 if ( !$request_name ) {
@@ -140,7 +192,7 @@ if ( !$request_name ) {
         $request_name = DEFAULT_PAGE;
     }
     else {
-        Error_Library_Controller::launch("No $request_type name set!", $request_type);
+        Error_LIB::launch("No $request_type name set!", $request_type);
         exit();
     }
 }
@@ -149,10 +201,10 @@ if ( !$request_name ) {
 if ( !( file_exists( $file = $request_type_name . '/' . $request_name . '/' . $request_name . '_c.php' ) ) ) {
 
     // Launch the user error page
-    Error_Library_Controller::launch("The service you are trying to access doesn't exist", $request_type);
+    Error_LIB::launch("The service you are trying to access doesn't exist", $request_type);
 
     // Trace the missing file for dev
-    Log_Library_Controller::trace("File doesn't exist '$file' for request '$request_name' of type '$request_type_name'");
+    Log_LIB::trace("[INDEX] File doesn't exist '$file' for request '$request_name' of type '$request_type_name'");
 
     // And leave
     exit();
@@ -162,13 +214,13 @@ if ( !( file_exists( $file = $request_type_name . '/' . $request_name . '/' . $r
 require_once $file;
 
 // Controller doesn't exist
-if ( !( class_exists( $class = ucfirst($request_name) . '_' . ucfirst($request_type_name) . '_Controller' ) ) ) {
+if ( !( class_exists( $class = ucfirst($request_name) . '_' . strtolower( substr( $request_type_name, 0, 3 ) ) . '_C' ) ) ) {
 
     // Launch the user error page
-    Error_Library_Controller::launch("Something wrong happened, try again later", $request_type);
+    Error_LIB::launch("Something wrong happened, try again later", $request_type);
 
     // Trace the missing class
-    Log_Library_Controller::trace("Controller '$class' doesn't exist in file '$file'");
+    Log_LIB::trace("[INDEX] Controller '$class' doesn't exist in file '$file'");
 
     // And leave
     exit();

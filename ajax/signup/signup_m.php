@@ -1,6 +1,6 @@
 <?php
 
-class Signup_Ajax_Model extends Base_Ajax_Model {
+class Signup_AJA_M extends Base_AJA_M {
 
     /** Add user in DB
      * 

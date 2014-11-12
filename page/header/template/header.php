@@ -174,7 +174,7 @@
               <!-- Sign up/Log in OR Account management / Notification -->
               <ul class="nav navbar-nav navbar-right">
 
-                <?php if ( !Session_Library_Controller::isUserLoggedIn() ) { ?>
+                <?php if ( !Session_LIB::isUserLoggedIn() ) { ?>
                   
                     <!-- Sign-up modal -->
                     <li><a href="#signupModal" data-toggle="modal"><span class="glyphicon glyphicon-user"></span> Sign up</a></li>

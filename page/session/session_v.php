@@ -1,5 +1,5 @@
 <?php
 
-class Session_Page_View extends Base_Page_View {
+class Session_PAG_V extends Base_PAG_V {
 
 }

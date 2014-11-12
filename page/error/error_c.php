@@ -1,6 +1,6 @@
 <?php
 
-abstract class Error_Page_Controller extends Base_Page_Controller {
+abstract class Error_PAG_C extends Base_PAG_C {
 
     static private $message = 'Error message not initialized';
 

@@ -1,6 +1,6 @@
 <?php
 
-abstract class Error_Api_Controller extends Base_Api_Controller {
+abstract class Error_API_C extends Base_API_C {
     
     static private $message = 'Error message not initialized';
 

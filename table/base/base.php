@@ -5,7 +5,7 @@ define('BTM_OK', 1);
 define('BTM_KO', 2);
 
 // Mother of all table Model
-abstract class Base_Table_Model extends Base_Library_Model {
+abstract class Base_TAB extends Model_Base_LIB {
 
     protected $tableName;
 
@@ -14,7 +14,7 @@ abstract class Base_Table_Model extends Base_Library_Model {
     // Core method that define the table and must be overwritten
     protected function initTable() {
 
-        Log_Library_Controller::trace('[SYSTEM] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
+        Log_LIB::trace('[Base_TAB] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
     }
 
     // Constructor: initialize table parameters
@@ -62,12 +62,12 @@ abstract class Base_Table_Model extends Base_Library_Model {
 
         if ( !$this->tableName ) {
 
-            Log_Library_Controller::trace('[SYSTEM] tableName has not been initialized in [' . get_called_class() . ']');
+            Log_LIB::trace('[Base_TAB] tableName has not been initialized in [' . get_called_class() . ']');
             return BTM_KO;
         }
         if ( !$this->parameters ) {
 
-            Log_Library_Controller::trace('[SYSTEM] parameters have not been initialized in [' . get_called_class() . ']');
+            Log_LIB::trace('[Base_TAB] parameters have not been initialized in [' . get_called_class() . ']');
             return BTM_KO;
         }
 
@@ -75,8 +75,7 @@ abstract class Base_Table_Model extends Base_Library_Model {
         if ( !$this->query($sql) ) {
 
             // Log error
-            Log_Library_Controller::trace('[SYSTEM] Error in query : ' . $sql);
-            Log_Library_Controller::trace('[SYSTEM] Error : ' . $this->getLastError() );
+            Log_LIB::trace($this->getLastError(), '[Base_TAB] Error in query : ' . $sql);
 
             return BTM_KO;
         }

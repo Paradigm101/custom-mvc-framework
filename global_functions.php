@@ -1,6 +1,7 @@
 <?php
 
 // Convert request type from code to name
+//  to convert url to directory name
 function convertRequestTypeToName( $request_type_code ) {
 
     switch ( $request_type_code ) {
@@ -23,7 +24,7 @@ function convertRequestTypeToName( $request_type_code ) {
 // Convert request type from name to code
 function convertRequestTypeToCode( $request_type_name ) {
 
-    switch ( $request_type_name ) {
+    switch ( strtolower($request_type_name) ) {
         case 'page':
             return REQUEST_TYPE_PAGE;
         case 'ajax':

@@ -3,6 +3,6 @@
 /**
  * Setting page
  */
-abstract class Inbox_Page_Controller extends Base_Page_Controller {
+abstract class Inbox_PAG_C extends Base_PAG_C {
     
 }

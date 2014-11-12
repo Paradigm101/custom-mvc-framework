@@ -1,6 +1,6 @@
 <?php
 
-class Logout_Ajax_Model extends Base_Ajax_Model {
+class Logout_AJA_M extends Base_AJA_M {
 
     // Remove session: logout user
     public function removeCurrentSession() {

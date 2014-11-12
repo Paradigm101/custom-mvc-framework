@@ -1,7 +1,7 @@
 <?php
 
 // Manage error according to the type of request
-abstract class Error_Library_Controller {
+abstract class Error_LIB {
 
     static public function launch( $message = '', $request_type = REQUEST_TYPE_PAGE ) {
 
@@ -13,7 +13,7 @@ abstract class Error_Library_Controller {
             case REQUEST_TYPE_API:
 
                 // Getting error management class according to request type
-                $errorClass = 'Error_' . ucfirst(convertRequestTypeToName($request_type)) . '_Controller';
+                $errorClass = 'Error_' . strtoupper( substr( convertRequestTypeToName($request_type), 0, 3 ));
                 
                 // Launch error page for user
                 $errorClass::setMessage($message);
@@ -24,7 +24,7 @@ abstract class Error_Library_Controller {
             case REQUEST_TYPE_LIBRARY:
             case REQUEST_TYPE_TABLE:
             default:
-                Log_Library_Controller::trace($message);
+                Log_LIB::trace('[Error_LIB] ' . $message);
                 break;
         }
     }

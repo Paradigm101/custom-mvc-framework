@@ -9,7 +9,7 @@ define('BASE_ERROR_STATUS_NO_TABLE',        4);
 /**
  * Mother class for all models (Page, Ajax, API, ...)
  */
-abstract class Base_Library_Model {
+abstract class Model_Base_LIB {
 
     // Instance of database connection
     private $db;
@@ -20,7 +20,7 @@ abstract class Base_Library_Model {
     public function __construct() {
 
         // Dynamic driver (we never know ...)
-        $className = ucfirst(DB_TYPE) . 'driver_Library_Controller';
+        $className = 'Driver_LIB_' . ucfirst(DB_TYPE);
 
         $this->db    = new $className();
         $this->error = BASE_ERROR_STATUS_NO_ERROR;
@@ -69,7 +69,7 @@ abstract class Base_Library_Model {
         }
         else {
             $this->error = BASE_ERROR_STATUS_UNKOWN;
-            Log_Library_Controller::trace($this->getLastDBError(), 'BASE_ERROR_STATUS_UNKOWN');
+            Log_LIB::trace('[Model_Base_LIB] Unknown DB error : ' . $this->getLastDBError());
         }
 
         // Problem

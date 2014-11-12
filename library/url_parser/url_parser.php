@@ -5,8 +5,9 @@
  * 
  * TBD: manage security, avoid SQL injection, ...
  * TBD: manage arrays
+ * TBD: user filter_input, etc..
  */
-abstract class Urlparser_Library_Controller
+abstract class Url_Parser_LIB
 {
     static private function getGetParam($param) {
 
@@ -41,8 +42,7 @@ abstract class Urlparser_Library_Controller
                 break;
 
             default:
-                Log_Library_Controller::trace( 'Unknow server request method : ' . $_SERVER['REQUEST_METHOD'] );
-                Log_Library_Controller::trace( $_SERVER );
+                Log_LIB::trace( $_SERVER, '[Url_Parser_LIB] Unknown server request method : ' . $_SERVER['REQUEST_METHOD'] );
         }
         
         return $data;

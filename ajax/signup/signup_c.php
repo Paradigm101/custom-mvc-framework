@@ -1,13 +1,13 @@
 <?php
 
-abstract class Signup_Ajax_Controller extends Base_Ajax_Controller {
+abstract class Signup_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
-        $email     = Urlparser_Library_Controller::getRequestParam('email');
-        $username  = Urlparser_Library_Controller::getRequestParam('username');
-        $password  = Urlparser_Library_Controller::getRequestParam('password');
-        $password2 = Urlparser_Library_Controller::getRequestParam('password2');
+        $email     = Url_Parser_LIB::getRequestParam('email');
+        $username  = Url_Parser_LIB::getRequestParam('username');
+        $password  = Url_Parser_LIB::getRequestParam('password');
+        $password2 = Url_Parser_LIB::getRequestParam('password2');
 
         // Check same passwords
         if ( $password != $password2 ) {

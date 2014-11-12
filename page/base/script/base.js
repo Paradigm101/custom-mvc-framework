@@ -20,7 +20,7 @@ $(function () {
         }
 
         // Ctrl+c : Session page
-        if( e.ctrlKey && e.which == 99 /* c */ ) {
+        if( e.ctrlKey && e.which == 101 /* e */ ) {
 
             e.preventDefault();
             $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=session' );
@@ -31,6 +31,13 @@ $(function () {
 
             e.preventDefault();
             $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=table' );
+        }
+
+        // Ctrl+p : API page
+        if( e.ctrlKey && e.which == 112 /* p */ ) {
+
+            e.preventDefault();
+            $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=api' );
         }
 
         // Ctrl+a : About page

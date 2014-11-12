@@ -13,8 +13,8 @@ abstract class Error_LIB {
             case REQUEST_TYPE_API:
 
                 // Getting error management class according to request type
-                $errorClass = 'Error_' . strtoupper( substr( convertRequestTypeToName($request_type), 0, 3 ));
-                
+                $errorClass = 'Error_' . strtoupper( substr( convertRequestTypeToName($request_type), 0, 3 ) . '_C' );
+
                 // Launch error page for user
                 $errorClass::setMessage($message);
                 $errorClass::launch();

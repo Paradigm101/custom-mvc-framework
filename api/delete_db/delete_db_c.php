@@ -5,29 +5,15 @@ abstract class Delete_Db_API_C extends Base_API_C {
 
     static protected function process () {
 
-        // Get list of table to create in the good order
-        $tables = array( 'sessions',
-                         'users' );
-
+        // Start answer
         $answer = "Delete database" . ALL_EOL
                 . "---------------" . ALL_EOL;
 
-        // For each table
-        foreach( $tables as $table ) {
+        // Ask the table manager to do the work
+        foreach ( Table_Manager_LIB::deleteAllTables( /* Don't stop on fail */ ) as $result ) {
 
-            // Get table class
-            $className = ucfirst( $table ) . '_TAB';
-            $tableCreator = new $className();
-
-            // Create table
-            if ( $tableCreator->deleteTable() == BTM_KO ) {
-
-                // if something wrong happen
-                $answer .= "Problem : $table" . ALL_EOL;
-            }
-            else {
-                $answer .= "Success : $table" . ALL_EOL;
-            }
+            // Add result for user
+            $answer .= ucfirst( $result[ 'tableName' ] ) . ' : ' . ( $result[ 'result' ] == BTM_OK ? 'Success' : 'Fail *******************************' ) . ALL_EOL;
         }
 
         // Return answer

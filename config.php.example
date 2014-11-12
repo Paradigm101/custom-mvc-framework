@@ -12,7 +12,7 @@ define('DEFAULT_PAGE',   'main');
 
 // default header/footer
 define('DEFAULT_HEADER', 'header');
-define('DEFAULT_FOOTER', 'footer_custom');
+define('DEFAULT_FOOTER', 'footer');
 
 // Log file, for trace
 define('LOG_FILE', 'dump.txt');

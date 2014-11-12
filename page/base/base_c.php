@@ -12,14 +12,6 @@ abstract class Base_PAG_C {
     // Static View, inherited controller is abstract
     static private $view;
 
-    // View setter
-    static private function setView() {
-
-        // LSB for View name, will based on inherited controller name
-        $viewName = str_replace( '_C', '_V', get_called_class());
-        self::$view = new $viewName();
-    }
-
     // View access wrapper
     static protected function assign( $name , $value ) {
 
@@ -33,8 +25,9 @@ abstract class Base_PAG_C {
         $modelName = str_replace( '_C', '_M', get_called_class());
         self::$model = new $modelName();
 
-        // Set View
-        self::setView();
+        // LSB for View name, will based on inherited controller name
+        $viewName = str_replace( '_C', '_V', get_called_class());
+        self::$view = new $viewName();
 
         // Launch main process
         static::process();

@@ -164,11 +164,11 @@
 
               <!-- Menu -->
               <ul class="nav navbar-nav">
-                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=main">Home</a></li>
-                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=bootstrapdemo">Bootstrap</a></li>
-                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=session">Session</a></li>
-                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=table">Table</a></li>
-                <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=about">About</a></li>
+<?php
+                foreach ( Menu_LIB::getPageMenu() as $page ) {
+                    echo '<li><a href="?rt=' . REQUEST_TYPE_PAGE . '&rn=' . $page['fileName'] . '">' . $page['pageName'] . '</a></li>';
+                }
+?>
               </ul>
 
               <!-- Sign up/Log in OR Account management / Notification -->

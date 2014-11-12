@@ -5,30 +5,15 @@ abstract class Create_Db_API_C extends Base_API_C {
 
     static protected function process () {
 
-        // Get list of table to create in the good order
-        // TBD: table manager library to get the list and other stuff (foreign keys, etc...)
-        $tables = array( 'users',
-                         'sessions' );
-
+        // Start answer
         $answer = "Create database" . ALL_EOL
                 . "---------------" . ALL_EOL;
 
-        // For each table
-        foreach( $tables as $table ) {
+        // Ask the table manager to do the work
+        foreach ( Table_Manager_LIB::createAllTables( /* Don't stop on fail */ ) as $result ) {
 
-            // Get table class
-            $className = ucfirst( $table ) . '_TAB';
-            $tableCreator = new $className();
-
-            // Create table
-            if ( $tableCreator->createTable() == BTM_KO ) {
-
-                // if something wrong happen
-                $answer .= "Problem : $table" . ALL_EOL;
-            }
-            else {
-                $answer .= "Success : $table" . ALL_EOL;
-            }
+            // Add result for user
+            $answer .= ucfirst( $result[ 'tableName' ] ) . ' : ' . ( $result[ 'result' ] == BTM_OK ? 'Success' : 'Fail *******************************' ) . ALL_EOL;
         }
 
         // Return answer

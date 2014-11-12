@@ -1,36 +1,31 @@
 <?php
 
-// Table controller
+// Table controller; children are now non-abstract to initialize model without interfering
 abstract class Base_Table_Controller {
-
-    // Internal process
-    static private $initDone = false;
 
     // Remove direct access from inherited controller which is basically a useless wrapper
     //      kept for homogeneity purpose: intersystem access is done through controllers!
-    static private $model;
+    private $model;
 
     // Initialize model and table parameters
-    static private function init() {
+    public function __construct() {
 
-        // Can only be done once
-        if ( !self::$initDone ) {
-
-            self::$initDone = true;
-
-            // LSB model
-            $modelName = str_replace( '_Controller', '_Model', get_called_class());
-            self::$model = new $modelName();
-        }
+        // LSB model
+        $modelName = str_replace( '_Controller', '_Model', get_called_class());
+        $this->model = new $modelName();
     }
 
     // Create a table in DB
-    static public function createTable() {
+    public function createTable() {
 
-        // Always try to initialize the table model before doing the work
-        self::init();
+        // Model is doing the work
+        return $this->model->createTable();
+    }
 
-        // Do the work ... well obv model is doing the work
-        return self::$model->createTable();
+    // Delete a table in DB
+    public function deleteTable() {
+
+        // Model is doing the work
+        return $this->model->deleteTable();
     }
 }

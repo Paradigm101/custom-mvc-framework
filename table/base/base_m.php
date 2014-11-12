@@ -26,19 +26,40 @@ abstract class Base_Table_Model extends Base_Library_Model {
     }
 
     // add parameter, for children
-    protected function addParameter( $name, $type, $size = null, $nullable = false, $default = true, $autoIncrement = false ) {
+    protected function addParameter( $name,
+                                     $type,
+                                     $size          = null,
+                                     $nullable      = false,
+                                     $default       = null,
+                                     $autoIncrement = false,
+                                     $isPrimaryKey  = false,
+                                     $isUniqueKey   = false ) {
+
         $this->parameters[] = array( 'name'          => $name,
                                      'type'          => $type,
                                      'size'          => $size,
                                      'nullable'      => $nullable,
                                      'default'       => $default,
-                                     'autoIncrement' => $autoIncrement );
+                                     'autoIncrement' => $autoIncrement,
+                                     'isPrimaryKey'  => $isPrimaryKey,
+                                     'isUniqueKey'   => $isUniqueKey );
     }
 
-    // create table, for controller
-    public function createTable() {
+    // Set uniqueness
+    public function setUnique( $param, $value = true ) {
 
-        // check that table has been initialized properly
+        foreach ( $this->parameters as &$parameter ) {
+            
+            if ( $parameter[ 'name' ] == $param ) {
+
+                $parameter[ 'isUniqueKey' ] = $value;
+            }
+        }
+    }
+
+    // To execute any commande: check parameters and manage DB errors
+    private function executeQuery( $sql ) {
+
         if ( !$this->tableName ) {
 
             Log_Library_Controller::trace('[SYSTEM] tableName has not been initialized in [' . get_called_class() . ']');
@@ -50,8 +71,35 @@ abstract class Base_Table_Model extends Base_Library_Model {
             return BTM_KO;
         }
 
+        // Execute query
+        if ( !$this->query($sql) ) {
+
+            // Log error
+            Log_Library_Controller::trace('[SYSTEM] Error in query : ' . $sql);
+            Log_Library_Controller::trace('[SYSTEM] Error : ' . $this->getLastError() );
+
+            return BTM_KO;
+        }
+
+        // Return OK
+        return BTM_OK;
+    }
+
+    // delete table, for controller
+    public function deleteTable() {
+
+        // Query
+        $sql = 'DROP TABLE ' . $this->tableName;
+
+        // Execute query
+        return $this->executeQuery($sql);
+    }
+
+    // create table, for controller
+    public function createTable() {
+
         // Start query
-        $sql = "CREATE TABLE IF NOT EXISTS `" . $this->tableName . "` (\n";
+        $sql = "CREATE TABLE IF NOT EXISTS `" . $this->tableName . '` (';
 
         // For each parameter, create a table field
         foreach( $this->parameters as $parameter ) {
@@ -62,19 +110,27 @@ abstract class Base_Table_Model extends Base_Library_Model {
                 . ( $parameter['nullable'] ? '' : 'NOT NULL ' )
                 . ( $parameter['default'] ? 'DEFAULT ' . $parameter['default'] : '' )
                 . ( $parameter['autoIncrement'] ? 'AUTO_INCREMENT ' : '' )
-                . ",\n";
+                . ',';
         }
 
-        // Remove last coma + CR
-        $sql = substr( $sql, 0, -2 );
+        // Manage indexes and other funny stuff
+        foreach( $this->parameters as $parameter ) {
+
+            if ( $parameter['isPrimaryKey'] ) {
+                $sql .= 'PRIMARY KEY (`' . $parameter['name'] . '`),';
+            }
+            if ( $parameter['isUniqueKey'] ) {
+                $sql .= "UNIQUE KEY `" . $parameter['name'] . "` (`" . $parameter['name'] . '`),';
+            }
+        }
+
+        // Remove last coma
+        $sql = substr( $sql, 0, -1 );
 
         // End query
-        $sql .= ") ENGINE=InnoDB DEFAULT CHARSET=latin1;\n";
+        $sql .= ') ENGINE=InnoDB DEFAULT CHARSET=latin1;';
 
-        // TBD Execute query
-        Log_Library_Controller::trace($sql);
-
-        // Return OK
-        return BTM_OK;
+        // Execute query
+        return $this->executeQuery($sql);
     }
 }

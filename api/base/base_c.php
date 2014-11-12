@@ -44,6 +44,6 @@ abstract class Base_Api_Controller {
     static private function sendAnswer() {
 
         // Converting and sending data
-        Log_Library_Controller::show(self::$answer);
+        Log_Library_Controller::show(ALL_EOL . self::$answer);
     }
 }

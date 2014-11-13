@@ -4,10 +4,10 @@ abstract class Signup_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
-        $email     = Url_Parser_LIB::getRequestParam('email');
-        $username  = Url_Parser_LIB::getRequestParam('username');
-        $password  = Url_Parser_LIB::getRequestParam('password');
-        $password2 = Url_Parser_LIB::getRequestParam('password2');
+        $email     = Url_Manager_LIB::getRequestParam('email');
+        $username  = Url_Manager_LIB::getRequestParam('username');
+        $password  = Url_Manager_LIB::getRequestParam('password');
+        $password2 = Url_Manager_LIB::getRequestParam('password2');
 
         // Check same passwords
         if ( $password != $password2 ) {

@@ -7,11 +7,12 @@
             var REQUEST_TYPE_AJAX = <?= REQUEST_TYPE_AJAX ?>;
             var REQUEST_TYPE_API  = <?= REQUEST_TYPE_API ?>;
 
-            // website root
-            var SITE_ROOT = '<?= SITE_ROOT ?>';
-
             // user logged in?
             var IS_USER_LOGGED_IN = '<?= Session_Manager_LIB::isUserLoggedIn() ?>' ? true : false;
+
+            // Get javascript from back
+            <?= Session_Manager_LIB::getJavascript() ?>
+
         </script>
 
         <!-- script in the end to display the page as fast as possible -->

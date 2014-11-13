@@ -1,7 +1,7 @@
 <?php
 
 // SITE_ROOT is the webserver for redirection
-define( 'SITE_ROOT' , 'http://localhost/<your_website_name>/?' );      // Customize
+define( 'SITE_ROOT' , 'http://localhost/<your_website_name>' );      // Customize
 
 /* Options in case a page is not found
  *      redirect: redirect user to default page

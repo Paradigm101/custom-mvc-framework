@@ -156,7 +156,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-                <a class="navbar-brand" href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=main">Brand</a>
+                <a class="navbar-brand" href="<?= Url_Manager_LIB::getUrlForRequest('main') ?>">Brand</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -165,7 +165,7 @@
               <!-- Menu -->
               <ul class="nav navbar-nav">
                   <?php foreach (Session_Manager_LIB::getPageMenu() as $page ) {
-                      echo '<li><a href="?rt=' . REQUEST_TYPE_PAGE . '&rn=' . $page['fileName'] . '">' . $page['headerTitle'] . '</a></li>';
+                      echo '<li><a href="' . Url_Manager_LIB::getUrlForRequest($page['fileName']) . '">' . $page['headerTitle'] . '</a></li>';
                     } ?>
               </ul>
 
@@ -186,16 +186,16 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-home"></span> My Account <strong class="caret"></strong></a>
                         <ul class="dropdown-menu">
-                          <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                          <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=profile"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
-                          <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=inbox"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
+                            <li><a href="<?= Url_Manager_LIB::getUrlForRequest('settings') ?>"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                          <li><a href="<?= Url_Manager_LIB::getUrlForRequest('profile') ?>"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
+                          <li><a href="<?= Url_Manager_LIB::getUrlForRequest('inbox') ?>"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
                           <li class="divider"></li>
                           <li><a id="logoutButton" href="#"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
                         </ul>
                     </li>
 
                     <!-- Notification -->
-                    <li><a href="?rt=<?= REQUEST_TYPE_PAGE ?>&rn=notification"><span class="glyphicon glyphicon-globe"></span></a></li>
+                    <li><a href="<?= Url_Manager_LIB::getUrlForRequest('notification') ?>"><span class="glyphicon glyphicon-globe"></span></a></li>
                 <?php } ?>
 
               </ul>

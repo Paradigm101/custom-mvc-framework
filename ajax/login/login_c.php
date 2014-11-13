@@ -4,8 +4,8 @@ abstract class Login_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
-        $email     = Url_Parser_LIB::getRequestParam('email');
-        $password  = Url_Parser_LIB::getRequestParam('password');
+        $email     = Url_Manager_LIB::getRequestParam('email');
+        $password  = Url_Manager_LIB::getRequestParam('password');
 
         // Verify that email is not empty
         if ( !$email ) {

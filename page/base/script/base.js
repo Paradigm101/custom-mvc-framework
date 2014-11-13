@@ -9,42 +9,42 @@ $(function () {
         if( e.ctrlKey && e.which == 104 /* h */ ) {
 
             e.preventDefault();
-            $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=main' );
+            $(location).attr('href', getURL('main') );
         }
 
         // Ctrl+b : Bootstrap demo page
         if( e.ctrlKey && e.which == 98 /* b */ ) {
 
             e.preventDefault();
-            $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=bootstrapdemo' );
+            $(location).attr('href', getURL('bootstrapdemo') );
         }
 
         // Ctrl+c : Session page
         if( e.ctrlKey && e.which == 101 /* e */ ) {
 
             e.preventDefault();
-            $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=session' );
+            $(location).attr('href', getURL('session') );
         }
 
         // Ctrl+t : Table page
         if( e.ctrlKey && e.which == 116 /* t */ ) {
 
             e.preventDefault();
-            $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=table' );
+            $(location).attr('href', getURL('table') );
         }
 
         // Ctrl+p : API page
         if( e.ctrlKey && e.which == 112 /* p */ ) {
 
             e.preventDefault();
-            $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=api' );
+            $(location).attr('href', getURL('api') );
         }
 
         // Ctrl+a : About page
         if( e.ctrlKey && e.which == 97 /* a */ ) {
 
             e.preventDefault();
-            $(location).attr('href', SITE_ROOT + 'rt=' + REQUEST_TYPE_PAGE + '&' + 'rn=about' );
+            $(location).attr('href', getURL('about') );
         }
     });
 

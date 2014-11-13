@@ -1,14 +1,32 @@
 <?php
 
 /**
- * Entry point for GET and POST data
+ * Manage url related services
+ *      retrieve GET and POST data
+ *      create url
  * 
  * TBD: manage security, avoid SQL injection, ...
  * TBD: manage arrays
  * TBD: user filter_input, etc..
  */
-abstract class Url_Parser_LIB
-{
+abstract class Url_Manager_LIB {
+
+    // Send javascript for client
+    static public function getJavascript() {
+
+        // Create URL from request name/type
+        $script  = "var getURL = function( request_name, request_type = REQUEST_TYPE_PAGE ) {";
+        $script .= "    return '" . SITE_ROOT . "?rn=' + request_name + ( request_type != REQUEST_TYPE_PAGE ? '&rt=' + request_type : '' );";
+        $script .= "}";
+
+        return $script;
+    }
+    
+    static public function getUrlForRequest( $requestName, $requestType = REQUEST_TYPE_PAGE ) {
+
+        return SITE_ROOT . '?rn=' . $requestName . ( $requestType != REQUEST_TYPE_PAGE ? '&rt=' . $serviceType : '' );
+    }
+
     static private function getGetParam($param) {
 
         if ( array_key_exists($param, $_GET))
@@ -25,7 +43,7 @@ abstract class Url_Parser_LIB
         return null;
     }
 
-    static public function getRequestParam( $param ){
+    static public function getRequestParam( $param ) {
 
         $data = null;
 

@@ -42,6 +42,11 @@ function convertRequestTypeToCode( $request_type_name ) {
 }
 
 // Get file from a class name, for autoload and security purpose
+//      className = <Module>_<RequestType>_<Complement>
+//      Modules can have underscore(s)
+//      Request Type : PAG, AJA, API, LIB, TAB
+//      Complement: if request type is PAG, AJA, API then _M, _V, _C
+//           else can be empty or anything except a request type (PAG, AJA, API, LIB, TAB)
 function getFileForClass( $className, $isSecurity = false ) {
 
     // Parse out class name

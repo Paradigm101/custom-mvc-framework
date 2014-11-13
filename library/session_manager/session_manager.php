@@ -83,11 +83,22 @@ abstract class Session_Manager_LIB {
     // Security check
     static public function hasAccess( $className ) {
 
+        // TBD remove
+        return true;
+
+        // Get XML security file
         $securityFile = getFileForClass($className, true /* security file */ );
 
-//        $test = simplexml_load_file( $securityFile );
-//        
-//        Log_LIB::trace($test);
+        // File doesn't exist, don't allow access
+        if ( !is_file( $securityFile )) {
+
+            return false;
+        }
+
+        // Parsing security file
+        $securityXML = simplexml_load_file( $securityFile );
+
+        Log_LIB::trace($securityXML);
 
         return true;
     }

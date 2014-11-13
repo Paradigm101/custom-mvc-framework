@@ -7,9 +7,14 @@ define('BTM_KO', 2);
 // Mother of all table Model
 abstract class Base_TAB extends Model_Base_LIB {
 
+    // Table name
     protected $tableName;
 
+    // Fields of the table
     private $parameters;
+
+    // Query to populate the table at the start (for config table)
+    protected $initQuery;
 
     // Core method that define the table and must be overwritten
     protected function initTable() {
@@ -75,7 +80,7 @@ abstract class Base_TAB extends Model_Base_LIB {
         if ( !$this->query($sql) ) {
 
             // Log error
-            Log_LIB::trace($this->getLastError(), '[Base_TAB] Error in query : ' . $sql);
+            Log_LIB::trace($this->getLastDBError(), "[Base_TAB] Error in query [$sql]");
 
             return BTM_KO;
         }
@@ -129,7 +134,16 @@ abstract class Base_TAB extends Model_Base_LIB {
         // End query
         $sql .= ') ENGINE=InnoDB DEFAULT CHARSET=latin1;';
 
-        // Execute query
-        return $this->executeQuery($sql);
+        // Execute query: create table
+        $result = $this->executeQuery($sql);
+
+        // Populate table at start if needed
+        if ( $result == BTM_OK && $this->initQuery ) {
+
+            $result = $this->executeQuery( $this->initQuery );
+        }
+
+        // Return result
+        return $result;
     }
 }

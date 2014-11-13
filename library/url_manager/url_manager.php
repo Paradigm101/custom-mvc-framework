@@ -21,12 +21,14 @@ abstract class Url_Manager_LIB {
 
         return $script;
     }
-    
+
+    // Get URL for request
     static public function getUrlForRequest( $requestName, $requestType = REQUEST_TYPE_PAGE ) {
 
-        return SITE_ROOT . '?rn=' . $requestName . ( $requestType != REQUEST_TYPE_PAGE ? '&rt=' . $serviceType : '' );
+        return SITE_ROOT . '?rn=' . $requestName . ( $requestType != REQUEST_TYPE_PAGE ? '&rt=' . $requestType : '' );
     }
 
+    // Get a parameter through GET method
     static private function getGetParam($param) {
 
         if ( array_key_exists($param, $_GET))
@@ -35,6 +37,7 @@ abstract class Url_Manager_LIB {
         return null;
     }
 
+    // Get a parameter through POST method
     static private function getPostParam($param) {
 
         if ( array_key_exists($param, $_POST))
@@ -43,6 +46,7 @@ abstract class Url_Manager_LIB {
         return null;
     }
 
+    // Get a parameter from a request
     static public function getRequestParam( $param ) {
 
         $data = null;

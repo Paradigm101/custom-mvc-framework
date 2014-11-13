@@ -14,6 +14,7 @@ class Users_TAB extends Base_TAB {
         $this->addParameter('email',    'varchar', 100);
         $this->addParameter('username', 'varchar', 100);
         $this->addParameter('password', 'varchar', 100);
+        $this->addParameter('id_role',  'int',      11, false, 1 /* admin */ );
 
         // Email is unique
         $this->setUnique( 'email' );

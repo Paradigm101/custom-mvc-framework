@@ -145,7 +145,7 @@ if ( !( file_exists( $file = $requestTypeName . '/' . $requestName . '/' . $requ
 require_once $file;
 
 // Controller doesn't exist
-if ( !( class_exists( $className = ucfirst($requestName) . '_' . strtolower( substr( $requestTypeName, 0, 3 ) ) . '_C' ) ) ) {
+if ( !( class_exists( $className = ucfirst($requestName) . '_' . strtoupper( substr( $requestTypeName, 0, 3 ) ) . '_C' ) ) ) {
 
     // Launch the user error page
     Error_LIB::process("Something wrong happened, try again later", $requestType);
@@ -165,7 +165,7 @@ if ( !Session_Manager_LIB::hasAccess( $className ) ) {
     Error_LIB::process("You do not have access to this service", $requestType);
 
     // Trace the missing class
-    Log_LIB::trace("[INDEX] User try to access forbidden service");
+    Log_LIB::trace("[INDEX] User try to access forbidden service [$className] IP [" . Session_Manager_LIB::getUserIP() . "]");
 
     // And leave
     exit();

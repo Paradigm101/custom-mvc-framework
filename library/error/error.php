@@ -3,7 +3,7 @@
 // Manage error according to the type of request
 abstract class Error_LIB {
 
-    static public function launch( $message = '', $request_type = REQUEST_TYPE_PAGE ) {
+    static public function start( $message = '', $request_type = REQUEST_TYPE_PAGE ) {
 
         switch ( $request_type ) {
 
@@ -17,7 +17,7 @@ abstract class Error_LIB {
 
                 // Launch error page for user
                 $errorClass::setMessage($message);
-                $errorClass::launch();
+                $errorClass::start();
                 break;
 
             // Other request type: log

@@ -3,25 +3,29 @@
 /**
  * Mother class for all ajax controllers
  */
-abstract class Base_AJA_C {
-
-    // Model
-    static protected $model;
+abstract class Base_AJA_C extends Controller_Base_LIB {
 
     // Data to send
     static private $answer;
 
     // Add answer data for client
     static protected function addAnswer( $key, $value ) {
+
         self::$answer[ $key ] = $value;
     }
 
-    // Main method, called by the router
-    static public function launch() {
+    // Manage data to send back
+    static private function sendAnswer() {
 
-        // LSB for Model
-        $modelName = str_replace( '_C', '_M', get_called_class());
-        self::$model = new $modelName();
+        // Using JSON
+        header("content-type:application/json");
+
+        // Converting and sending data
+        echo json_encode(self::$answer);
+    }
+
+    // Set answer, pass the relay to children then send answer
+    static protected function launch() {
 
         // Answer data
         self::$answer = array();
@@ -34,15 +38,8 @@ abstract class Base_AJA_C {
     }
 
     // Core method that does nothing here and need to be overwritten by children class
-    static protected function process() {}
+    static protected function process() {
 
-    // Manage data to send back
-    static private function sendAnswer() {
-
-        // Using JSON
-        header("content-type:application/json");
-
-        // Converting and sending data
-        echo json_encode(self::$answer);
+        Log_LIB::trace('[Base_AJA_C] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
     }
 }

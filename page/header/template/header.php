@@ -164,17 +164,15 @@
 
               <!-- Menu -->
               <ul class="nav navbar-nav">
-<?php
-                foreach ( Menu_LIB::getPageMenu() as $page ) {
-                    echo '<li><a href="?rt=' . REQUEST_TYPE_PAGE . '&rn=' . $page['fileName'] . '">' . $page['pageName'] . '</a></li>';
-                }
-?>
+                  <?php foreach (Session_Manager_LIB::getPageMenu() as $page ) {
+                      echo '<li><a href="?rt=' . REQUEST_TYPE_PAGE . '&rn=' . $page['fileName'] . '">' . $page['headerTitle'] . '</a></li>';
+                    } ?>
               </ul>
 
               <!-- Sign up/Log in OR Account management / Notification -->
               <ul class="nav navbar-nav navbar-right">
 
-                <?php if ( !Session_LIB::isUserLoggedIn() ) { ?>
+                <?php if ( !Session_Manager_LIB::isUserLoggedIn() ) { ?>
                   
                     <!-- Sign-up modal -->
                     <li><a href="#signupModal" data-toggle="modal"><span class="glyphicon glyphicon-user"></span> Sign up</a></li>

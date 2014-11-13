@@ -4,10 +4,7 @@
  * Mother class for all Page controllers
  *      inherited controllers are abstract => only static attributes and methodes
  */
-abstract class Base_PAG_C {
-
-    // Static Model, inherited controller is abstract
-    static protected $model;
+abstract class Base_PAG_C extends Controller_Base_LIB {
 
     // Static View, inherited controller is abstract
     static private $view;
@@ -18,12 +15,8 @@ abstract class Base_PAG_C {
         self::$view->assign( $name, $value );
     }
 
-    // Entry point, called by the index
-    static public function launch() {
-
-        // LSB for Model name, will based on inherited controller name
-        $modelName = str_replace( '_C', '_M', get_called_class());
-        self::$model = new $modelName();
+    // Set view, pass the relay to children then render view
+    static protected function launch() {
 
         // LSB for View name, will based on inherited controller name
         $viewName = str_replace( '_C', '_V', get_called_class());
@@ -36,6 +29,6 @@ abstract class Base_PAG_C {
         self::$view->render();
     }
 
-    // Core method that does nothing and should be overwritten by children (if needed)
+    // Core method that does nothing and can be overwritten by children
     static protected function process() {}
 }

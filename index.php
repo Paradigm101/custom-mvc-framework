@@ -20,66 +20,8 @@ require_once 'global_functions.php';
 //---------
 spl_autoload_register( function ( $className ) {
 
-    // Parse out class name
-    $exploded = explode('_', $className);
-
-    // Retrieve last element
-    $last = strtolower( array_pop($exploded) );
-    
-    // If last element is a request type, no complement
-    if ( in_array($last, array('pag', 'aja', 'api', 'lib', 'tab'))) {
-
-        $complement = '';
-        $requestType = $last;
-    }
-    // Last element is the complement and next retrive request type
-    else {
-        $complement  = $last;
-        $requestType = strtolower( array_pop($exploded) );
-    }
-
-    // Retrieve module name (can have underscores)
-    $module = strtolower( implode('_', $exploded) );
-
-    // Convert request type into folder name
-    switch ( $requestType ) {
-        case 'pag': $requestTypeName = 'page';       break;
-        case 'aja': $requestTypeName = 'ajax';       break;
-        case 'api': $requestTypeName = 'api';        break;
-        case 'lib': $requestTypeName = 'library';    break;
-        case 'tab': $requestTypeName = 'table';      break;
-        default:
-            file_put_contents(LOG_FILE, "[AUTOLOAD] Unknown request type [$requestType] for [$className]\n", FILE_APPEND);
-            exit();
-    }
-
-    // Complement
-    switch ( $requestCode = convertRequestTypeToCode( $requestTypeName ) ) {
-        
-        // Case MVC
-        case REQUEST_TYPE_PAGE:
-        case REQUEST_TYPE_AJAX:
-        case REQUEST_TYPE_API:
-            $fileName = $module . '_' . $complement;
-            break;
-
-        // Other case, default file name is module else name is complement
-        case REQUEST_TYPE_LIBRARY:
-        case REQUEST_TYPE_TABLE:
-            if ( $complement ) {
-                $fileName = $complement;
-            }
-            else {
-                $fileName = $module;
-            }
-            break;
-        default:
-            file_put_contents(LOG_FILE, "[AUTOLOAD] Unknown request code [$requestCode] for request [$requestTypeName] in [$className]\n", FILE_APPEND);
-            exit();
-    }
-
     // File
-    $file = $requestTypeName . '/' . $module . '/' . $fileName . '.php';
+    $file = getFileForClass($className);
 
     // File doesn't exist
     if ( !file_exists( $file ) ) {
@@ -149,7 +91,7 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
 
 // Start user session
 //-------------------
-Session_LIB::initSession();
+Session_Manager_LIB::initSession();
 
 // Get request type (no default)
 //------------------------------
@@ -174,7 +116,7 @@ if ( !(in_array($request_type, array(REQUEST_TYPE_PAGE, REQUEST_TYPE_AJAX, REQUE
     }
 
     // Launch error management
-    Error_LIB::launch($error_message, $request_type);
+    Error_LIB::start($error_message, $request_type);
 
     // Quit
     exit();
@@ -192,7 +134,7 @@ if ( !$request_name ) {
         $request_name = DEFAULT_PAGE;
     }
     else {
-        Error_LIB::launch("No $request_type name set!", $request_type);
+        Error_LIB::start("No $request_type name set!", $request_type);
         exit();
     }
 }
@@ -201,7 +143,7 @@ if ( !$request_name ) {
 if ( !( file_exists( $file = $request_type_name . '/' . $request_name . '/' . $request_name . '_c.php' ) ) ) {
 
     // Launch the user error page
-    Error_LIB::launch("The service you are trying to access doesn't exist", $request_type);
+    Error_LIB::start("The service you are trying to access doesn't exist", $request_type);
 
     // Trace the missing file for dev
     Log_LIB::trace("[INDEX] File doesn't exist '$file' for request '$request_name' of type '$request_type_name'");
@@ -214,18 +156,32 @@ if ( !( file_exists( $file = $request_type_name . '/' . $request_name . '/' . $r
 require_once $file;
 
 // Controller doesn't exist
-if ( !( class_exists( $class = ucfirst($request_name) . '_' . strtolower( substr( $request_type_name, 0, 3 ) ) . '_C' ) ) ) {
+if ( !( class_exists( $className = ucfirst($request_name) . '_' . strtolower( substr( $request_type_name, 0, 3 ) ) . '_C' ) ) ) {
 
     // Launch the user error page
-    Error_LIB::launch("Something wrong happened, try again later", $request_type);
+    Error_LIB::start("Something wrong happened, try again later", $request_type);
 
     // Trace the missing class
-    Log_LIB::trace("[INDEX] Controller '$class' doesn't exist in file '$file'");
+    Log_LIB::trace("[INDEX] Controller '$className' doesn't exist in file '$file'");
 
     // And leave
     exit();
 }
 
-// Launch request creation
-//------------------------
-$class::launch();
+// Manage security
+//----------------
+if ( !Session_Manager_LIB::hasAccess( $className ) ) {
+
+    // Launch the user error page
+    Error_LIB::start("You do not have access to this service", $request_type);
+
+    // Trace the missing class
+    Log_LIB::trace("[INDEX] User try to access forbidden service");
+
+    // And leave
+    exit();
+}
+
+// Start Request
+//--------------
+$className::start();

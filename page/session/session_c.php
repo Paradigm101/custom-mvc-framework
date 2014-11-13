@@ -9,6 +9,6 @@ abstract class Session_PAG_C extends Base_PAG_C {
     static protected function process() {
 
         static::assign('session_id', session_id());
-        static::assign('IsLoggedIn', Session_LIB::isUserLoggedIn() ? 'YES' : 'NO' );
+        static::assign('IsLoggedIn', Session_Manager_LIB::isUserLoggedIn() ? 'YES' : 'NO' );
     }
 }

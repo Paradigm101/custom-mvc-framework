@@ -3,10 +3,7 @@
 /**
  * Mother class for all api controllers
  */
-abstract class Base_API_C {
-
-    // Model
-    static protected $model;
+abstract class Base_API_C extends Controller_Base_LIB {
 
     // Data to send
     static private $answer;
@@ -17,12 +14,15 @@ abstract class Base_API_C {
         self::$answer = $answer;
     }
 
-    // Main method, called by the router
-    static public function launch() {
+    // Manage data to send back
+    static private function sendAnswer() {
 
-        // LSB for Model
-        $modelName = str_replace( '_C', '_M', get_called_class());
-        self::$model = new $modelName();
+        // Converting and sending data
+        Log_LIB::show(ALL_EOL . self::$answer);
+    }
+
+    // Set answer, pass the relay to children then send answer
+    static protected function launch() {
 
         // Initialize Answer data
         self::$answer = 'OK';
@@ -38,12 +38,5 @@ abstract class Base_API_C {
     static protected function process() {
 
         Log_LIB::trace('[Base_API_C] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
-    }
-
-    // Manage data to send back
-    static private function sendAnswer() {
-
-        // Converting and sending data
-        Log_LIB::show(ALL_EOL . self::$answer);
     }
 }

@@ -40,6 +40,8 @@
                 <td>Resume (CV)</td>
             </tr>
         </tbody>
+    </table>
+    <table class="table table-striped table-hover table-bordered">
         <thead>
             <tr>
                 <th>Action</th>
@@ -56,7 +58,7 @@
             <tr>
                 <td>Log-in</td>
                 <td>Ctrl+l</td>
-                <td>Log-in</td>
+                <td>Log-in feature</td>
             </tr>
         </tbody>
     </table>

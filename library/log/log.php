@@ -21,12 +21,12 @@ abstract class Log_LIB {
             case 'object':
                 if ( $isWeb ) {
                     ob_start();
-                    var_dump(Tools_LIB::safeClone( $param ) );
+                    var_dump( $param );                 // TBD: use safeClone?
                     $content = ob_get_contents();
                     ob_end_clean();
                 }
                 else {
-                    $content = print_r(Tools_LIB::safeClone( $param ), true );
+                    $content = print_r( $param, true ); // TBD: use safeClone?
                 }
                 break;
 

@@ -1,9 +1,12 @@
 <?php
 
+// Sign-up Ajax controller
 abstract class Signup_AJA_C extends Base_AJA_C {
 
+    // Main process
     static protected function process() {
 
+        // Retrieve parameters
         $email     = Url_Manager_LIB::getRequestParam('email');
         $username  = Url_Manager_LIB::getRequestParam('username');
         $password  = Url_Manager_LIB::getRequestParam('password');
@@ -17,12 +20,14 @@ abstract class Signup_AJA_C extends Base_AJA_C {
 
         // Verify that email is not empty
         if ( !$email ) {
+
             static::addAnswer('error',  'Email has to be set.');
             return;
         }
 
         // Verify that username is not empty
         if ( !$username ) {
+
             static::addAnswer('error',  'Username has to be set.');
             return;
         }

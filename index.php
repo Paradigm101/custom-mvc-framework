@@ -106,6 +106,7 @@ if ( !(in_array($requestType, array(null, REQUEST_TYPE_AJAX, REQUEST_TYPE_API)))
 
 // Wrong or no request type means page
 if ( !(in_array($requestType, array(REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
+
     $requestType = REQUEST_TYPE_PAGE;
 }
 
@@ -115,7 +116,7 @@ $requestTypeName = convertRequestTypeToName($requestType);
 //-----------------
 $requestName = strtolower(Url_Manager_LIB::getRequestParam('rn'));
 
-// Request name not found
+// Request name not found (base is specific protected keyword)
 if ( !$requestName || $requestName == 'base' ) {
 
     // Default page
@@ -128,14 +129,14 @@ if ( !$requestName || $requestName == 'base' ) {
     }
 }
 
-// File doesn't exist
+// Controller file doesn't exist
 if ( !( file_exists( $file = $requestTypeName . '/' . $requestName . '/' . $requestName . '_c.php' ) ) ) {
 
-    // Launch the user error page
+    // Launch the user error answer: page/ajax/api
     Error_LIB::process("The service you are trying to access doesn't exist", $requestType);
 
-    // Trace the missing file for dev
-    Log_LIB::trace("[INDEX] File doesn't exist '$file' for request '$requestName' of type '$requestTypeName'");
+    // Trace hacker
+    Log_LIB::trace("[INDEX] File does NOT exist [$file] for request [$requestName] of type [$requestTypeName] from IP [" . Session_Manager_LIB::getUserIP() . ']');
 
     // And leave
     exit();

@@ -1,0 +1,5 @@
+<security>
+    <role>
+        <allow></allow>
+    </role>
+</security>

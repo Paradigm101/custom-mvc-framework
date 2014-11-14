@@ -2,24 +2,6 @@
 // When page is loaded
 $(function(){
 
-    // Header shortcuts
-    $(document).keypress(function(e) {
-
-        // Ctrl+s : Signup modal
-        if( e.ctrlKey && e.which == 115 && !IS_USER_LOGGED_IN ) {
-
-            $('#signupModal').modal('show');
-            return false;
-        }
-
-        // Ctrl+l : Login modal
-        if( e.ctrlKey && e.which == 108 && !IS_USER_LOGGED_IN ) {
-
-            $('#loginModal').modal('show');
-            return false;
-        }
-    });
-
     // ***************
     // *** Sign-up ***
     // ***************

@@ -15,9 +15,11 @@ abstract class Url_Manager_LIB {
     static public function getJavascript() {
 
         // Create URL from request name/type
-        $script  = "var getURL = function( request_name, request_type = REQUEST_TYPE_PAGE ) {";
-        $script .= "    return '" . SITE_ROOT . "?rn=' + request_name + ( request_type != REQUEST_TYPE_PAGE ? '&rt=' + request_type : '' );";
-        $script .= "}";
+        $script  = "// get URL for a specific page\n"
+                . "//----------------------------\n"
+                . "var getURL = function( request_name, request_type = REQUEST_TYPE_PAGE ) {\n"
+                .  "    return '" . SITE_ROOT . "?rn=' + request_name + ( request_type != REQUEST_TYPE_PAGE ? '&rt=' + request_type : '' );\n"
+                .  "}\n";
 
         return $script;
     }

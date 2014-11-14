@@ -16,6 +16,7 @@ class Roles_TAB extends Base_TAB {
         
         // Init query for config
         $this->initQuery = "INSERT INTO roles (name, label) VALUES ('admin', 'administrator'),"
+                                                                . "('guest', 'guest'),"
                                                                 . "('role1', 'role 1'),"
                                                                 . "('role2', 'role 2');";
     }

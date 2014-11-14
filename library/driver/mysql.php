@@ -137,22 +137,24 @@ class Driver_LIB_Mysql {
             $result = mysqli_query( $this->connection, $query );
         }
         // Unknown exception
-        catch(Exception $e)
-        {
+        catch(Exception $e) {
+
             $this->error = $e->getMessage();
+            Log_LIB::trace("[Driver_LIB_Mysql] Exception in query [$query] : " . $this->error);
             return false;
         }
 
         // Problem
-        if ( $result === false )
-        {
+        if ( $result === false ) {
+
             $this->error = mysqli_error( $this->connection );
+            Log_LIB::trace("[Driver_LIB_Mysql] Error in query [$query] : " . $this->error);
             return false;
         }
 
         // Stock results and row number for SELECT, SHOW, DESCRIBE or EXPLAIN
-        if ( is_object($result) )
-        {
+        if ( is_object($result) ) {
+
             $this->result = $result;
             $this->rows   = mysqli_num_rows( $this->result );
         }

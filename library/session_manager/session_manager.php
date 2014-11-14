@@ -5,24 +5,66 @@
  */
 abstract class Session_Manager_LIB {
 
+    // Model
+    static private $model;
+
+    // user ID
+    static private $idUser;
+
+    // Starting the session, should be done before the page creation (like in the index...)
+    static public function initSession() {
+
+        // Start PHP session
+        session_start();
+
+        // Set session model
+        self::$model = new Session_Manager_LIB_Model();
+
+        // Set user id if any
+        self::$idUser = static::$model->getUserForSession( session_id() );
+    }
+
+    // Get user id for this session (if exists)
+    static public function getUserId() {
+
+        return static::$idUser;
+    }
+
+    // Check if user is logged in
+    static public function isUserLoggedIn() {
+
+        return ( static::$idUser ? true : false );
+    }
+
     // To send javascript to client
     static private $classWithJavascript = array( 'Url_Manager_LIB' );
 
     // Page list (should be const but seems impossible to be private and const for whatever reason...)
-    // TBD manage menu according to rights/roles and add API/AJAX
-    static private $requests = array( array( 'shortcut' => 'h', 'withControl' => true, 'fileName' => 'main',          'headerTitle' => '<strong>H</strong>ome' ),
-                                      array( 'shortcut' => 'b', 'withControl' => true, 'fileName' => 'bootstrapdemo', 'headerTitle' => '<strong>B</strong>ootstrap' ),
-                                      array( 'shortcut' => 'e', 'withControl' => true, 'fileName' => 'session',       'headerTitle' => 'S<strong>e</strong>ssion' ),
-                                      array( 'shortcut' => 't', 'withControl' => true, 'fileName' => 'table',         'headerTitle' => '<strong>T</strong>able' ),
-                                      array( 'shortcut' => 'p', 'withControl' => true, 'fileName' => 'api',           'headerTitle' => 'A<strong>P</strong>I' ),
-                                      array( 'shortcut' => 'a', 'withControl' => true, 'fileName' => 'about',         'headerTitle' => '<strong>A</strong>bout' ) );
+    static private $pages = array( array( 'fileName' => 'main',          'shortcut' => 'h', 'withCtrl' => true, 'headerTitle' => '<strong>H</strong>ome' ),
+                                   array( 'fileName' => 'bootstrapdemo', 'shortcut' => 'b', 'withCtrl' => true, 'headerTitle' => '<strong>B</strong>ootstrap' ),
+                                   array( 'fileName' => 'table',         'shortcut' => 't', 'withCtrl' => true, 'headerTitle' => '<strong>T</strong>able' ),
+                                   array( 'fileName' => 'api',           'shortcut' => 'p', 'withCtrl' => true, 'headerTitle' => 'A<strong>P</strong>I' ),
+                                   array( 'fileName' => 'about',         'shortcut' => 'a', 'withCtrl' => true, 'headerTitle' => '<strong>A</strong>bout' ) );
 
-    // Define menu pages
-    // TBD manage menu according to rights/roles and return only pages
-    static public function getPageMenu() {
+    // Get page list for user
+    static public function getUserPages() {
 
-        // Avoid those pages of being changed
-        return Tools_LIB::safeClone(self::$requests);
+        // Initialize accessible pages
+        $pages = array();
+
+        // For every existing page (safeClone to avoid any changes)
+        foreach( Tools_LIB::safeClone(self::$pages) as $page ) {
+
+            // check access
+            if ( static::hasAccess($page['fileName'] . '_PAG_C') ) {
+
+                // Add page to the accessible pages
+                $pages[] = $page;
+            }
+        }
+
+        // Send pages
+        return $pages;
     }
 
     // Send javascript to client
@@ -30,10 +72,38 @@ abstract class Session_Manager_LIB {
 
         $script = "";
 
+        // Constantes
+        //-----------
+        $script .= "// Constantes\n"
+                . "//-----------\n"
+                . "REQUEST_TYPE_AJAX = " . REQUEST_TYPE_AJAX . ";\n"
+                . "REQUEST_TYPE_PAGE = " . REQUEST_TYPE_PAGE . ";\n"
+                . "\n";
+
         // Retrieve javascript from each subscribed class
         foreach ( static::$classWithJavascript as $class ) {
-            $script .= $class::getJavascript();
+            $script .= $class::getJavascript() . "\n\n";
         }
+
+        // Add shortcuts
+        //--------------
+        $script .= "// Shortcuts\n"
+                . "//----------\n"
+                . "$(function () {\n"
+                .  "    $(document).keypress(function(e) {\n";
+
+        foreach ( static::getUserPages() as $page ) {
+
+            $shortcutCondition = 'e.which == ' . ord( $page['shortcut'] ) . ( $page['withCtrl'] ? ' && e.ctrlKey' : '' );
+
+            $script .= "        if ( $shortcutCondition ) {\n"
+                    . "             e.preventDefault();\n"
+                    . "             $(location).attr('href', '" . Url_Manager_LIB::getUrlForRequest( $page['fileName'] ) . "' );\n"
+                    . "         }\n";
+        }
+
+        $script .= "    });\n"
+                . "});\n\n";
 
         return $script;
     }
@@ -49,57 +119,54 @@ abstract class Session_Manager_LIB {
                getenv('REMOTE_ADDR');
     }
 
-    // Model
-    static private $model;
-
-    // user ID
-    static private $id_user;
-
-    // Starting the session, should be done before the page creation (like in the index...)
-    static public function initSession()
-    {
-        // Start PHP session
-        session_start();
-
-        // Set session model
-        self::$model = new Session_Manager_LIB_Model();
-
-        // Set user id if any
-        self::$id_user = static::$model->getUserForSession( session_id() );
-    }
-
-    // Get user id for this session (if exists)
-    static public function getUserId() {
-
-        return static::$id_user;
-    }
-
-    // Check if user is logged in
-    static public function isUserLoggedIn() {
-
-        return ( static::$id_user ? true : false );
-    }
-
     // Security check
     static public function hasAccess( $className ) {
-
-        // TBD remove
-        return true;
 
         // Get XML security file
         $securityFile = getFileForClass($className, true /* security file */ );
 
-        // File doesn't exist, don't allow access
+        // File doesn't exist, allow everyone
         if ( !is_file( $securityFile )) {
 
-            return false;
+            return true;
         }
 
         // Parsing security file
         $securityXML = simplexml_load_file( $securityFile );
 
-        Log_LIB::trace($securityXML);
+        // Check role
+        if ( !empty( $securityXML->role ) ) {
 
+            // Retrieving user role
+            $userRole = static::$model->getUserRole( static::$idUser );
+
+            // By deny
+            if ( !empty( $securityXML->role->deny ) ) {
+
+                // User is persona non grata
+                if ( in_array( $userRole, (array) $securityXML->role->deny ) ) {
+
+                    return false;
+                }
+
+                // User has access
+                return true;
+            }
+            // By allowance
+            else {
+
+                // User is persona non grata
+                if ( !in_array( $userRole, (array) $securityXML->role->allow ) ) {
+
+                    return false;
+                }
+
+                // User has access
+                return true;
+            }
+        }
+
+        // User has access
         return true;
     }
 }

@@ -1,23 +1,17 @@
 
-        <!-- Transfer from PHP to Javascript -->
-        <script type="text/javascript">
-
-            // Request types
-            var REQUEST_TYPE_PAGE = <?= REQUEST_TYPE_PAGE ?>;
-            var REQUEST_TYPE_AJAX = <?= REQUEST_TYPE_AJAX ?>;
-            var REQUEST_TYPE_API  = <?= REQUEST_TYPE_API ?>;
-
-            // user logged in?
-            var IS_USER_LOGGED_IN = '<?= Session_Manager_LIB::isUserLoggedIn() ?>' ? true : false;
-
-            // Get javascript from back
-            <?= Session_Manager_LIB::getJavascript() ?>
-
-        </script>
-
         <!-- script in the end to display the page as fast as possible -->
         <!-- JQuery -->
         <script type="text/javascript" src="page/jquery/script/jquery.js"></script>
+
+        <!-- Transfer from PHP to Javascript -->
+        <script type="text/javascript">
+
+// Get javascript from back-end
+//-----------------------------
+
+<?= Session_Manager_LIB::getJavascript() ?>
+
+        </script>
 
         <!-- Javascript for every page -->
         <script type="text/javascript" src="page/base/script/base.js"></script>

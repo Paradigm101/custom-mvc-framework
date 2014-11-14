@@ -103,7 +103,6 @@ abstract class Model_Base_LIB {
         }
         else {
             $this->error = BASE_ERROR_STATUS_UNKOWN;
-            Log_LIB::trace('[Model_Base_LIB] Unknown DB error : ' . $this->getLastDBError());
         }
 
         // Problem

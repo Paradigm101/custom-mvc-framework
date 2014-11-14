@@ -1,7 +1,7 @@
 <?php
 
 // Api commande that create the database
-abstract class Delete_Db_API_C extends Base_API_C {
+abstract class Reset_Db_API_C extends Base_API_C {
 
     static protected function process () {
 
@@ -9,8 +9,20 @@ abstract class Delete_Db_API_C extends Base_API_C {
         $answer = "Delete database" . ALL_EOL
                 . "---------------" . ALL_EOL;
 
-        // Ask the table manager to do the work
+        // Delete all tables
         foreach ( Table_Manager_LIB::deleteAllTables( /* Don't stop on fail */ ) as $result ) {
+
+            // Add result for user
+            $answer .= ucfirst( $result[ 'tableName' ] ) . ' : ' . ( $result[ 'error' ] ? 'Fail [' . $result[ 'error' ] . '] ***************** ' : 'Success' ) . ALL_EOL;
+        }
+
+        // Continue answer
+        $answer .= ALL_EOL
+                . "Create database" . ALL_EOL
+                . "---------------" . ALL_EOL;
+
+        // Create all tables
+        foreach ( Table_Manager_LIB::createAllTables( /* Don't stop on fail */ ) as $result ) {
 
             // Add result for user
             $answer .= ucfirst( $result[ 'tableName' ] ) . ' : ' . ( $result[ 'error' ] ? 'Fail [' . $result[ 'error' ] . '] ***************** ' : 'Success' ) . ALL_EOL;

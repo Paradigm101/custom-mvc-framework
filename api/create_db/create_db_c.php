@@ -13,7 +13,7 @@ abstract class Create_Db_API_C extends Base_API_C {
         foreach ( Table_Manager_LIB::createAllTables( /* Don't stop on fail */ ) as $result ) {
 
             // Add result for user
-            $answer .= ucfirst( $result[ 'tableName' ] ) . ' : ' . ( $result[ 'result' ] == BTM_OK ? 'Success' : 'Fail *******************************' ) . ALL_EOL;
+            $answer .= ucfirst( $result[ 'tableName' ] ) . ' : ' . ( $result[ 'error' ] ? 'Fail [' . $result[ 'error' ] . '] ***************** ' : 'Success' ) . ALL_EOL;
         }
 
         // Return answer

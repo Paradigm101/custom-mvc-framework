@@ -5,6 +5,8 @@ define('BASE_ERROR_STATUS_UNKOWN',          1);
 define('BASE_ERROR_STATUS_DUPLICATE_ENTRY', 2);
 define('BASE_ERROR_STATUS_NULL_VALUE',      3);
 define('BASE_ERROR_STATUS_NO_TABLE',        4);
+define('BASE_ERROR_STATUS_TABLE_EXISTS',    5);
+define('BASE_ERROR_STATUS_UNKNOWN_TABLE',   6);
 
 /**
  * Mother class for all models (Page, Ajax, API, ...)
@@ -29,6 +31,29 @@ abstract class Model_Base_LIB {
     // Error management for controller
     public function getLastError() {
         return $this->error;
+    }
+
+    // Error management for controller
+    public function getLastErrorForUser() {
+
+        switch ($this->error) {
+            case BASE_ERROR_STATUS_NO_ERROR:
+                return 'No error';
+            case BASE_ERROR_STATUS_UNKOWN:
+                return 'Unknown error';
+            case BASE_ERROR_STATUS_DUPLICATE_ENTRY:
+                return 'Duplicate entry';
+            case BASE_ERROR_STATUS_NULL_VALUE:
+                return "Value cannot null value";
+            case BASE_ERROR_STATUS_NO_TABLE:
+                return "Table doesn't exists";
+            case BASE_ERROR_STATUS_TABLE_EXISTS:
+                return 'Table already exists';
+            case BASE_ERROR_STATUS_UNKNOWN_TABLE:
+                return 'Unknown table';
+            default:
+                return null;
+        }
     }
 
     // DB data access for controller
@@ -66,6 +91,15 @@ abstract class Model_Base_LIB {
                   ( strpos($this->getLastDBError(), "doesn't exist") !== false ) ) {
 
             $this->error = BASE_ERROR_STATUS_NO_TABLE;
+        }
+        else if ( ( strpos($this->getLastDBError(), 'Table') !== false ) &&
+                  ( strpos($this->getLastDBError(), 'already exists') !== false ) ) {
+
+            $this->error = BASE_ERROR_STATUS_TABLE_EXISTS;
+        }
+        else if ( strpos($this->getLastDBError(), 'Unknown table') !== false ) {
+
+            $this->error = BASE_ERROR_STATUS_UNKNOWN_TABLE;
         }
         else {
             $this->error = BASE_ERROR_STATUS_UNKOWN;

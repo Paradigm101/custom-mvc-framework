@@ -9,7 +9,7 @@ abstract class Table_Manager_LIB {
 
     static private function executeCommandForAllTables( $command, $stopOnFail = false ) {
         
-        // Prepare Answer : array( array( 'name' => tableName, 'result' => BTM_OK/BTM_KO ),
+        // Prepare Answer : array( array( 'name' => tableName, 'error' => '...' ),
         //                         ... );
         $results = array();
 
@@ -21,14 +21,14 @@ abstract class Table_Manager_LIB {
             $tableClass = new $className();
 
             // Create table and get result
-            $result = $tableClass->$command();
+            $error = $tableClass->$command();
 
             // Store data in answer array
-            $results[] = array( 'tableName' => $table, 'result' => $result );
+            $results[] = array( 'tableName' => $table, 'error' => $error );
 
             // Manage stop on fail option
             if ( $stopOnFail
-              && $result == BTM_KO ) {
+              && $error ) {
 
                 return $results;
             }

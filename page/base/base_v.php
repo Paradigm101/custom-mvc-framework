@@ -45,6 +45,7 @@ abstract class Base_PAG_V {
     }
 
     // Collect data from controller and child view
+    // TBD: should be protected?
     public function assign( $name , $value ) {
 
         // Reserved data
@@ -54,9 +55,9 @@ abstract class Base_PAG_V {
              $name == 'header'    ||
              $name == 'footer' ) {
 
-        // Log and return KO
-         Log_LIB::trace("[Base_PAG_V] Trying to assign protected field in View [$name]");
-         return BPV_ASSIGN_KO;
+            // Log and return KO
+            Log_LIB::trace("[Base_PAG_V] Trying to assign protected field in View [$name]");
+            return BPV_ASSIGN_KO;
         }
 
         // Assign and return OK
@@ -76,15 +77,15 @@ abstract class Base_PAG_V {
         require 'page/base/template/top.php';
 
         // Add header if needed
-        if ( $this->data[ 'header' ] ) {
-            require 'page/' . $this->data[ 'header' ] . '/template/' . $this->data[ 'header' ] . '.php';
+        if ( $data[ 'header' ] ) {
+            require 'page/' . $data[ 'header' ] . '/template/' . $data[ 'header' ] . '.php';
         }
 
         // Add template(s)
-        foreach( $this->data[ 'templates' ] as $template ) {
+        foreach( $data[ 'templates' ] as $template ) {
 
             // Check file exists
-            if ( !file_exists( $templateFile = 'page/' . $this->data[ 'page' ] . '/template/' . $template . '.php' ) ) {
+            if ( !file_exists( $templateFile = 'page/' . $data[ 'page' ] . '/template/' . $template . '.php' ) ) {
 
                 $errorMsg = "Template file doesn't exists : $templateFile";
                 Log_LIB::trace( '[Base_PAG_V] ' . $errorMsg );
@@ -97,8 +98,8 @@ abstract class Base_PAG_V {
         }
 
         // Add footer if needed
-        if ( $this->data['footer'] ) {
-            require 'page/' . $this->data['footer'] . '/template/' . $this->data['footer'] . '.php';
+        if ( $data['footer'] ) {
+            require 'page/' . $data['footer'] . '/template/' . $data['footer'] . '.php';
         }
 
         // What is always on bottom

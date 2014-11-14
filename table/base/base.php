@@ -1,9 +1,5 @@
 <?php
 
-// For interface with this class
-define('BTM_OK', 1);
-define('BTM_KO', 2);
-
 // Mother of all table Model
 abstract class Base_TAB extends Model_Base_LIB {
 
@@ -68,25 +64,22 @@ abstract class Base_TAB extends Model_Base_LIB {
         if ( !$this->tableName ) {
 
             Log_LIB::trace('[Base_TAB] tableName has not been initialized in [' . get_called_class() . ']');
-            return BTM_KO;
+            return 'Internal error';
         }
         if ( !$this->parameters ) {
 
             Log_LIB::trace('[Base_TAB] parameters have not been initialized in [' . get_called_class() . ']');
-            return BTM_KO;
+            return 'Internal error';
         }
 
         // Execute query
         if ( !$this->query($sql) ) {
 
-            // Log error
-            Log_LIB::trace($this->getLastDBError(), "[Base_TAB] Error in query [$sql]");
-
-            return BTM_KO;
+            return $this->getLastErrorForUser();
         }
 
-        // Return OK
-        return BTM_OK;
+        // Return no error
+        return '';
     }
 
     // delete table, for controller
@@ -95,7 +88,7 @@ abstract class Base_TAB extends Model_Base_LIB {
         // Query
         $sql = 'DROP TABLE ' . $this->tableName;
 
-        // Execute query
+        // Execute query and return error
         return $this->executeQuery($sql);
     }
 
@@ -103,7 +96,7 @@ abstract class Base_TAB extends Model_Base_LIB {
     public function createTable() {
 
         // Start query
-        $sql = "CREATE TABLE IF NOT EXISTS `" . $this->tableName . '` (';
+        $sql = "CREATE TABLE `" . $this->tableName . '` (';
 
         // For each parameter, create a table field
         foreach( $this->parameters as $parameter ) {
@@ -135,15 +128,15 @@ abstract class Base_TAB extends Model_Base_LIB {
         $sql .= ') ENGINE=InnoDB DEFAULT CHARSET=latin1;';
 
         // Execute query: create table
-        $result = $this->executeQuery($sql);
+        $error = $this->executeQuery($sql);
 
         // Populate table at start if needed
-        if ( $result == BTM_OK && $this->initQuery ) {
+        if ( !$error && $this->initQuery ) {
 
-            $result = $this->executeQuery( $this->initQuery );
+            $error = $this->executeQuery( $this->initQuery );
         }
 
-        // Return result
-        return $result;
+        // Return $error
+        return $error;
     }
 }

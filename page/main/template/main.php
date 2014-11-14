@@ -1,6 +1,6 @@
 <div class="container">
     <p>
-    <table class="table table-striped table-hover table-bordered">
+    <table class="table table-striped table-hover table-bordered table-condensed">
         <thead>
             <tr>
                 <th>Page</th>
@@ -41,7 +41,7 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-striped table-hover table-bordered">
+    <table class="table table-striped table-hover table-bordered table-condensed">
         <thead>
             <tr>
                 <th>Action</th>

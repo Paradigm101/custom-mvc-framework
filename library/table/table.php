@@ -9,7 +9,7 @@ class Table_LIB {
         $header = array('data1', 'data2', 'data3', 'data4', 'data5', 'data6');
 
         // Start table
-        $toDisplay = "<table class=\"table table-striped table-hover table-bordered\">\n";
+        $toDisplay = "<table class=\"table table-striped table-hover table-bordered table-condensed\">\n";
 
         // Header
         //-------

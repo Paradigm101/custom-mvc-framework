@@ -40,11 +40,11 @@ abstract class Session_Manager_LIB {
     static private $classWithJavascript = array( 'Url_Manager_LIB' );
 
     // Page list (should be const but seems impossible to be private and const for whatever reason...)
-    static private $pages = array( array( 'fileName' => 'main',          'shortcut' => 'h', 'withCtrl' => true, 'headerTitle' => '<strong>H</strong>ome' ),
-                                   array( 'fileName' => 'bootstrapdemo', 'shortcut' => 'b', 'withCtrl' => true, 'headerTitle' => '<strong>B</strong>ootstrap' ),
-                                   array( 'fileName' => 'table',         'shortcut' => 't', 'withCtrl' => true, 'headerTitle' => '<strong>T</strong>able' ),
-                                   array( 'fileName' => 'api',           'shortcut' => 'p', 'withCtrl' => true, 'headerTitle' => 'A<strong>P</strong>I' ),
-                                   array( 'fileName' => 'about',         'shortcut' => 'a', 'withCtrl' => true, 'headerTitle' => '<strong>A</strong>bout' ) );
+    static private $pages = array( array( 'fileName' => 'main',          'shortcut' => 'h', 'withCtrl' => true, 'headerTitle' => '<strong>H</strong>ome',       'description' => 'Home page : menu' ),
+                                   array( 'fileName' => 'bootstrapdemo', 'shortcut' => 'b', 'withCtrl' => true, 'headerTitle' => '<strong>B</strong>ootstrap',  'description' => 'Bootstrap demonstration page' ),
+                                   array( 'fileName' => 'table',         'shortcut' => 't', 'withCtrl' => true, 'headerTitle' => '<strong>T</strong>able',      'description' => 'Table demonstration page' ),
+                                   array( 'fileName' => 'api',           'shortcut' => 'p', 'withCtrl' => true, 'headerTitle' => 'A<strong>P</strong>I',        'description' => 'API access' ),
+                                   array( 'fileName' => 'about',         'shortcut' => 'a', 'withCtrl' => true, 'headerTitle' => '<strong>A</strong>bout',      'description' => 'About page : my resume' ) );
 
     // Get page list for user
     static public function getUserPages() {

@@ -9,7 +9,7 @@
 // Get javascript from back-end
 //-----------------------------
 
-<?= Session_Manager_LIB::getJavascript() ?>
+<?= Page_Manager_LIB::getJavascriptForPage() ?>
 
         </script>
 

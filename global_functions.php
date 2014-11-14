@@ -1,10 +1,9 @@
 <?php
 
-// Convert request type from code to name
-//  to convert url to directory name
-function convertRequestTypeToName( $request_type_code ) {
+// Convert request type from code to directory
+function convertRequestCodeToDirectory( $requestTypeCode ) {
 
-    switch ( $request_type_code ) {
+    switch ( $requestTypeCode ) {
         case REQUEST_TYPE_PAGE:
             return 'page';
         case REQUEST_TYPE_AJAX:
@@ -17,37 +16,50 @@ function convertRequestTypeToName( $request_type_code ) {
             return 'table';
     }
 
+    // Log problem
+    file_put_contents(LOG_FILE, "[convertRequestCodeToDirectory] Unknown type code [$requestTypeCode]\n", FILE_APPEND);
+
     // Unknown type
-    return NULL;
+    return null;
 }
 
-// Convert request type from name to code
-function convertRequestTypeToCode( $request_type_name ) {
+// Convert request type from code to class
+function convertRequestCodeToClass( $requestTypeCode ) {
 
-    switch ( strtolower($request_type_name) ) {
-        case 'page':
+    // Simple transformation
+    return strtoupper( substr( convertRequestCodeToDirectory( $requestTypeCode ), 0, 3 ) );
+}
+
+// Convert request type from class to code
+function convertRequestClassToCode( $requestTypeClass ) {
+
+    switch ( strtolower($requestTypeClass) ) {
+        case 'pag':
             return REQUEST_TYPE_PAGE;
-        case 'ajax':
+        case 'aja':
             return REQUEST_TYPE_AJAX;
         case 'api':
             return REQUEST_TYPE_API;
-        case 'library':
+        case 'lib':
             return REQUEST_TYPE_LIBRARY;
-        case 'table':
+        case 'tab':
             return REQUEST_TYPE_TABLE;
     }
 
+    // Log problem
+    file_put_contents(LOG_FILE, "[convertRequestClassToCode] Unknown request [$requestTypeClass]\n", FILE_APPEND);
+
     // Unknown type
-    return NULL;
+    return null;
 }
 
-// Get file from a class name, for autoload and security purpose
+// Get file to load a class
 //      className = <Module>_<RequestType>_<Complement>
 //      Modules can have underscore(s)
 //      Request Type : PAG, AJA, API, LIB, TAB
 //      Complement: if request type is PAG, AJA, API then _M, _V, _C
 //           else can be empty or anything except a request type (PAG, AJA, API, LIB, TAB)
-function getFileForClass( $className, $isSecurity = false ) {
+function getFileForClass( $className ) {
 
     // Parse out class name
     $exploded = explode('_', $className);
@@ -55,55 +67,33 @@ function getFileForClass( $className, $isSecurity = false ) {
     // Retrieve last element
     $last = strtolower( array_pop($exploded) );
 
-    // Not a controller => no security file
-    if ( $isSecurity && $last != 'c' ) {
-
-        return null;
-    }
-
     // If last element is a request type, no complement
-    if ( in_array($last, array('pag', 'aja', 'api', 'lib', 'tab'))) {
+    if ( in_array($last, array('lib', 'tab'))) {
 
-        $complement = '';
-        $requestType = $last;
+        $complement       = '';
+        $requestTypeClass = $last;
     }
     // Last element is the complement and next retrive request type
     else {
-        $complement  = $last;
-        $requestType = strtolower( array_pop($exploded) );
+        $complement       = $last;
+        $requestTypeClass = strtolower( array_pop($exploded) );
     }
 
     // Retrieve module name (can have underscores)
     $module = strtolower( implode('_', $exploded) );
 
-    // Convert request type into folder name
-    switch ( $requestType ) {
-        case 'pag': $requestTypeName = 'page';       break;
-        case 'aja': $requestTypeName = 'ajax';       break;
-        case 'api': $requestTypeName = 'api';        break;
-        case 'lib': $requestTypeName = 'library';    break;
-        case 'tab': $requestTypeName = 'table';      break;
-        default:
-            file_put_contents(LOG_FILE, "[getFileFromClass] Unknown request type [$requestType] for [$className]\n", FILE_APPEND);
-            return null;
-    }
+    // Get request code
+    $requestTypeCode = convertRequestClassToCode($requestTypeClass);
 
     // Complement
-    switch ( $requestCode = convertRequestTypeToCode( $requestTypeName ) ) {
+    switch ( $requestTypeCode ) {
 
         // Case MVC
         case REQUEST_TYPE_PAGE:
         case REQUEST_TYPE_AJAX:
         case REQUEST_TYPE_API:
-            
-            // Case security file
-            if ( $isSecurity && $last == 'c' ) {
 
-                $fileName = $module . '.xml';
-            }
-            else {
-                $fileName = $module . '_' . $complement . '.php';
-            }
+            $fileName = $module . '_' . $complement . '.php';
             break;
 
         // Other case, default file name is module else name is complement
@@ -117,10 +107,26 @@ function getFileForClass( $className, $isSecurity = false ) {
             }
             break;
         default:
-            file_put_contents(LOG_FILE, "[getFileFromClass] Unknown request code [$requestCode] for request [$requestTypeName] in [$className]\n", FILE_APPEND);
+            file_put_contents(LOG_FILE, "[getFileForClass] Unknown request code [$requestTypeCode] for class [$className]\n", FILE_APPEND);
             return null;
     }
 
+    // Get directory
+    $directory = convertRequestCodeToDirectory($requestTypeCode);
+
     // At last, return file name
-    return $requestTypeName . '/' . $module . '/' . $fileName;
+    return $directory . '/' . $module . '/' . $fileName;
+}
+
+// Get security xml file associated with class (only for controllers)
+function getSecurityFileForClass( $className ) {
+
+    // Not a controller, no security file
+    if ( substr( $className, -2, 2 ) != '_C' ) {
+
+        return null;
+    }
+
+    // Return xml file
+    return str_replace( '_c.php', '.xml', getFileForClass($className) );
 }

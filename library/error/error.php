@@ -3,9 +3,9 @@
 // Manage error according to the type of request
 abstract class Error_LIB {
 
-    static public function process( $message = '', $request_type = REQUEST_TYPE_PAGE ) {
+    static public function process( $message = '', $requestTypeCode = REQUEST_TYPE_PAGE ) {
 
-        switch ( $request_type ) {
+        switch ( $requestTypeCode ) {
 
             // Problem when loading a Page/Ajax/Api
             case REQUEST_TYPE_PAGE:
@@ -13,7 +13,7 @@ abstract class Error_LIB {
             case REQUEST_TYPE_API:
 
                 // Getting error management class according to request type
-                $errorClass = 'Error_' . strtoupper( substr( convertRequestTypeToName($request_type), 0, 3 ) . '_C' );
+                $errorClass = 'Error_' . convertRequestCodeToClass($requestTypeCode) . '_C';
 
                 // Launch error page for user
                 $errorClass::setMessage($message);

@@ -164,7 +164,7 @@
 
               <!-- Menu -->
               <ul class="nav navbar-nav">
-                  <?php foreach (Session_Manager_LIB::getUserPages() as $page ) {
+                  <?php foreach (Page_Manager_LIB::getUserPages() as $page ) {
                         echo '<li><a href="' . Url_Manager_LIB::getUrlForRequest($page['fileName']) . '">' . $page['headerTitle'] . '</a></li>' . "\n";
                     } ?>
               </ul>

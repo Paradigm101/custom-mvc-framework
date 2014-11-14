@@ -10,7 +10,7 @@
         </thead>
         <tbody>
             <?php
-            foreach( Session_Manager_LIB::getUserPages() as $page ) {
+            foreach( Page_Manager_LIB::getUserPages() as $page ) {
             ?>
             <tr>
                 <td><?= $page['headerTitle'] ?></td>

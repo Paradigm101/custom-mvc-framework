@@ -95,22 +95,20 @@ Session_Manager_LIB::initSession();
 
 // Get request type (no default)
 //------------------------------
-$requestType = strtolower(Url_Manager_LIB::getRequestParam('rt'));
+$requestTypeCode = strtolower(Url_Manager_LIB::getRequestParam('rt'));
 
 // Wrong request type: log hacker
-if ( !(in_array($requestType, array(null, REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
+if ( !(in_array($requestTypeCode, array(null, REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
 
     // Log error
-    Log_LIB::trace("[INDEX] Wrong request type [$requestType] from [" . Session_Manager_LIB::getUserIP() . "]");
+    Log_LIB::trace("[INDEX] Wrong request type [$requestTypeCode] from [" . Session_Manager_LIB::getUserIP() . "]");
 }
 
 // Wrong or no request type means page
-if ( !(in_array($requestType, array(REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
+if ( !(in_array($requestTypeCode, array(REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
 
-    $requestType = REQUEST_TYPE_PAGE;
+    $requestTypeCode = REQUEST_TYPE_PAGE;
 }
-
-$requestTypeName = convertRequestTypeToName($requestType);
 
 // Get request name
 //-----------------
@@ -120,7 +118,7 @@ $requestName = strtolower(Url_Manager_LIB::getRequestParam('rn'));
 if ( !$requestName || $requestName == 'base' ) {
 
     // Default page
-    if ( $requestType == REQUEST_TYPE_PAGE ) {
+    if ( $requestTypeCode == REQUEST_TYPE_PAGE ) {
         $requestName = DEFAULT_PAGE;
     }
     else {
@@ -129,14 +127,16 @@ if ( !$requestName || $requestName == 'base' ) {
     }
 }
 
+$directory = convertRequestCodeToDirectory($requestTypeCode);
+
 // Controller file doesn't exist
-if ( !( file_exists( $file = $requestTypeName . '/' . $requestName . '/' . $requestName . '_c.php' ) ) ) {
+if ( !( file_exists( $file = $directory . '/' . $requestName . '/' . $requestName . '_c.php' ) ) ) {
 
     // Launch the user error answer: page/ajax/api
     Error_LIB::process("The service you are trying to access doesn't exist", $requestType);
 
     // Trace hacker
-    Log_LIB::trace("[INDEX] File does NOT exist [$file] for request [$requestName] of type [$requestTypeName] from IP [" . Session_Manager_LIB::getUserIP() . ']');
+    Log_LIB::trace("[INDEX] File does NOT exist [$file] for request [$requestName] of type [$requestTypeCode] from IP [" . Session_Manager_LIB::getUserIP() . ']');
 
     // And leave
     exit();
@@ -146,13 +146,13 @@ if ( !( file_exists( $file = $requestTypeName . '/' . $requestName . '/' . $requ
 require_once $file;
 
 // Controller doesn't exist
-if ( !( class_exists( $className = ucfirst($requestName) . '_' . strtoupper( substr( $requestTypeName, 0, 3 ) ) . '_C' ) ) ) {
+if ( !( class_exists( $className = ucfirst($requestName) . '_' . convertRequestCodeToClass($requestTypeCode) . '_C' ) ) ) {
 
     // Launch the user error page
     Error_LIB::process("Something wrong happened, try again later", $requestType);
 
     // Trace the missing class
-    Log_LIB::trace("[INDEX] Controller '$className' doesn't exist in file '$file'");
+    Log_LIB::trace("[INDEX] Controller [$className] doesn't exist in file [$file]");
 
     // And leave
     exit();
@@ -160,10 +160,10 @@ if ( !( class_exists( $className = ucfirst($requestName) . '_' . strtoupper( sub
 
 // Manage security
 //----------------
-if ( !Session_Manager_LIB::hasAccess( $className ) ) {
+if ( !Session_Manager_LIB::hasAccess( $requestName, $requestTypeCode ) ) {
 
     // Launch the user error page
-    Error_LIB::process("You do not have access to this service", $requestType);
+    Error_LIB::process("You do not have access to this service", $requestTypeCode);
 
     // Trace the missing class
     Log_LIB::trace("[INDEX] User try to access forbidden service [$className] IP [" . Session_Manager_LIB::getUserIP() . "]");

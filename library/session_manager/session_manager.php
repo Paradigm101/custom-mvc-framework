@@ -36,78 +36,6 @@ abstract class Session_Manager_LIB {
         return ( static::$idUser ? true : false );
     }
 
-    // To send javascript to client
-    static private $classWithJavascript = array( 'Url_Manager_LIB' );
-
-    // Page list (should be const but seems impossible to be private and const for whatever reason...)
-    static private $pages = array( array( 'fileName' => 'main',          'shortcut' => 'h', 'withCtrl' => true, 'headerTitle' => '<strong>H</strong>ome',       'description' => 'Home page : menu' ),
-                                   array( 'fileName' => 'bootstrapdemo', 'shortcut' => 'b', 'withCtrl' => true, 'headerTitle' => '<strong>B</strong>ootstrap',  'description' => 'Bootstrap demonstration page' ),
-                                   array( 'fileName' => 'table',         'shortcut' => 't', 'withCtrl' => true, 'headerTitle' => '<strong>T</strong>able',      'description' => 'Table demonstration page' ),
-                                   array( 'fileName' => 'api',           'shortcut' => 'p', 'withCtrl' => true, 'headerTitle' => 'A<strong>P</strong>I',        'description' => 'API access' ),
-                                   array( 'fileName' => 'about',         'shortcut' => 'a', 'withCtrl' => true, 'headerTitle' => '<strong>A</strong>bout',      'description' => 'About page : my resume' ) );
-
-    // Get page list for user
-    static public function getUserPages() {
-
-        // Initialize accessible pages
-        $pages = array();
-
-        // For every existing page (safeClone to avoid any changes)
-        foreach( Tools_LIB::safeClone(self::$pages) as $page ) {
-
-            // check access
-            if ( static::hasAccess($page['fileName'] . '_PAG_C') ) {
-
-                // Add page to the accessible pages
-                $pages[] = $page;
-            }
-        }
-
-        // Send pages
-        return $pages;
-    }
-
-    // Send javascript to client
-    static public function getJavascript() {
-
-        $script = "";
-
-        // Constantes
-        //-----------
-        $script .= "// Constantes\n"
-                . "//-----------\n"
-                . "REQUEST_TYPE_AJAX = " . REQUEST_TYPE_AJAX . ";\n"
-                . "REQUEST_TYPE_PAGE = " . REQUEST_TYPE_PAGE . ";\n"
-                . "\n";
-
-        // Retrieve javascript from each subscribed class
-        foreach ( static::$classWithJavascript as $class ) {
-            $script .= $class::getJavascript() . "\n\n";
-        }
-
-        // Add shortcuts
-        //--------------
-        $script .= "// Shortcuts\n"
-                . "//----------\n"
-                . "$(function () {\n"
-                .  "    $(document).keypress(function(e) {\n";
-
-        foreach ( static::getUserPages() as $page ) {
-
-            $shortcutCondition = 'e.which == ' . ord( $page['shortcut'] ) . ( $page['withCtrl'] ? ' && e.ctrlKey' : '' );
-
-            $script .= "        if ( $shortcutCondition ) {\n"
-                    . "             e.preventDefault();\n"
-                    . "             $(location).attr('href', '" . Url_Manager_LIB::getUrlForRequest( $page['fileName'] ) . "' );\n"
-                    . "         }\n";
-        }
-
-        $script .= "    });\n"
-                . "});\n\n";
-
-        return $script;
-    }
-
     // Getting user's IP address
     static public function getUserIP() {
 
@@ -120,10 +48,13 @@ abstract class Session_Manager_LIB {
     }
 
     // Security check
-    static public function hasAccess( $className ) {
+    static public function hasAccess( $requestName, $requestTypeCode = REQUEST_TYPE_PAGE ) {
+
+        // Getting class Name
+        $className = $requestName . '_' . convertRequestCodeToClass( $requestTypeCode ) . '_C';
 
         // Get XML security file
-        $securityFile = getFileForClass($className, true /* security file */ );
+        $securityFile = getSecurityFileForClass($className);
 
         // File doesn't exist, allow everyone
         if ( !is_file( $securityFile )) {

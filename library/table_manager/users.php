@@ -1,7 +1,7 @@
 <?php
 
 // Table users
-class Users_TAB extends Base_TAB {
+class Table_manager_LIB_Users extends Table_manager_LIB_Base {
 
     // Table data
     protected function initTable() {

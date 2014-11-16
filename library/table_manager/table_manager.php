@@ -17,7 +17,7 @@ abstract class Table_Manager_LIB {
         foreach( static::$tables as $table ) {
 
             // Get table class
-            $className = ucfirst( $table ) . '_TAB';
+            $className = 'Table_Manager_LIB_' . ucfirst( $table );
             $tableClass = new $className();
 
             // Create table and get result

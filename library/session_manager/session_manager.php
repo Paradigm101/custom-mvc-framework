@@ -14,6 +14,9 @@ abstract class Session_Manager_LIB {
     // Starting the session, should be done before the page creation (like in the index...)
     static public function initSession() {
 
+        // Set starting time of page processing now!
+        Page_Manager_LIB::setStartingTime();
+
         // Start PHP session
         session_start();
 
@@ -53,8 +56,8 @@ abstract class Session_Manager_LIB {
         // Getting class Name
         $className = $requestName . '_' . convertRequestCodeToClass( $requestTypeCode ) . '_C';
 
-        // Get XML security file
-        $securityFile = getSecurityFileForClass($className);
+        // Get xml security file
+        $securityFile = str_replace( '_c.php', '.xml', getFileForClass($className) );
 
         // File doesn't exist, allow everyone
         if ( !is_file( $securityFile )) {

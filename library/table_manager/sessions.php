@@ -1,7 +1,7 @@
 <?php
 
 // Table sessions
-class Sessions_TAB extends Base_TAB {
+class Table_manager_LIB_Sessions extends Table_manager_LIB_Base {
 
     // Table data
     protected function initTable() {

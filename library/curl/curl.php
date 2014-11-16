@@ -151,72 +151,52 @@ abstract class Curl_LIB {
      */
     public static function send( $url, $post_values, $resetOptions = true ) {
 
-        // We can use curl, yeah!
-        if ( function_exists( 'curl_init' ) ) {
-            
-            // Initialise and set URL
-            $connection = curl_init( $url );
+        // Initialise and set URL
+        $connection = curl_init( $url );
 
-            // Set POST variables
-            curl_setopt( $connection, CURLOPT_POSTFIELDS, $post_values );
+        // Set POST variables
+        curl_setopt( $connection, CURLOPT_POSTFIELDS, $post_values );
 
-            // Set timeout
-            if ( static::$timeout !== null )
-                curl_setopt( $connection, CURLOPT_TIMEOUT, static::$timeout );
+        // Set timeout
+        if ( static::$timeout !== null ) {
 
-            // Set user and password
-            if ( static::$user !== null )
-                curl_setopt( $connection, CURLOPT_USERPWD, static::$user . ':' . static::$password );
-
-            // Set headers
-            if ( static::$headers !== null ) {
-                curl_setopt( $connection, CURLOPT_HTTPHEADER, $headers );
-            }
-
-            // Set to TRUE to return the transfer as a string of the return value of curl_exec() instead of outputting it out directly.
-            curl_setopt( $connection, CURLOPT_RETURNTRANSFER, 1 );
-
-            // do not verify certificate
-            if ( has_feature('TRAINING_HACKS') ) {
-                curl_setopt( $connection, CURLOPT_SSL_VERIFYPEER, 0 );
-            }
-
-            // Doing the stuff and storing the result
-            $result = curl_exec( $connection );
-
-            // Store error number
-            // because after, connection will be closed and it will be too late
-            static::$curlErrorNumber = curl_errno( $connection );
-
-            // Closing connection
-            curl_close( $connection );
+            curl_setopt( $connection, CURLOPT_TIMEOUT, static::$timeout );
         }
-        else {
-            $args = '';
 
-            // Timeout
-            if ( static::$timeout !== null )
-                $args .= '--connect-timeout ' . static::$timeout;
+        // Set user and password
+        if ( static::$user !== null ) {
 
-            // allow insecure/training/self signed certificates
-            if ( has_feature('TRAINING_HACKS') )
-                $args .= ' --insecure ';
-
-            exec( CLIENT_CURL_PATH . ' '
-                . $args . ' '
-                . '-d "' . $post_values . '" '
-                . $url,
-                  $result );
-
-            // Choise between returning all or just the first item
-            if ( static::$returnAll )
-                $result = implode( '', $result );
-            else
-                $result = $result[0];
+            curl_setopt( $connection, CURLOPT_USERPWD, static::$user . ':' . static::$password );
         }
+
+        // Set headers
+        if ( static::$headers !== null ) {
+
+            curl_setopt( $connection, CURLOPT_HTTPHEADER, static::$headers );
+        }
+
+        // Set to TRUE to return the transfer as a string of the return value of curl_exec() instead of outputting it out directly.
+        curl_setopt( $connection, CURLOPT_RETURNTRANSFER, 1 );
+
+        // Get time for page stats
+        $timeBefore = microtime(true);
+
+        // Doing the stuff and storing the result
+        $result = curl_exec( $connection );
+
+        // Store time spent waiting for server answer
+        Page_Manager_LIB::addTimeInCurl(microtime(true) - $timeBefore);
+
+        // Store error number
+        // because after, connection will be closed and it will be too late
+        static::$curlErrorNumber = curl_errno( $connection );
+
+        // Closing connection
+        curl_close( $connection );
 
         // Work is done, reseting all options
         if ( $resetOptions ) {
+
             static::$user      = null;
             static::$password  = null;
             static::$headers   = null;
@@ -232,12 +212,16 @@ abstract class Curl_LIB {
     public static function getLastError() {
 
         // No error (0) or nothing set yet (null)
-        if ( empty( static::$curlErrorNumber ) )
+        if ( empty( static::$curlErrorNumber ) ) {
+
             return '';
+        }
 
         // Error found
-        if ( array_key_exists( static::$curlErrorNumber, static::$curlErrorCodes ) )
+        if ( array_key_exists( static::$curlErrorNumber, static::$curlErrorCodes ) ) {
+
             return static::$curlErrorCodes[ static::$curlErrorNumber ];
+        }
 
         // Unknown error found
         return 'CURL_UNKNOWN_ERROR : [' . static::$curlErrorNumber . ']';

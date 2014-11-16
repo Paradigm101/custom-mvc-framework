@@ -1,14 +1,13 @@
 
 <!-- footer -->
-<footer>
+<footer class="navbar navbar-fixed-bottom">
     <div class="container">
         <div class="row">
             <div class="col-sm-2">
                 <h6>Copyright &copy; Laurent THIERY</h6>
             </div><!-- end col-sm-2 -->
             <div class="col-sm-8">
-                <h6>About</h6>
-                <p><?= LOREM ?></p>
+                <h6><?= Page_Manager_LIB::getPageGeneration() ?></h6>
             </div><!-- end col-sm-8 -->
             <div class="col-sm-2">
                 <h6>Follow me</h6>

@@ -4,6 +4,7 @@ abstract class Page_Manager_LIB {
 
     // Page list (should be const but seems impossible to be private and const for whatever reason...)
     static private $pages = array( array( 'fileName' => 'main',          'shortcut' => 'h', 'withCtrl' => true, 'headerTitle' => '<strong>H</strong>ome',       'description' => 'Home page : menu' ),
+                                   array( 'fileName' => 'tv_show',       'shortcut' => 's', 'withCtrl' => true, 'headerTitle' => 'TV <strong>s</strong>how',    'description' => 'TV shows' ),
                                    array( 'fileName' => 'bootstrapdemo', 'shortcut' => 'b', 'withCtrl' => true, 'headerTitle' => '<strong>B</strong>ootstrap',  'description' => 'Bootstrap demonstration page' ),
                                    array( 'fileName' => 'table',         'shortcut' => 't', 'withCtrl' => true, 'headerTitle' => '<strong>T</strong>able',      'description' => 'Table demonstration page' ),
                                    array( 'fileName' => 'api',           'shortcut' => 'p', 'withCtrl' => true, 'headerTitle' => 'A<strong>P</strong>I',        'description' => 'API access' ),
@@ -36,7 +37,9 @@ abstract class Page_Manager_LIB {
         return $pages;
     }
 
-    // To send javascript to client
+    /****************************************************************************************************************/
+    
+    // Manage javascript to inject in page
     static private $classWithJavascript = array( 'Url_Manager_LIB' );
 
     // Send javascript to client
@@ -78,5 +81,48 @@ abstract class Page_Manager_LIB {
                 . "});\n\n";
 
         return $script;
+    }
+
+    /****************************************************************************************************************/
+
+    // Manage time spent in DB for page display
+    static private $DBTime = 0;
+
+    static public function addTimeInDB( $time ) {
+        static::$DBTime += $time;
+    }
+
+    // Starting time in PHP
+    static private $pageStartingTime = 0;
+
+    static public function setStartingTime() {
+        static::$pageStartingTime = microtime( true );
+    }
+
+    // Time spent waiting for another server
+    static private $curlTime = 0;
+
+    // Add time spent waiting for another server
+    static public function addTimeInCurl( $time ) {
+
+        static::$curlTime += $time;
+    }
+    
+    // Get page generation time (in PHP/DB)
+    static public function getPageGeneration() {
+
+        // Get page generation time
+        $generationTime = microtime( true ) - static::$pageStartingTime;
+        
+        // Get time spent in PHP (i.e. not in DB nor waiting for 3rd party server)
+        $PHPTime = $generationTime - static::$DBTime - static::$curlTime;
+
+        // Get percentages for display
+        $PHPPercent  = round( ( $PHPTime * 100 ) / $generationTime );
+        $DBPercent   = round( ( static::$DBTime * 100 ) / $generationTime );
+        $CurlPercent = round( ( static::$curlTime * 100 ) / $generationTime );
+
+        // Send data to display
+        return 'Page Generation Time: ' . round($generationTime, 3) . "s (PHP: $PHPPercent% - SQL: $DBPercent%" . ( static::$curlTime ? " - CURL: $CurlPercent%" : "" ) . ')';
     }
 }

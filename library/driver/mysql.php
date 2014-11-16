@@ -127,6 +127,9 @@ class Driver_LIB_Mysql {
         // Store query
         $this->query = $query;
 
+        // Get time before query (float)
+        $timeBefore = microtime( true );
+
         /** Everything is OK, do the job
          *  Result is equal to:
          *      false on failure
@@ -134,6 +137,7 @@ class Driver_LIB_Mysql {
          *      true else
          */
         try {
+            // Launch query
             $result = mysqli_query( $this->connection, $query );
         }
         // Unknown exception
@@ -143,6 +147,9 @@ class Driver_LIB_Mysql {
             Log_LIB::trace("[Driver_LIB_Mysql] Exception in query [$query] : " . $this->error);
             return false;
         }
+
+        // Store time spent in DB (float precision)
+        Page_Manager_LIB::addTimeInDB( microtime( true ) - $timeBefore );
 
         // Problem
         if ( $result === false ) {

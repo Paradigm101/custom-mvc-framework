@@ -12,12 +12,7 @@ function convertRequestCodeToDirectory( $requestTypeCode ) {
             return 'api';
         case REQUEST_TYPE_LIBRARY:
             return 'library';
-        case REQUEST_TYPE_TABLE:
-            return 'table';
     }
-
-    // Log problem
-    file_put_contents(LOG_FILE, "[convertRequestCodeToDirectory] Unknown type code [$requestTypeCode]\n", FILE_APPEND);
 
     // Unknown type
     return null;
@@ -42,12 +37,7 @@ function convertRequestClassToCode( $requestTypeClass ) {
             return REQUEST_TYPE_API;
         case 'lib':
             return REQUEST_TYPE_LIBRARY;
-        case 'tab':
-            return REQUEST_TYPE_TABLE;
     }
-
-    // Log problem
-    file_put_contents(LOG_FILE, "[convertRequestClassToCode] Unknown request [$requestTypeClass]\n", FILE_APPEND);
 
     // Unknown type
     return null;
@@ -55,35 +45,29 @@ function convertRequestClassToCode( $requestTypeClass ) {
 
 // Get file to load a class
 //      className = <Module>_<RequestType>_<Complement>
-//      Modules can have underscore(s)
-//      Request Type : PAG, AJA, API, LIB, TAB
+//      Modules and Complements can have underscore(s)
+//      Request Type : PAG, AJA, API, LIB (reserved keywords)
 //      Complement: if request type is PAG, AJA, API then _M, _V, _C
-//           else can be empty or anything except a request type (PAG, AJA, API, LIB, TAB)
+//           else can be any value or empty
 function getFileForClass( $className ) {
 
     // Parse out class name
     $exploded = explode('_', $className);
 
-    // Retrieve last element
-    $last = strtolower( array_pop($exploded) );
+    // Create complement
+    $complement = array();
+    
+    // While last element is not a class type, store it in complement
+    while ( ( $requestTypeCode = convertRequestClassToCode( $last = strtolower( array_pop($exploded) ) ) ) == null ) {
 
-    // If last element is a request type, no complement
-    if ( in_array($last, array('lib', 'tab'))) {
+        $complement[] = $last;
+    }
 
-        $complement       = '';
-        $requestTypeClass = $last;
-    }
-    // Last element is the complement and next retrive request type
-    else {
-        $complement       = $last;
-        $requestTypeClass = strtolower( array_pop($exploded) );
-    }
+    // Build complement
+    $complement = strtolower( implode('_', $complement) );
 
     // Retrieve module name (can have underscores)
     $module = strtolower( implode('_', $exploded) );
-
-    // Get request code
-    $requestTypeCode = convertRequestClassToCode($requestTypeClass);
 
     // Complement
     switch ( $requestTypeCode ) {
@@ -98,7 +82,6 @@ function getFileForClass( $className ) {
 
         // Other case, default file name is module else name is complement
         case REQUEST_TYPE_LIBRARY:
-        case REQUEST_TYPE_TABLE:
             if ( $complement ) {
                 $fileName = $complement . '.php';
             }
@@ -112,21 +95,12 @@ function getFileForClass( $className ) {
     }
 
     // Get directory
-    $directory = convertRequestCodeToDirectory($requestTypeCode);
+    if ( ( $directory = convertRequestCodeToDirectory($requestTypeCode) ) == null ) {
 
-    // At last, return file name
-    return $directory . '/' . $module . '/' . $fileName;
-}
-
-// Get security xml file associated with class (only for controllers)
-function getSecurityFileForClass( $className ) {
-
-    // Not a controller, no security file
-    if ( substr( $className, -2, 2 ) != '_C' ) {
-
+        file_put_contents(LOG_FILE, "[getFileForClass] Can not get directory for class [$className] with request type code [$requestTypeCode]\n", FILE_APPEND);
         return null;
     }
 
-    // Return xml file
-    return str_replace( '_c.php', '.xml', getFileForClass($className) );
+    // At last, return file name
+    return $directory . '/' . $module . '/' . $fileName;
 }

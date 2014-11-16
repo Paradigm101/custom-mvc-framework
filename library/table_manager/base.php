@@ -1,7 +1,7 @@
 <?php
 
 // Mother of all table Model
-abstract class Base_TAB extends Model_Base_LIB {
+abstract class Table_manager_LIB_Base extends Model_Base_LIB {
 
     // Table name
     protected $tableName;
@@ -15,7 +15,7 @@ abstract class Base_TAB extends Model_Base_LIB {
     // Core method that define the table and must be overwritten
     protected function initTable() {
 
-        Log_LIB::trace('[Base_TAB] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
+        Log_LIB::trace('[Table_manager_LIB_Base] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
     }
 
     // Constructor: initialize table parameters
@@ -63,12 +63,12 @@ abstract class Base_TAB extends Model_Base_LIB {
 
         if ( !$this->tableName ) {
 
-            Log_LIB::trace('[Base_TAB] tableName has not been initialized in [' . get_called_class() . ']');
+            Log_LIB::trace('[Table_manager_LIB_Base] tableName has not been initialized in [' . get_called_class() . ']');
             return 'Internal error';
         }
         if ( !$this->parameters ) {
 
-            Log_LIB::trace('[Base_TAB] parameters have not been initialized in [' . get_called_class() . ']');
+            Log_LIB::trace('[Table_manager_LIB_Base] parameters have not been initialized in [' . get_called_class() . ']');
             return 'Internal error';
         }
 

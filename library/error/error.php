@@ -22,7 +22,6 @@ abstract class Error_LIB {
 
             // Other request type: log
             case REQUEST_TYPE_LIBRARY:
-            case REQUEST_TYPE_TABLE:
             default:
                 Log_LIB::trace('[Error_LIB] ' . $message);
                 break;

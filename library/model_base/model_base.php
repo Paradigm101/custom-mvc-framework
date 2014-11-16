@@ -9,7 +9,7 @@ define('BASE_ERROR_STATUS_TABLE_EXISTS',    5);
 define('BASE_ERROR_STATUS_UNKNOWN_TABLE',   6);
 
 /**
- * Mother class for all models (Page, Ajax, API, ...)
+ * Mother class for models from all controllers
  */
 abstract class Model_Base_LIB {
 

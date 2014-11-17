@@ -125,10 +125,10 @@ abstract class Model_Base_LIB {
     }
     protected function fetchNext($type = 'object') {
         
-        return $this->db->fetchNext($type = 'object');
+        return $this->db->fetchNext($type);
     }
     protected function fetchAll($type = 'object') {
         
-        return $this->db->fetchAll($type = 'object');
+        return $this->db->fetchAll($type);
     }
 }

@@ -3,54 +3,61 @@
 // Manage board display
 class Board_LIB_View {
 
+    // Data to display
     private $data;
 
-    // Constructor
-    public function __construct( $data ) {
+    // For interface
+    private $fields;
 
-        $this->data = $data;
+    // Set data
+    public function __construct( $data, $fields ) {
+
+        $this->data   = $data;
+        $this->fields = $fields;
     }
 
     // Display data
     public function display() {
 
-        // TBD: retrive data from DB through parameters
-        $header = array('data1', 'data2', 'data3', 'data4', 'data5', 'data6');
-
         // Start table
         $toDisplay = "<table class=\"table table-striped table-hover table-bordered table-condensed\">\n";
 
-        // Header
-        //-------
+        // Start header
         $toDisplay .= "<thead>\n"
                         . "<tr>\n"
                             . "<th></th>\n";
 
-        foreach( $header as $column ) {
-            $toDisplay .= "<th>$column</th>\n";
+        // Display each field title
+        foreach( $this->data[0] as $key => $value ) {
+
+            $toDisplay .= "<th>" . ucfirst( $this->fields[ $key ]['label'] ) . "</th>\n";
         }
 
+        // End header
         $toDisplay .= "</tr>\n"
                 . "</thead>\n";
 
-        // Body
-        //-----
+        // Start body
         $toDisplay .= "<tbody>\n";
 
-        // Row
-        for( $i = 0; $i < 30; $i++ ) {
+        // Display all rows
+        foreach( $this->data as $key => $row ) {
 
             // Start with the checkbox
             $toDisplay .= "<tr>\n"
-                            . "<td><input type=\"checkbox\" id=\"checkbox_$i\"></td>\n";
+                            . "<td><input type=\"checkbox\" id=\"checkbox_$key\"></td>\n";
 
-            foreach( $header as $key => $column ) {
-                $toDisplay .= "<td>" . ( $i + 1 ) . ( $key + 1 ) * rand(1, 5) . "</td>\n";
+            // Display each fields
+            foreach( $row as $value ) {
+
+                $toDisplay .= "<td>" . $value . "</td>\n";
             }
 
+            // End row
             $toDisplay .= "</tr>\n";
         }
 
+        // End body
         $toDisplay .= "</tbody>\n";
 
         // End table

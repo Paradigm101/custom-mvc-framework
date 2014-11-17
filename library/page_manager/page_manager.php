@@ -7,7 +7,6 @@ abstract class Page_Manager_LIB {
     static private $pages = array( array( 'fileName' => 'main',          'shortcut' => 'h', 'withCtrl' => true, 'headerTitle' => '<strong>H</strong>ome',       'description' => 'Home page : menu' ),
                                    array( 'fileName' => 'tv_show',       'shortcut' => 's', 'withCtrl' => true, 'headerTitle' => 'TV <strong>s</strong>how',    'description' => 'TV shows' ),
                                    array( 'fileName' => 'bootstrapdemo', 'shortcut' => 'b', 'withCtrl' => true, 'headerTitle' => '<strong>B</strong>ootstrap',  'description' => 'Bootstrap demonstration page' ),
-                                   array( 'fileName' => 'table',         'shortcut' => 't', 'withCtrl' => true, 'headerTitle' => '<strong>T</strong>able',      'description' => 'Table demonstration page' ),
                                    array( 'fileName' => 'api',           'shortcut' => 'p', 'withCtrl' => true, 'headerTitle' => 'A<strong>P</strong>I',        'description' => 'API access' ),
                                    array( 'fileName' => 'about',         'shortcut' => 'o', 'withCtrl' => true, 'headerTitle' => 'Ab<strong>o</strong>ut',      'description' => 'About page : my resume' ) );
 

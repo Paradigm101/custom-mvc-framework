@@ -9,7 +9,12 @@ class Tv_Show_PAG_M extends Base_PAG_M {
     public function getQueryForBoard() {
 
         // The nice query
-        $query = 'SELECT * FROM users;';
+        $query = 'SELECT '
+                . '     id      `id@roles`, '
+                . '     name    `name@roles`, '
+                . '     label   `label@roles` '
+                . 'FROM '
+                . '     roles;';
 
         return $query;
     }

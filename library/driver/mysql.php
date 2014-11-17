@@ -121,6 +121,14 @@ class Driver_LIB_Mysql {
      */
     public function queryDB( $query ) {
 
+        // Empty query
+        if ( !$query ) {
+
+            $this->error = 'Empty query';
+            Log_LIB::traceBT("[Driver_LIB_Mysql] Error empty query");
+            return false;
+        }
+
         // Free existing results
         $this->freeResult();
 
@@ -193,9 +201,13 @@ class Driver_LIB_Mysql {
 
                 // Convert data for better usage
                 $i = 0;
-                foreach( $tmpArray as $key => $value )
-                    if ( $i++ % 2 )
+                foreach( $tmpArray as $key => $value ) {
+
+                    if ( $i++ % 2 ) {
+
                         $toReturn[ $key ] = $value;
+                    }
+                }
                 break;
 
             case 'object':
@@ -204,8 +216,10 @@ class Driver_LIB_Mysql {
         }
 
         // Decrease rows and Free memory if no results left
-        if ( --$this->rows == 0 )
+        if ( --$this->rows == 0 ) {
+
             $this->freeResult();
+        }
 
         // Return data
         return $toReturn;
@@ -220,8 +234,10 @@ class Driver_LIB_Mysql {
 
         $toReturn = array();
 
-        while( $this->rows )
+        while( $this->rows ) {
+
             $toReturn[] = $this->fetchNext( $type );
+        }
 
         return $toReturn;
     }

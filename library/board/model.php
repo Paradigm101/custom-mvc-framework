@@ -3,20 +3,25 @@
 // Manage data for board
 class Board_LIB_Model extends Model_Base_LIB {
 
-    // Query to get data
-    private $query;
+    // Data from DB
+    private $data;
 
-    // Constructor
+    // Constructor: retrieve data and store them
     public function __construct( $query = '' ) {
+
+        // Parent, obv
         parent::__construct();
 
-        $this->query = $query;
+        // Query data
+        $this->query( $query );
+
+        // Set data ready to retrieve
+        $this->data = $this->fetchAll( 'array' );
     }
 
+    // Retrieve data
     public function getBoardData() {
-        
-        $this->query( $this->query );
-        
-        return $this->fetchAll();
+
+        return $this->data;
     }
 }

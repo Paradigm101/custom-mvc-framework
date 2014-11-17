@@ -84,4 +84,22 @@ abstract class Log_LIB {
         // Launch the big thing
         file_put_contents(LOG_FILE, static::coreLog($param, $title), FILE_APPEND);
     }
+
+    // Trace backtrace for debug
+    static public function traceBT($title = null) {
+
+        // Get backtrace
+        $backTrace = debug_backtrace();
+
+        // Remove first element
+        unset($backTrace[0]);
+
+        // Remove object property for lisibility
+        foreach ( $backTrace as &$element ) {
+            unset( $element['object'] );
+        }
+
+        // Trace backtrace
+        static::trace($backTrace, $title);
+    }
 }

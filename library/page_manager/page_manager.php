@@ -1,5 +1,6 @@
 <?php
 
+// Page Manager: manage data displayed in the requested page        
 abstract class Page_Manager_LIB {
 
     // Page list (should be const but seems impossible to be private and const for whatever reason...)

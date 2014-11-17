@@ -9,8 +9,12 @@ abstract class Tv_Show_PAG_C extends Base_PAG_C {
     static protected function process() {
 
         // Do stuff
-        $list = static::$model->getTVShowList();
+        $query = static::$model->getQueryForBoard();
 
-        static::assign('list', $list);
+        // Create board
+        $board = new Board_LIB( $query );
+
+        // Send board to front
+        static::assign('board', $board);
     }
 }

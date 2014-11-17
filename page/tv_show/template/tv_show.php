@@ -3,6 +3,6 @@
 <div class="container">
     <p>
         <br>
-        <?php Log_LIB::show( $data['list'] ); ?>
+        <?php echo $data['board']->display(); ?>
     </p>
 </div>

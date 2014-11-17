@@ -1,8 +1,17 @@
 <?php
 
-// Providing a nice table
-class Table_LIB {
+// Manage board display
+class Board_LIB_View {
 
+    private $data;
+
+    // Constructor
+    public function __construct( $data ) {
+
+        $this->data = $data;
+    }
+
+    // Display data
     public function display() {
 
         // TBD: retrive data from DB through parameters

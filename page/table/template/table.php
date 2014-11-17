@@ -2,5 +2,5 @@
 <!-- Body -->
 <div class="container">
     <br>
-    <?= $data['table']->display(); ?>
+    <?= $data['board']->display(); ?>
 </div>

@@ -4,16 +4,31 @@
 abstract class Page_LIB {
 
     // Page list (should be const but seems impossible to be private and const for whatever reason...)
-    static private $pages = array( array( 'fileName' => 'main',          'shortcut' => 'h', 'withCtrl' => true, 'headerTitle' => '<strong>H</strong>ome',       'description' => 'Home page : menu' ),
-                                   array( 'fileName' => 'tv_show',       'shortcut' => 's', 'withCtrl' => true, 'headerTitle' => 'TV <strong>s</strong>how',    'description' => 'TV shows' ),
-                                   array( 'fileName' => 'bootstrapdemo', 'shortcut' => 'b', 'withCtrl' => true, 'headerTitle' => '<strong>B</strong>ootstrap',  'description' => 'Bootstrap demonstration page' ),
-                                   array( 'fileName' => 'api',           'shortcut' => 'p', 'withCtrl' => true, 'headerTitle' => 'A<strong>P</strong>I',        'description' => 'API access' ),
-                                   array( 'fileName' => 'about',         'shortcut' => 'o', 'withCtrl' => true, 'headerTitle' => 'Ab<strong>o</strong>ut',      'description' => 'About page : my resume' ),
-                                   array( 'fileName' => 'commands',      'shortcut' => 'm', 'withCtrl' => true, 'headerTitle' => 'Co<strong>m</strong>mands',   'description' => 'Allow user the send commands, mainly manage database' ) );
+    static private $pages;
 
     // Return a safe copy of pages to be sure it is not modified by the system
+    // to be used by every internal methods
     static public function getAllPages() {
-        
+
+        // Initialize pages if needed
+        if ( !static::$pages ) {
+
+            // Get config file for pages
+            $csvFile = fopen( SITE_ROOT . '/library/page/page.csv', 'r' );
+
+            // Parsing file and storing data
+            while ( $data = fgetcsv( $csvFile ) ) {
+
+                // Add page
+                static::$pages[] = array( 'fileName'    => trim( $data[0] ),
+                                          'shortcut'    => trim( $data[1] ),
+                                          'withCtrl'    => trim( $data[2] ? true : false ),
+                                          'headerTitle' => trim( $data[3] ),
+                                          'description' => trim( $data[4] ) );
+            }
+        }
+
+        // Return only a copy to be sure it wouldn't modify by the system
         return Tools_LIB::safeClone(self::$pages);
     }
 

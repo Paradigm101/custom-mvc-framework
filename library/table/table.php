@@ -8,7 +8,7 @@ abstract class Table_LIB {
     static private $tables = array( 'users', 'sessions', 'roles' );
 
     static private function executeCommandForAllTables( $command, $stopOnFail = false ) {
-        
+
         // Prepare Answer : array( array( 'name' => tableName, 'error' => '...' ),
         //                         ... );
         $results = array();
@@ -26,9 +26,8 @@ abstract class Table_LIB {
             // Store data in answer array
             $results[] = array( 'tableName' => $table, 'error' => $error );
 
-            // Manage stop on fail option
-            if ( $stopOnFail
-              && $error ) {
+            // Stop on fail if needed
+            if ( $stopOnFail && $error ) {
 
                 return $results;
             }
@@ -37,7 +36,7 @@ abstract class Table_LIB {
         // Return results
         return $results;
     }
-    
+
     // Create all DB tables
     // TBD: manage foreign key, create after
     static public function createAllTables( $stopOnFail = false ) {

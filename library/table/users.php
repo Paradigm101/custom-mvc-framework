@@ -1,22 +1,11 @@
 <?php
 
 // Table users
-class Table_LIB_Users extends Table_LIB_Base {
+class Table_LIB_Users extends Table_LIB_Model {
 
-    // Table data
-    protected function initTable() {
+    // Table Name (mandatory)
+    protected function getTableName() {
 
-        // Name
-        $this->tableName = 'users';
-
-        // Fields
-        $this->addParameter('id',       'int',      11, false, null, true, true);
-        $this->addParameter('email',    'varchar', 100);
-        $this->addParameter('username', 'varchar', 100);
-        $this->addParameter('password', 'varchar', 100);
-        $this->addParameter('id_role',  'int',      11, false, 1 /* admin */ );
-
-        // Email is unique
-        $this->setUnique( 'email' );
+        return 'users';
     }
 }

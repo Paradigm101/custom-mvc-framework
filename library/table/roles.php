@@ -1,23 +1,17 @@
 <?php
 
-// Table users
-class Table_LIB_Roles extends Table_LIB_Base {
+// Table roles
+class Table_LIB_Roles extends Table_LIB_Model {
 
-    // Table data
-    protected function initTable() {
+    // Table Name (mandatory)
+    protected function getTableName() {
 
-        // Name
-        $this->tableName = 'roles';
+        return 'roles';
+    }
 
-        // Fields
-        $this->addParameter('id',    'int',      11, false, null, true, true);
-        $this->addParameter('name',  'varchar', 100);
-        $this->addParameter('label', 'varchar', 100);
-        
-        // Init query for config
-        $this->initQuery = "INSERT INTO roles (name, label) VALUES ('admin', 'administrator'),"
-                                                                . "('guest', 'guest'),"
-                                                                . "('role1', 'role 1'),"
-                                                                . "('role2', 'role 2');";
+    // Init: without ID
+    protected function getInitMode() {
+
+        return TLM_INIT_AUTO_WITHOUT_ID;
     }
 }

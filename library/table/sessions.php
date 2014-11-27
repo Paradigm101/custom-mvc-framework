@@ -1,17 +1,11 @@
 <?php
 
 // Table sessions
-class Table_LIB_Sessions extends Table_LIB_Base {
+class Table_LIB_Sessions extends Table_LIB_Model {
 
-    // Table data
-    protected function initTable() {
+    // Table Name (mandatory)
+    protected function getTableName() {
 
-        // Name
-        $this->tableName = 'sessions';
-
-        // Fields
-        $this->addParameter('id_session', 'varchar',    100);
-        $this->addParameter('id_user',    'int',         11);
-        $this->addParameter('login_date', 'timestamp', null, false, 'CURRENT_TIMESTAMP');
+        return 'sessions';
     }
 }

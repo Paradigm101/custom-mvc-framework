@@ -73,29 +73,19 @@ class Base_PAG_V {
      */
     public function render() {
 
-        // Preparing css/javascript files
-        foreach( $this->data['templates'] as $template ) {
+        // Add css files for every page
+        //-----------------------------
+        $this->data['css_files'] = array( 'page/base/base.css',
+                                          'page/base/bootstrap/css/bootstrap.css',
+                                          'page/base/bootstrap/css/bootstrap-theme.css' );
 
-            // Getting css file name
-            $cssFile = 'page/' . $this->data['page'] . '/' . $template . '.css';
+        // Add javascript files for every page
+        //------------------------------------
+        $this->data['script_files'] = array( 'page/base/bootstrap/bootstrap.js',
+                                             'page/base/base.js' );
 
-            // If file exists, add it to be loaded
-            if ( file_exists( $cssFile ) ) {
-
-                $this->data['css_files'][] = $cssFile;
-            }
-
-            // Getting javascript file name
-            $scriptFile = 'page/' . $this->data['page'] . '/' . $template . '.js';
-
-            // If file exists, add it to be loaded
-            if ( file_exists( $scriptFile ) ) {
-
-                $this->data['script_files'][] = $scriptFile;
-            }
-        }
-
-        // Add header css/js if needed
+        // Add css/javascript files for header
+        //------------------------------------
         if ( $this->data[ 'header' ] ) {
 
             // Getting css file name
@@ -117,7 +107,8 @@ class Base_PAG_V {
             }
         }
 
-        // Add footer css/js if needed
+        // Add css/javascript files for footer
+        //------------------------------------
         if ( $this->data[ 'footer' ] ) {
 
             // Getting css file name
@@ -131,6 +122,29 @@ class Base_PAG_V {
 
             // Getting javascript file name
             $scriptFile = 'page/' . $this->data['footer'] . '/' . $this->data['footer'] . '.js';
+
+            // If file exists, add it to be loaded
+            if ( file_exists( $scriptFile ) ) {
+
+                $this->data['script_files'][] = $scriptFile;
+            }
+        }
+
+        // Add css/javascript files for templates
+        //---------------------------------------
+        foreach( $this->data['templates'] as $template ) {
+
+            // Getting css file name
+            $cssFile = 'page/' . $this->data['page'] . '/' . $template . '.css';
+
+            // If file exists, add it to be loaded
+            if ( file_exists( $cssFile ) ) {
+
+                $this->data['css_files'][] = $cssFile;
+            }
+
+            // Getting javascript file name
+            $scriptFile = 'page/' . $this->data['page'] . '/' . $template . '.js';
 
             // If file exists, add it to be loaded
             if ( file_exists( $scriptFile ) ) {

@@ -1,0 +1,5 @@
+id,         int,       ,  , 0, 1, 1, 1
+email,      varchar, 64,  , 0, 0, 0, 1
+username,   varchar, 64,  , 0, 0, 0, 0
+password,   varchar, 64,  , 1, 0, 0, 0
+id_role,    int,       , 1, 0, 0, 0, 0

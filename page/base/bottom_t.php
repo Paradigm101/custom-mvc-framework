@@ -4,7 +4,7 @@
 
         <!-- script in the end to display the page as fast as possible -->
         <!-- JQuery -->
-        <script type="text/javascript" src="page/jquery/jquery.js"></script>
+        <script type="text/javascript" src="page/base/jquery/jquery.js"></script>
 
         <!-- Transfer from PHP to Javascript -->
         <script type="text/javascript">
@@ -13,15 +13,10 @@
             <?= Page_LIB::getJavascriptForPage() ?>
         </script>
 
-        <!-- Javascript for every page -->
-        <script type="text/javascript" src="page/base/base.js"></script>
-
-        <!-- Javascript(s) for this specific page (if needed) and header/footer -->
+        <!-- Javascript files -->
 <?      foreach( $data['script_files'] as $scriptFile ) { ?>
         <script type="text/javascript" src="<?= $scriptFile ?>"></script>
 <?      } ?>
 
-        <!-- BOOTSTRAP -->
-        <script type="text/javascript" src="page/bootstrap/bootstrap.js"></script>
     </body>
 </html>

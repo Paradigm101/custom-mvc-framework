@@ -60,7 +60,8 @@ function getFileForClass( $className ) {
     // While last element is not a class type, store it in complement
     while ( ( $requestTypeCode = convertRequestClassToCode( $last = strtolower( array_pop($exploded) ) ) ) == null ) {
 
-        $complement[] = $last;
+        // In the good order
+        array_unshift($complement, $last);
     }
 
     // Build complement

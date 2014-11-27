@@ -166,7 +166,8 @@ abstract class Table_LIB_Model extends Base_LIB_Model {
             return $this->executeQuery( $this->getInitScript() );
         }
         
-        // Auto init with or without ID specified in data file
+        // Auto init with data file
+        //-------------------------
 
         // Get table initialize file <table_name>_i.csv
         if ( !( $csvFileStream = $this->getConfigFile( 'library/table/' . strtolower( str_replace( 'Table_LIB_', '', get_called_class() ) ) . '_i.csv' ) ) ) {
@@ -198,12 +199,32 @@ abstract class Table_LIB_Model extends Base_LIB_Model {
             // start values
             $sql .= '(';
 
-            // Add values
-            foreach ( $elements as $element ) {
+            // Get each value and add it, manage numeric values
+            for ( $i = 0; $i < count($fields); $i++ ) {
+                
+                // If this is the ID and we are not processing the IDs
+                // don't do anything and continue the loop
+                if ( ( $this->getInitMode() == TLM_INIT_AUTO_WITHOUT_ID )
+                  && ( $fields[$i]['name'] == 'id' ) ) {
+                    continue;
+                }
+                
+                // Get data
+                $element = trim( array_shift( $elements ) );
+                
+                // Manage numeric
+                if ( in_array($fields[$i]['type'], ['tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'decimal', 'float', 'double', 'real'] ) ) {
+                    $element += 0;
+                }
+
+                // Manage boolean
+                if ( $fields[$i]['type'] == 'boolean' ) {
+                    $element = ( $element && ( strtolower($element) != 'false' ) ? true : false );
+                }
 
                 $sql .= $this->getQuotedValue( $element ) . ',';
             }
-
+            
             // Remove last coma and continue
             $sql = substr( $sql, 0, -1 ) . '),';
         }

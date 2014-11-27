@@ -5,7 +5,7 @@
 abstract class Table_LIB {
 
     // Table list
-    static private $tables = array( 'users', 'sessions', 'roles' );
+    static private $tables = array( 'users', 'sessions', 'roles', 'male_first_names' );
 
     static private function executeCommandForAllTables( $command, $stopOnFail = false ) {
 
@@ -16,8 +16,11 @@ abstract class Table_LIB {
         // For each table
         foreach( static::$tables as $table ) {
 
-            // Get table class
-            $className = 'Table_LIB_' . ucfirst( $table );
+            // Name is slightly complexe: Xxx_Yyy_Zzz
+            $table = implode( '_', array_map( 'ucfirst', explode('_', $table) ) );
+            
+            // Get table class (name is slightly complexe: Xxx_Yyy_Zzz)
+            $className = 'Table_LIB_' . $table;
             $tableClass = new $className();
 
             // Create table and get result

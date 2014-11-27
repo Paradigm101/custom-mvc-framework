@@ -91,17 +91,17 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
 
 // Start user session
 //-------------------
-Session_Manager_LIB::initSession();
+Session_LIB::initSession();
 
 // Get request type (no default)
 //------------------------------
-$requestTypeCode = strtolower(Url_Manager_LIB::getRequestParam('rt'));
+$requestTypeCode = strtolower(Url_LIB::getRequestParam('rt'));
 
 // Wrong request type: log hacker
 if ( !(in_array($requestTypeCode, array(null, REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
 
     // Log error
-    Log_LIB::trace("[INDEX] Wrong request type [$requestTypeCode] from [" . Session_Manager_LIB::getUserIP() . "]");
+    Log_LIB::trace("[INDEX] Wrong request type [$requestTypeCode] from [" . Session_LIB::getUserIP() . "]");
 }
 
 // Wrong or no request type means page
@@ -112,7 +112,7 @@ if ( !(in_array($requestTypeCode, array(REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) )
 
 // Get request name
 //-----------------
-$requestName = strtolower(Url_Manager_LIB::getRequestParam('rn'));
+$requestName = strtolower(Url_LIB::getRequestParam('rn'));
 
 // Request name not found (base is specific protected keyword)
 if ( !$requestName || $requestName == 'base' ) {
@@ -133,10 +133,10 @@ $directory = convertRequestCodeToDirectory($requestTypeCode);
 if ( !( file_exists( $file = $directory . '/' . $requestName . '/' . $requestName . '_c.php' ) ) ) {
 
     // Launch the user error answer: page/ajax/api
-    Error_LIB::process("The service you are trying to access doesn't exist", $requestType);
+    Error_LIB::process("The service you are trying to access doesn't exist", $requestTypeCode);
 
     // Trace hacker
-    Log_LIB::trace("[INDEX] File does NOT exist [$file] for request [$requestName] of type [$requestTypeCode] from IP [" . Session_Manager_LIB::getUserIP() . ']');
+    Log_LIB::trace("[INDEX] File does NOT exist [$file] for request [$requestName] of type [$requestTypeCode] from IP [" . Session_LIB::getUserIP() . ']');
 
     // And leave
     exit();
@@ -160,13 +160,13 @@ if ( !( class_exists( $className = ucfirst($requestName) . '_' . convertRequestC
 
 // Manage security
 //----------------
-if ( !Session_Manager_LIB::hasAccess( $requestName, $requestTypeCode ) ) {
+if ( !Session_LIB::hasAccess( $requestName, $requestTypeCode ) ) {
 
     // Launch the user error page
     Error_LIB::process("You do not have access to this service", $requestTypeCode);
 
     // Trace the missing class
-    Log_LIB::trace("[INDEX] User try to access forbidden service [$className] IP [" . Session_Manager_LIB::getUserIP() . "]");
+    Log_LIB::trace("[INDEX] User try to access forbidden service [$className] IP [" . Session_LIB::getUserIP() . "]");
 
     // And leave
     exit();

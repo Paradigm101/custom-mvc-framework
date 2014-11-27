@@ -3,7 +3,7 @@
 /**
  * TV show page model
  */
-class Tv_Show_PAG_M extends Base_PAG_M {
+class Tv_Show_PAG_M extends Base_LIB_Model {
 
     // Get query for data used in the board
     public function getQueryForBoard() {

@@ -56,7 +56,7 @@ function getFileForClass( $className ) {
 
     // Create complement
     $complement = array();
-    
+
     // While last element is not a class type, store it in complement
     while ( ( $requestTypeCode = convertRequestClassToCode( $last = strtolower( array_pop($exploded) ) ) ) == null ) {
 
@@ -103,4 +103,9 @@ function getFileForClass( $className ) {
 
     // At last, return file name
     return $directory . '/' . $module . '/' . $fileName;
+}
+
+// Check if this class exists
+function isClassExists( $className ) {
+    return file_exists( getFileForClass( $className ) );
 }

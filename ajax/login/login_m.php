@@ -1,6 +1,6 @@
 <?php
 
-class Login_AJA_M extends Base_AJA_M {
+class Login_AJA_M extends Base_LIB_Model {
 
     // Check if user and password are correct
     // Return user id if yes, null otherwise

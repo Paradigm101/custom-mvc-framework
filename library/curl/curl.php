@@ -185,7 +185,7 @@ abstract class Curl_LIB {
         $result = curl_exec( $connection );
 
         // Store time spent waiting for server answer
-        Page_Manager_LIB::addTimeInCurl(microtime(true) - $timeBefore);
+        Page_LIB::addTimeInCurl(microtime(true) - $timeBefore);
 
         // Store error number
         // because after, connection will be closed and it will be too late

@@ -1,7 +1,7 @@
 <?php
 
-// Api commande that create the database
-abstract class Reset_Db_API_C extends Base_API_C {
+// Ajax commande that create the database
+abstract class Reset_Db_AJA_C extends Base_AJA_C {
 
     static protected function process () {
 
@@ -29,6 +29,6 @@ abstract class Reset_Db_API_C extends Base_API_C {
         }
 
         // Return answer
-        static::setAnswer($answer);
+        static::addAnswer('message', $answer);
     }
 }

@@ -7,10 +7,10 @@ abstract class Signup_AJA_C extends Base_AJA_C {
     static protected function process() {
 
         // Retrieve parameters
-        $email     = Url_Manager_LIB::getRequestParam('email');
-        $username  = Url_Manager_LIB::getRequestParam('username');
-        $password  = Url_Manager_LIB::getRequestParam('password');
-        $password2 = Url_Manager_LIB::getRequestParam('password2');
+        $email     = Url_LIB::getRequestParam('email');
+        $username  = Url_LIB::getRequestParam('username');
+        $password  = Url_LIB::getRequestParam('password');
+        $password2 = Url_LIB::getRequestParam('password2');
 
         // Check same passwords
         if ( $password != $password2 ) {
@@ -39,7 +39,7 @@ abstract class Signup_AJA_C extends Base_AJA_C {
             switch( static::$model->getLastError() ) {
 
                 // User already exists
-                case BASE_ERROR_STATUS_DUPLICATE_ENTRY:
+                case BLM_ERROR_STATUS_DUPLICATE_ENTRY:
                     static::addAnswer('error',  'This email already exists in our system.');
                     break;
 

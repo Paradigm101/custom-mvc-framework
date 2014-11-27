@@ -3,7 +3,7 @@
 /**
  * Mother class for all ajax controllers
  */
-abstract class Base_AJA_C extends Controller_Base_LIB {
+abstract class Base_AJA_C extends Base_LIB_Controller {
 
     // Data to send
     static private $answer;

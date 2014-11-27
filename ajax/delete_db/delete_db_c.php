@@ -1,7 +1,7 @@
 <?php
 
-// Api commande that delete the database
-abstract class Delete_Db_API_C extends Base_API_C {
+// Ajax commande that delete the database
+abstract class Delete_Db_AJA_C extends Base_AJA_C {
 
     static protected function process () {
 
@@ -17,6 +17,6 @@ abstract class Delete_Db_API_C extends Base_API_C {
         }
 
         // Return answer
-        static::setAnswer($answer);
+        static::addAnswer('message', $answer);
     }
 }

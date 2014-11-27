@@ -1,7 +1,7 @@
 <?php
 
 // Manage data for board
-class Board_LIB_Model extends Model_Base_LIB {
+class Board_LIB_Model extends Base_LIB_Model {
 
     // Data from DB
     private $data;

@@ -2,6 +2,8 @@
 
 /**
  * Description: The MySQL driver provides interaction with a MySQL database
+ * 
+ * TBD: manage security, avoid SQL injection, ...
  */
 class Driver_LIB_Mysql {
 
@@ -157,7 +159,7 @@ class Driver_LIB_Mysql {
         }
 
         // Store time spent in DB (float precision)
-        Page_Manager_LIB::addTimeInDB( microtime( true ) - $timeBefore );
+        Page_LIB::addTimeInDB( microtime( true ) - $timeBefore );
 
         // Problem
         if ( $result === false ) {

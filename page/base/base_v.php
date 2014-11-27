@@ -6,24 +6,25 @@ define('BPV_ASSIGN_KO', 2);
 /**
  * Mother class of every Page view
  * (i.e. every view bcuz only pages have a view)
- * this class is abstract but children are meant to be instanciated, hence the '$this->' on properties
  */
-abstract class Base_PAG_V {
+class Base_PAG_V {
 
     // Holds variables assigned to template
     private $data;
 
     // At creation, set parameters: template, header/footer, title, ...
-    public function __construct() {
+    public function __construct( $page = null ) {
 
         // Initialize data and page name
         $this->data = array();
-        $this->data[ 'page' ] = strtolower( str_replace( '_PAG_V', '', get_called_class()) );
+
+        // In case page has no view, controller provide with page name
+        $this->data[ 'page' ] = $page ? $page : strtolower( str_replace( '_PAG_V', '', get_called_class()) );
 
         // Set title
         $this->data['title'] = ucfirst( $this->data[ 'page' ] );
 
-        // Initialize templates with main file IN THE FIRST POSITION
+        // Initialize templates with main file IN THE FIRST POSITION (but the file doesn't necessarily exits)
         $this->data[ 'templates' ] = array( $this->data[ 'page' ] );
 
         // Default header/footer
@@ -53,7 +54,9 @@ abstract class Base_PAG_V {
              $name == 'page'      ||
              $name == 'title'     ||
              $name == 'header'    ||
-             $name == 'footer' ) {
+             $name == 'footer'    ||
+             $name == 'css_files' ||
+             $name == 'script_files' ) {
 
             // Log and return KO
             Log_LIB::trace("[Base_PAG_V] Trying to assign protected field in View [$name]");
@@ -70,39 +73,103 @@ abstract class Base_PAG_V {
      */
     public function render() {
 
-        // Send data to front for templates: To do first!
+        // Preparing css/javascript files
+        foreach( $this->data['templates'] as $template ) {
+
+            // Getting css file name
+            $cssFile = 'page/' . $this->data['page'] . '/' . $template . '.css';
+
+            // If file exists, add it to be loaded
+            if ( file_exists( $cssFile ) ) {
+
+                $this->data['css_files'][] = $cssFile;
+            }
+
+            // Getting javascript file name
+            $scriptFile = 'page/' . $this->data['page'] . '/' . $template . '.js';
+
+            // If file exists, add it to be loaded
+            if ( file_exists( $scriptFile ) ) {
+
+                $this->data['script_files'][] = $scriptFile;
+            }
+        }
+
+        // Add header css/js if needed
+        if ( $this->data[ 'header' ] ) {
+
+            // Getting css file name
+            $cssFile = 'page/' . $this->data['header'] . '/' . $this->data['header'] . '.css';
+
+            // If file exists, add it to be loaded
+            if ( file_exists( $cssFile ) ) {
+
+                $this->data['css_files'][] = $cssFile;
+            }
+
+            // Getting javascript file name
+            $scriptFile = 'page/' . $this->data['header'] . '/' . $this->data['header'] . '.js';
+
+            // If file exists, add it to be loaded
+            if ( file_exists( $scriptFile ) ) {
+
+                $this->data['script_files'][] = $scriptFile;
+            }
+        }
+
+        // Add footer css/js if needed
+        if ( $this->data[ 'footer' ] ) {
+
+            // Getting css file name
+            $cssFile = 'page/' . $this->data['footer'] . '/' . $this->data['footer'] . '.css';
+
+            // If file exists, add it to be loaded
+            if ( file_exists( $cssFile ) ) {
+
+                $this->data['css_files'][] = $cssFile;
+            }
+
+            // Getting javascript file name
+            $scriptFile = 'page/' . $this->data['footer'] . '/' . $this->data['footer'] . '.js';
+
+            // If file exists, add it to be loaded
+            if ( file_exists( $scriptFile ) ) {
+
+                $this->data['script_files'][] = $scriptFile;
+            }
+        }
+
+        // Send data to front for templates
+        // To do BEFORE requiring the templates
         $data = $this->data;
 
         // What is always on top
-        require 'page/base/template/top.php';
+        require 'page/base/top_t.php';
 
         // Add header if needed
-        if ( $data[ 'header' ] ) {
-            require 'page/' . $data[ 'header' ] . '/template/' . $data[ 'header' ] . '.php';
+        if ( $this->data[ 'header' ] ) {
+
+            require 'page/' . $this->data[ 'header' ] . '/' . $this->data[ 'header' ] . '_t.php';
         }
 
         // Add template(s)
-        foreach( $data[ 'templates' ] as $template ) {
+        foreach( $this->data[ 'templates' ] as $template ) {
 
             // Check file exists
-            if ( !file_exists( $templateFile = 'page/' . $data[ 'page' ] . '/template/' . $template . '.php' ) ) {
+            if ( file_exists( $templateFile = 'page/' . $this->data[ 'page' ] . '/' . $template . '_t.php' ) ) {
 
-                $errorMsg = "Template file doesn't exists : $templateFile";
-                Log_LIB::trace( '[Base_PAG_V] ' . $errorMsg );
-                echo $errorMsg, ALL_EOL;
-            }
-            // Core job: finally include template(s)
-            else {
+                // Core job: finally include template(s)
                 require $templateFile;
             }
         }
 
         // Add footer if needed
-        if ( $data['footer'] ) {
-            require 'page/' . $data['footer'] . '/template/' . $data['footer'] . '.php';
+        if ( $this->data['footer'] ) {
+
+            require 'page/' . $this->data['footer'] . '/' . $this->data['footer'] . '_t.php';
         }
 
         // What is always on bottom
-        require 'page/base/template/bottom.php';
+        require 'page/base/bottom_t.php';
     }
 }

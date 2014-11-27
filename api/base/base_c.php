@@ -3,7 +3,7 @@
 /**
  * Mother class for all api controllers
  */
-abstract class Base_API_C extends Controller_Base_LIB {
+abstract class Base_API_C extends Base_LIB_Controller {
 
     // Data to send
     static private $answer;

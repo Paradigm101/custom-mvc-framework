@@ -1,6 +1,6 @@
 <?php
 
-class Signup_AJA_M extends Base_AJA_M {
+class Signup_AJA_M extends Base_LIB_Model {
 
     /** Add user in DB
      * 

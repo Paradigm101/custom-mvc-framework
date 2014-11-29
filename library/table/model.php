@@ -213,7 +213,7 @@ abstract class Table_LIB_Model extends Base_LIB_Model {
                 $element = trim( array_shift( $elements ) );
                 
                 // Manage numeric
-                if ( in_array($fields[$i]['type'], ['tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'decimal', 'float', 'double', 'real'] ) ) {
+                if ( in_array($fields[$i]['type'], array('tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'decimal', 'float', 'double', 'real') ) ) {
                     $element += 0;
                 }
 

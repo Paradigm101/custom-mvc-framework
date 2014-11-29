@@ -14,7 +14,7 @@ abstract class Page_LIB {
         if ( !static::$pages ) {
 
             // Get config file for pages
-            $csvFile = fopen( SITE_ROOT . '/library/page/page.csv', 'r' );
+            $csvFile = fopen( 'library/page/page.csv', 'r' );
 
             // Parsing file and storing data
             while ( $data = fgetcsv( $csvFile ) ) {

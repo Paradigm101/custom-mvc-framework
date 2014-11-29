@@ -29,7 +29,7 @@ spl_autoload_register( function ( $className ) {
         file_put_contents(LOG_FILE, "[AUTOLOAD] File doesn't exists [$file] for [$className]\n", FILE_APPEND);
         exit();
     }
-
+    
     // file exists: fetch it at last!
     require_once $file;
 

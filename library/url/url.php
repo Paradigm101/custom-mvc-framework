@@ -17,7 +17,13 @@ abstract class Url_LIB {
         // Create URL from request name/type
         $script  = "// get URL for a specific page\n"
                 . "//----------------------------\n"
-                . "var getURL = function( request_name, request_type = REQUEST_TYPE_PAGE ) {\n"
+                . "var getURL = function( request_name, request_type ) {\n"
+                .  "\n"
+                .  "    if ( request_type == undefined ) {\n"
+                .  "\n"
+                .  "        request_type = REQUEST_TYPE_PAGE;\n"
+                .  "    }\n"
+                .  "\n"
                 .  "    return '" . SITE_ROOT . "?rn=' + request_name + ( request_type != REQUEST_TYPE_PAGE ? '&rt=' + request_type : '' );\n"
                 .  "}\n";
 

@@ -1,0 +1,5 @@
+id,         int,        , , 0, 1, 1, 1
+name,       varchar,  64, , 0, 0, 0, 1
+frequency,  float,      , , 0, 0, 0, 0
+occurrence, int,        , , 0, 0, 0, 0
+rank,       int,        , , 0, 0, 0, 0

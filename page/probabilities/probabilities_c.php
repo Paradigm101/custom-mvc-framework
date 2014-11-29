@@ -22,24 +22,14 @@ abstract class Probabilities_PAG_C extends Base_PAG_C {
         
         return ( $totalNumber - $poolNumber ) / $totalNumber;
     }
-    
-    /**
-     *  Probability to draw a card out of a deck
-     * 
-     * $poolNumber = number of cards to get
-     * $totalNumber = number of deck size
-     */
-    static private function probaDraw( $poolNumber, $totalNumber ) {
-        
-        return $poolNumber / $totalNumber;
-    }
-    
+
+    // Main method
     static protected function process() {
 
         // Create a structure to store results
-        $tmp   = array( PROBA_NO_KEEP => $tmp, PROBA_KEEP_ONE => $tmp );
-        $tmp   = array( PROBA_PRE_MULLIGAN => $tmp, PROBA_POST_MULLIGAN => $tmp );
-        $proba = array( PROBA_GO_FIRST => $tmp, PROBA_GO_SECOND => $tmp );
+        $tmp   = array( PROBA_NO_KEEP      => array(), PROBA_KEEP_ONE      => array() );
+        $tmp   = array( PROBA_PRE_MULLIGAN => $tmp,    PROBA_POST_MULLIGAN => $tmp );
+        $proba = array( PROBA_GO_FIRST     => $tmp,    PROBA_GO_SECOND     => $tmp );
         
         // For every 2-drop number possible
         for( $twoDropNumber = 0; $twoDropNumber <= 30; $twoDropNumber++ ) {
@@ -90,10 +80,6 @@ abstract class Probabilities_PAG_C extends Base_PAG_C {
                                                                                          * static::probaNotDraw($twoDropNumber, 27)
                                                                                          * static::probaNotDraw($twoDropNumber, 26)
                                                                                          * static::probaNotDraw($twoDropNumber, 25);
-
-            // Copy result in keep_one for sanity
-//            $proba[PROBA_GO_FIRST][PROBA_POST_MULLIGAN][PROBA_KEEP_ONE][$twoDropNumber]  = $proba[PROBA_GO_FIRST][PROBA_POST_MULLIGAN][PROBA_NO_KEEP][$twoDropNumber];
-//            $proba[PROBA_GO_SECOND][PROBA_POST_MULLIGAN][PROBA_KEEP_ONE][$twoDropNumber] = $proba[PROBA_GO_SECOND][PROBA_POST_MULLIGAN][PROBA_NO_KEEP][$twoDropNumber];
         }
 
         static::assign('proba', $proba);

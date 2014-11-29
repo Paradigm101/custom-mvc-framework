@@ -1,7 +1,7 @@
 main,           h, 1, <strong>H</strong>ome, Home page : menu
 bootstrapdemo,  b, 1, <strong>B</strong>ootstrap, Bootstrap demonstration page
-tv_show,        s, 1, TV <strong>s</strong>how, TV shows
+users,          u, 1, <strong>U</strong>sers, User management (admin only)
 api,            p, 1, A<strong>P</strong>I, API access
 about,          o, 1, Ab<strong>o</strong>ut, About page : my resume
 commands,       m, 1, Co<strong>m</strong>mands, Allow user the send commands, mainly manage database
-probabilities,  r, 1, Probabilities, Hearthstone probabilities
+probabilities,  i, 1, Probab<strong>i</strong>lities, Hearthstone probabilities

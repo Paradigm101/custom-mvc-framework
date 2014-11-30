@@ -1,0 +1,4 @@
+id,       int, 0, ID,       0, 0
+username, txt, 1, username, 0, 0
+email,    txt, 1, email,    0, 0
+role,     txt, 1, role,     0, 0

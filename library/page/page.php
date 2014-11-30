@@ -17,14 +17,14 @@ abstract class Page_LIB {
             $csvFile = fopen( 'library/page/page.csv', 'r' );
 
             // Parsing file and storing data
-            while ( $data = fgetcsv( $csvFile ) ) {
+            while ( $page = fgetcsv( $csvFile ) ) {
 
                 // Add page
-                static::$pages[] = array( 'fileName'    => trim( $data[0] ),
-                                          'shortcut'    => trim( $data[1] ),
-                                          'withCtrl'    => trim( $data[2] ? true : false ),
-                                          'headerTitle' => trim( $data[3] ),
-                                          'description' => trim( $data[4] ) );
+                static::$pages[] = array( 'fileName'    => trim( $page[0] ),
+                                          'shortcut'    => trim( $page[1] ),
+                                          'withCtrl'    => trim( $page[2] ) ? true : false,
+                                          'headerTitle' => trim( $page[3] ),
+                                          'description' => trim( $page[4] ) );
             }
         }
 
@@ -55,12 +55,21 @@ abstract class Page_LIB {
 
     /****************************************************************************************************************/
 
+    static private $extraScript;
+    
+    // Others can push extra script
+    static public function addJavascript( $script ) {
+        
+        static::$extraScript .= ";\n" . $script . ";\n";
+    }
+    
     // Manage javascript to inject in page
     static private $classWithJavascript = array( 'Url_LIB' );
 
     // Send javascript to client
-    static public function getJavascriptForPage() {
+    static public function getJavascript() {
 
+        // Start script
         $script = "";
 
         // Constantes
@@ -76,13 +85,14 @@ abstract class Page_LIB {
             $script .= $class::getJavascript() . "\n\n";
         }
 
-        // Add shortcuts
-        //--------------
+        // Start shortcuts
+        //----------------
         $script .= "// Shortcuts\n"
                 . "//----------\n"
                 . "$(function () {\n"
                 .  "    $(document).keypress(function(e) {\n";
 
+        // For each page, add shortcut
         foreach ( static::getUserPages() as $page ) {
 
             $shortcutCondition = 'e.which == ' . ord( $page['shortcut'] ) . ( $page['withCtrl'] ? ' && e.ctrlKey' : '' );
@@ -93,9 +103,14 @@ abstract class Page_LIB {
                     . "         }\n";
         }
 
+        // End shortcuts
         $script .= "    });\n"
                 . "});\n\n";
 
+        // Add extra script
+        $script .= static::$extraScript;
+        
+        // Send all
         return $script;
     }
 

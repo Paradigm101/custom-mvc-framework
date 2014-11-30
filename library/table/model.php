@@ -8,6 +8,12 @@ define('TLM_INIT_CUSTOM',          3);
 // Mother of all table Model
 abstract class Table_LIB_Model extends Base_LIB_Model {
 
+    // Get table name, must be overwritten
+    protected function getTableName() {
+
+        Log_LIB::trace('[Table_LIB_Base] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
+    }
+
     // Return initializing mode, can be overwritten
     protected function getInitMode() {
 
@@ -20,12 +26,6 @@ abstract class Table_LIB_Model extends Base_LIB_Model {
 
         // By default, no script
         return '';
-    }
-
-    // Get table name, must be overwritten
-    protected function getTableName() {
-
-        Log_LIB::trace('[Table_LIB_Base] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
     }
 
     // To execute any commande: check parameters and manage DB errors
@@ -212,13 +212,13 @@ abstract class Table_LIB_Model extends Base_LIB_Model {
                 // Get data
                 $element = trim( array_shift( $elements ) );
                 
+                // TBD switch/case
                 // Manage numeric
                 if ( in_array($fields[$i]['type'], array('tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'decimal', 'float', 'double', 'real') ) ) {
                     $element += 0;
                 }
-
                 // Manage boolean
-                if ( $fields[$i]['type'] == 'boolean' ) {
+                else if ( $fields[$i]['type'] == 'boolean' ) {
                     $element = ( $element && ( strtolower($element) != 'false' ) ? true : false );
                 }
 

@@ -10,7 +10,7 @@
         <script type="text/javascript">
 
             // Get javascript from back-end
-            <?= Page_LIB::getJavascriptForPage() ?>
+            <?= Page_LIB::getJavascript() ?>
         </script>
 
         <!-- Javascript files -->

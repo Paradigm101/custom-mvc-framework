@@ -56,13 +56,13 @@ abstract class Page_LIB {
     /****************************************************************************************************************/
 
     static private $extraScript;
-    
+
     // Others can push extra script
     static public function addJavascript( $script ) {
         
         static::$extraScript .= ";\n" . $script . ";\n";
     }
-    
+
     // Manage javascript to inject in page
     static private $classWithJavascript = array( 'Url_LIB' );
 
@@ -138,7 +138,7 @@ abstract class Page_LIB {
 
         static::$curlTime += $time;
     }
-    
+
     // Get page generation time (in PHP/DB)
     static public function getPageGeneration() {
 
@@ -154,6 +154,6 @@ abstract class Page_LIB {
         $CurlPercent = round( ( static::$curlTime * 100 ) / $generationTime );
 
         // Send data to display
-        return 'Page Generation Time: ' . round($generationTime, 3) . "s (PHP: $PHPPercent% - SQL: $DBPercent%" . ( static::$curlTime ? " - CURL: $CurlPercent%" : "" ) . ')';
+        return 'Page Generation Time: ' . round(1000 * $generationTime) . "ms (PHP: $PHPPercent% - SQL: $DBPercent%" . ( static::$curlTime ? " - CURL: $CurlPercent%" : "" ) . ')';
     }
 }

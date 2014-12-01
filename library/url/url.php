@@ -9,7 +9,13 @@
  * TBD: manage arrays
  * TBD: user filter_input, etc..
  * 
- * TBD: sum up URL parameters
+ * URL parameters:
+ *      - rn: request name, name for the page, ajax or api
+ *      - rt: request type, page, ajax or api REQUEST_TYPE_XXX (null = page)
+ *      - s: sort parameter (for board)
+ *      - is: inverse sort parameter (for board)
+ *      - f_<xxx>: filter of variable <xxx> (for board)
+ *      - p: page (for board)
  */
 abstract class Url_LIB {
 
@@ -23,10 +29,15 @@ abstract class Url_LIB {
                 .  "\n"
                 .  "    if ( request_type == undefined ) {\n"
                 .  "\n"
-                .  "        request_type = REQUEST_TYPE_PAGE;\n"
+                .  "        if ( request_name == undefined ) {\n"
+                .  "\n"
+                .  "            return '" . SITE_ROOT . "';\n"
+                .  "        }\n"
+                .  "\n"
+                .  "        return '" . SITE_ROOT . "?rn=' + request_name;\n"
                 .  "    }\n"
                 .  "\n"
-                .  "    return '" . SITE_ROOT . "?rn=' + request_name + ( request_type != REQUEST_TYPE_PAGE ? '&rt=' + request_type : '' );\n"
+                .  "    return '" . SITE_ROOT . "?rn=' + request_name + '&rt=' + request_type;\n"
                 .  "}\n";
 
         return $script;

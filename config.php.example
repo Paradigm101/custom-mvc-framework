@@ -40,3 +40,9 @@ define('REQUEST_TYPE_PAGE',     1);
 define('REQUEST_TYPE_AJAX',     2);
 define('REQUEST_TYPE_API',      3);
 define('REQUEST_TYPE_LIBRARY',  4);
+
+// Bootstrap inclusion
+define('WEBSITE_IS_ONLINE', false);
+
+// Boards
+define('DEFAULT_PAGE_SIZE', 22);

@@ -14,9 +14,9 @@
         </script>
 
         <!-- Javascript files -->
-<?      foreach( $data['script_files'] as $scriptFile ) { ?>
+<?php   foreach( $data['script_files'] as $scriptFile ) { ?>
         <script type="text/javascript" src="<?= $scriptFile ?>"></script>
-<?      } ?>
+<?php   } ?>
 
     </body>
 </html>

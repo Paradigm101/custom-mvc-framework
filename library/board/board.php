@@ -6,6 +6,16 @@ class Board_LIB {
     // Data to display
     private $data;
 
+    // Total number of result for pagination
+    private $resultNumber;
+
+    // Pagination
+    private $currentPage;
+    private $pageNumber;
+    
+    // The guy who called
+    private $requestName;
+    
     // For interface
     private $metadata;
 
@@ -13,7 +23,7 @@ class Board_LIB {
     private $noDataMessage;
 
     // Private constructor : use factory
-    public function __construct( $data, $metadataFile, $noDataMessage = 'No data' ) {
+    public function __construct( $data, $resultNumber, $currentPage, $pageNumber, $requestName, $metadataFile, $noDataMessage = 'No data' ) {
 
         // Manage No metadata file
         if ( !$metadataFile ) {
@@ -58,6 +68,10 @@ class Board_LIB {
         }
 
         $this->data          = $data;
+        $this->resultNumber  = $resultNumber;
+        $this->currentPage   = $currentPage;
+        $this->pageNumber    = $pageNumber;
+        $this->requestName   = $requestName;
         $this->metadata      = $metadata;
         $this->noDataMessage = $noDataMessage;
     }
@@ -72,7 +86,7 @@ class Board_LIB {
         }
         
         // Start table
-        $toDisplay = "<table class=\"table table-striped table-hover table-bordered table-condensed\">\n";
+        $toDisplay = "<table class=\"table table-hover table-bordered table-condensed table-striped\">\n";
 
         // Start header
         $toDisplay .= "<thead>\n"
@@ -144,6 +158,42 @@ class Board_LIB {
 
         // End table
         $toDisplay .= "</table>\n";
+
+        // Display buttons for pagination
+        $toDisplay .= '<div align="right">'
+                        . '<button class="btn btn-default" onclick="board_reload(\'first\')"><<</button>'
+                        . '<button class="btn btn-default" onclick="board_reload(\'previous\')"><</button>'
+                        . '<button class="btn btn-default" onclick="board_reload(\'next\')">></button>'
+                        . '<button class="btn btn-default" onclick="board_reload(\'last\')">>></button>'
+                    . '</div>';
+
+        // Javascript to manage filter, sort and pagination
+        $script = "\n"
+                . "var board_page = {$this->currentPage};\n"
+                . "\n"
+                . "var board_reload = function(page) {\n"
+                .     "\n"
+                .     "switch ( page ) {\n"
+                .         "case 'first':\n"
+                .             "board_page = 1;\n"
+                .             "break;\n"
+                .         "case 'previous':\n"
+                .             "board_page--;\n"
+                .             "if ( board_page <= 0 ) board_page = 1;"
+                .             "break;\n"
+                .         "case 'next':\n"
+                .             "board_page++;\n"
+                .             "if ( board_page > {$this->pageNumber} ) board_page = {$this->pageNumber};"
+                .             "break;\n"
+                .         "case 'last':\n"
+                .             "board_page = {$this->pageNumber};\n"
+                .             "break;\n"
+                .     "}\n"
+                .     "\n"
+                .     "window.location.href = getURL('{$this->requestName}') + '&p=' + board_page;\n"
+                .     "\n"
+                . "}\n";
+        Page_LIB::addJavascript($script);
 
         return $toDisplay;
     }

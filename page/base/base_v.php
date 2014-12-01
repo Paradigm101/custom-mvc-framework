@@ -73,16 +73,29 @@ class Base_PAG_V {
      */
     public function render() {
 
-        // Add css files for every page
-        //-----------------------------
-        $this->data['css_files'] = array( 'page/base/base.css',
-                                          'page/base/bootstrap/css/bootstrap.css',
-                                          'page/base/bootstrap/css/bootstrap-theme.css' );
+        // CSS files for every page
+        //-------------------------
+        $this->data['css_files'] = array( 'page/base/base.css' );
 
-        // Add javascript files for every page
-        //------------------------------------
-        $this->data['script_files'] = array( 'page/base/bootstrap/bootstrap.js',
-                                             'page/base/base.js' );
+        // Bootstrap
+        //----------
+        if ( WEBSITE_IS_ONLINE ) {
+            
+            $this->data['css_files'][] = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css';
+            $this->data['css_files'][] = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css';
+
+            $this->data['script_files'] = array( 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' );
+        }
+        else {
+            $this->data['css_files'][] = 'page/base/bootstrap/css/bootstrap.min.css';
+            $this->data['css_files'][] = 'page/base/bootstrap/css/bootstrap-theme.min.css';
+            
+            $this->data['script_files'] = array( 'page/base/bootstrap/js/bootstrap.min.js' );
+        }
+        
+        // JS files for every page
+        //------------------------
+        $this->data['script_files'][] = 'page/base/base.js';
 
         // Add css/javascript files for header
         //------------------------------------

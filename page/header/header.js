@@ -8,7 +8,7 @@ $(function(){
     // Sign-up OK modal: user can hit enter to leave
     $('#signupOkModal').keypress(function(e) {
 
-        if (e.which == '13') {
+        if (e.which === 13) {
 
             e.preventDefault();
             $(this).modal('hide');
@@ -22,7 +22,7 @@ $(function(){
 
     // Sign-up Modal: user can hit enter to submit
     $('#signupModal').keypress(function(e) {
-        if (e.which == '13') {
+        if (e.which === 13) {
             e.preventDefault();
             $('#signupForm').submit();
         }
@@ -98,7 +98,7 @@ $(function(){
                 setTimeout(function(){
 
                     $('#logoutOkModal').modal('hide');
-                    location.reload();
+                    window.location.href = getURL();
                 }, 2000);
             }
         });
@@ -109,7 +109,7 @@ $(function(){
     // **************
     // Log-in OK modal: user can hit enter to leave
     $('#loginOkModal').keypress(function(e) {
-        if (e.which == '13') {
+        if (e.which === 13) {
             e.preventDefault();
             $(this).modal('hide');
         }
@@ -124,7 +124,7 @@ $(function(){
     // Log-in Modal: user can hit enter to submit
     $('#loginModal').keypress(function(e) {
 
-        if (e.which == '13') {
+        if (e.which === 13) {
 
             e.preventDefault();
             $('#loginForm').submit();

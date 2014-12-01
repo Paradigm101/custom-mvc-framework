@@ -1,15 +1,25 @@
 <?php
 
+// Users management model
 class Users_PAG_M extends Base_LIB_Model {
     
-    public function getData( $sort ) {
-        
+    // Get data to display
+    public function getData() {
+
+        // Get sort
+        if ( !($sort = Url_LIB::getRequestParam('s') ) ) {
+
+            $sort = 'c2';
+        }
+
+        // TBD get filter param
+
         // Query to get DB data
         $query = 'SELECT '
-                . '     u.id          id, '
-                . '     u.username    username, '
-                . '     u.email       email, '
-                . '     r.label       role '
+                . '     u.id        c1, '
+                . '     u.username  c2, '
+                . '     u.email     c3, '
+                . '     r.label     c4 '
                 . 'FROM '
                 . '     users u '
                 . '     INNER JOIN roles r ON '

@@ -11,7 +11,7 @@ class Board_LIB {
 
     // In case no data
     private $noDataMessage;
-    
+
     // Private constructor : use factory
     public function __construct( $data, $metadataFile, $noDataMessage = 'No data' ) {
 
@@ -22,7 +22,7 @@ class Board_LIB {
             $backTrace = debug_backtrace();
             
             // Log error for dev
-            Log_LIB::trace('[Board_LIB __construct] No metadata file for class [' . $backTrace[1]['class'] . ']');
+            Log_LIB::trace('[Board_LIB] No metadata file for class [' . $backTrace[1]['class'] . ']');
             
             return;
         }
@@ -41,6 +41,22 @@ class Board_LIB {
                                          'is_sortable' => trim( $line[5] ) ? true : false );
         }
 
+        // Check alignment
+        if ( $data ) {
+
+            // Comparing keys of metadata to keys of the first raw of data (order and values)
+            if ( array_keys($data[0]) != array_keys($metadata) ) {
+
+                // Get call stack
+                $backTrace = debug_backtrace();
+
+                // Log error for dev
+                Log_LIB::trace('[Board_LIB] Metadata/Data no aligned for [' . $backTrace[1]['class'] . ']');
+
+                return;
+            }
+        }
+
         $this->data          = $data;
         $this->metadata      = $metadata;
         $this->noDataMessage = $noDataMessage;
@@ -49,6 +65,12 @@ class Board_LIB {
     // Display board (for template)
     public function display() {
 
+        // If no metadata, no need to continue
+        if ( !$this->metadata ) {
+
+            return 'Internal error';
+        }
+        
         // Start table
         $toDisplay = "<table class=\"table table-striped table-hover table-bordered table-condensed\">\n";
 

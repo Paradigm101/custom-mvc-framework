@@ -8,6 +8,8 @@
  * TBD: manage security, avoid SQL injection, ...
  * TBD: manage arrays
  * TBD: user filter_input, etc..
+ * 
+ * TBD: sum up URL parameters
  */
 abstract class Url_LIB {
 

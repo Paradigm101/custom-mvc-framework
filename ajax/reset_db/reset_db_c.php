@@ -5,6 +5,8 @@ abstract class Reset_Db_AJA_C extends Base_AJA_C {
 
     static protected function process () {
 
+        $timeBefore = microtime( true );
+        
         // Start answer
         $answer = "Delete database" . ALL_EOL
                 . "---------------" . ALL_EOL;
@@ -28,6 +30,10 @@ abstract class Reset_Db_AJA_C extends Base_AJA_C {
             $answer .= ucfirst( $result[ 'tableName' ] ) . ' : ' . ( $result[ 'error' ] ? 'Fail [' . $result[ 'error' ] . '] ***************** ' : 'Success' ) . ALL_EOL;
         }
 
+        // Adding time spent
+        $duration = microtime( true ) - $timeBefore;
+        $answer .= ALL_EOL . 'Total time duration : ' . round( $duration, 3 ) . 's' . ALL_EOL;
+        
         // Return answer
         static::addAnswer('message', $answer);
     }

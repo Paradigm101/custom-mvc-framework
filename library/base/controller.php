@@ -31,6 +31,6 @@ abstract class Base_LIB_Controller {
     // Launch the controller, has to be overwritten
     static protected function launch() {
 
-        Log_LIB::trace('[Base_API_C] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
+        Log_LIB::trace('[Base_LIB_Controller] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
     }
 }

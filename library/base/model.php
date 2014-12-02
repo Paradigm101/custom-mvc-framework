@@ -131,4 +131,7 @@ class Base_LIB_Model {
         
         return $this->db->fetchAll($type);
     }
+    protected function getStringForQuery($string) {
+        return $this->db->getStringForQuery($string);
+    }
 }

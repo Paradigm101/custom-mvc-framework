@@ -179,7 +179,12 @@ class Base_PAG_V {
             require 'page/' . $this->data[ 'header' ] . '/' . $this->data[ 'header' ] . '_t.php';
         }
 
-        // Add template(s)
+        // Add template
+        //-------------
+        // Base template
+        require 'page/base/base_t.php';
+        
+        // Page template(s)
         foreach( $this->data[ 'templates' ] as $template ) {
 
             // Check file exists

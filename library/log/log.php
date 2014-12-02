@@ -72,14 +72,14 @@ abstract class Log_LIB {
     }
 
     // Show log in the browser
-    static public function show( $param = null, $title = null ) {
+    static public function show( $param, $title = null ) {
 
         // Launch the big thing
         echo static::coreLog( $param, $title, true /* IsWeb */ );
     }
 
     // Log data in file
-    static public function trace( $param = null, $title = null ) {
+    static public function trace( $param, $title = null ) {
 
         // Launch the big thing
         file_put_contents(LOG_FILE, static::coreLog($param, $title), FILE_APPEND);

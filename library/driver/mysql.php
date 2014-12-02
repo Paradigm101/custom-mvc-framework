@@ -58,6 +58,12 @@ class Driver_LIB_Mysql {
         $this->error  = '';
     }
 
+    // Protect from SQL injection
+    public function getStringForQuery( $string ) {
+
+        return $this->connection->real_escape_string( $string );
+    }
+    
     // Specific to each connection type
     public function getQuotedValue( $data ) {
 
@@ -79,7 +85,6 @@ class Driver_LIB_Mysql {
             case 'array':
             case 'object':
             case 'resource':
-                
                 Log_LIB::trace( '[Driver_LIB_Mysql] trying to escape wrong data type for query, type [' . gettype( $data ) . "] data [$data]" );
                 return null;
 

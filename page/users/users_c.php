@@ -6,13 +6,19 @@ abstract class Users_PAG_C extends Base_PAG_C {
     // Main process
     static protected function process() {
 
-        // Retrieving information
-        list( $data, $currentPage, $pageNumber, $sort ) = static::$model->getData();
-
         // Create board
-        $board = new Board_LIB( $data, $currentPage, $pageNumber, $sort, 'users', 'page/users/users.csv', 'No users' );
+        $board = new Board_LIB();
 
-        // Send board to front
+        // Set all information
+        $board->setData(static::$model->getBoardData())
+                ->setMetadata('page/users/users.csv')
+                ->setNoDataMessage('No users')
+                ->setPageNumber(static::$model->getBoardPageNumber())
+                ->setRequestName('users')
+                ->setSort(static::$model->getBoardSort())
+                ->setCurrentPage(static::$model->getBoardCurrentPage());
+
+        // Send board to view
         static::assign('board', $board);
     }
 }

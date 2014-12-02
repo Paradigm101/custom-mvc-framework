@@ -6,12 +6,12 @@ class Board_LIB {
     // Data to display
     private $data;
 
-    // Total number of result for pagination
-    private $resultNumber;
-
     // Pagination
     private $currentPage;
     private $pageNumber;
+    
+    // Sort
+    private $sort;
     
     // The guy who called
     private $requestName;
@@ -23,17 +23,17 @@ class Board_LIB {
     private $noDataMessage;
 
     // Private constructor : use factory
-    public function __construct( $data, $resultNumber, $currentPage, $pageNumber, $requestName, $metadataFile, $noDataMessage = 'No data' ) {
+    public function __construct( $data, $currentPage, $pageNumber, $sort, $requestName, $metadataFile, $noDataMessage = 'No data' ) {
 
         // Manage No metadata file
         if ( !$metadataFile ) {
 
             // Get call stack
             $backTrace = debug_backtrace();
-            
+
             // Log error for dev
             Log_LIB::trace('[Board_LIB] No metadata file for class [' . $backTrace[1]['class'] . ']');
-            
+
             return;
         }
 
@@ -44,11 +44,11 @@ class Board_LIB {
         while ( $line = fgetcsv( $csvFile ) ) {
 
             // Add metadata
-            $metadata[$line[0]] = array( 'type'        => trim( $line[1] ),
-                                         'is_shown'    => trim( $line[2] ) ? true : false,
-                                         'label'       => trim( $line[3] ),
-                                         'is_filtered' => trim( $line[4] ) ? true : false,
-                                         'is_sortable' => trim( $line[5] ) ? true : false );
+            $metadata[$line[0]] = array( 'type'            => trim( $line[1] ),
+                                         'is_shown'        => trim( $line[2] ) ? true : false,
+                                         'label'           => trim( $line[3] ),
+                                         'is_filtered'     => trim( $line[4] ) ? true : false,
+                                         'is_sortable'     => trim( $line[5] ) ? true : false );
         }
 
         // Check alignment
@@ -68,15 +68,16 @@ class Board_LIB {
         }
 
         $this->data          = $data;
-        $this->resultNumber  = $resultNumber;
         $this->currentPage   = $currentPage;
         $this->pageNumber    = $pageNumber;
+        $this->sort          = $sort;
         $this->requestName   = $requestName;
         $this->metadata      = $metadata;
         $this->noDataMessage = $noDataMessage;
     }
 
     // Display board (for template)
+    // TBD: fixed column size
     public function display() {
 
         // If no metadata, no need to continue
@@ -95,12 +96,30 @@ class Board_LIB {
                             . '<th></th>' . "\n";
 
         // Display each field title
-        foreach( $this->metadata as $param ) {
+        foreach( $this->metadata as $key => $param ) {
 
             // Check if this field is displayed
             if ( $param['is_shown'] ) {
-                
-                $toDisplay .= "<th>" . ucfirst( $param['label'] ) . "</th>\n";
+
+                // If this is the sorted field
+                // TBD: use default sort
+                if ( $this->sort == $key ) {
+
+                    // Display it with the caret and link to inverse sort
+                    $toDisplay .= '<th><a onclick="board_sort_reload(\'_' . $key . '\');">' . ucfirst( $param['label'] ) . '</a><span class="caret"></span></th>' . "\n";
+                }
+                // If this is the reverse sorted field
+                else if ( $this->sort == '_' . $key ) {
+
+                    // Display it with the inversed caret and link to regular sort
+                    $toDisplay .= '<th><a onclick="board_sort_reload(\'' . $key . '\');">' . ucfirst( $param['label'] ) . '</a><span class="dropup"><span class="caret"></span></span></th>' . "\n";
+                }
+                // Not the sorted field
+                else {
+
+                    // Display it with NO caret and link to regular sort
+                    $toDisplay .= '<th><a onclick="board_sort_reload(\'' . $key . '\');">' . ucfirst( $param['label'] ) . '</a></th>' . "\n";
+                }
             }
         }
 
@@ -120,10 +139,10 @@ class Board_LIB {
                 // Start with the checkbox
                 $toDisplay .= "<tr>\n"
                                 . '<td style="width:20px;"><input type="checkbox" id="checkbox_' . $id . '"></td>' . "\n";
-
+                
                 // Display each fields
                 foreach( $row as $name => $value ) {
-
+       
                     // Check if this field is displayed
                     if ( $this->metadata[$name]['is_shown'] ) {
 
@@ -160,18 +179,40 @@ class Board_LIB {
         $toDisplay .= "</table>\n";
 
         // Display buttons for pagination
-        $toDisplay .= '<div align="right">'
-                        . '<button class="btn btn-default" onclick="board_reload(\'first\')"><<</button>'
-                        . '<button class="btn btn-default" onclick="board_reload(\'previous\')"><</button>'
-                        . '<button class="btn btn-default" onclick="board_reload(\'next\')">></button>'
-                        . '<button class="btn btn-default" onclick="board_reload(\'last\')">>></button>'
-                    . '</div>';
+        $toDisplay .= '<div align="right">';
+        
+        // TBD: keep button disabled
+        // TBD: keep at the bottom of the page (for end of board)
+        // TBD: add page X/<total_page>
+        if ( $this->currentPage > 1 ) {
+            $toDisplay .= '<button class="btn btn-default glyphicon glyphicon-backward"     onclick="board_page_reload(\'first\')"></button>'
+                        . '<button class="btn btn-default glyphicon glyphicon-chevron-left" onclick="board_page_reload(\'previous\')"></button>';
+        }
+        if ( $this->currentPage < $this->pageNumber ) {
+            $toDisplay .= '<button class="btn btn-default glyphicon glyphicon-chevron-right" onclick="board_page_reload(\'next\')"></button>'
+                        . '<button class="btn btn-default glyphicon glyphicon-forward"       onclick="board_page_reload(\'last\')"></button>';
+        }
+        $toDisplay .= '</div>';
 
         // Javascript to manage filter, sort and pagination
         $script = "\n"
                 . "var board_page = {$this->currentPage};\n"
+                . "var board_sort = '{$this->sort}';\n"
                 . "\n"
-                . "var board_reload = function(page) {\n"
+                . "var board_reload = function() {\n"
+                .     "\n"
+                .     "window.location.href = getURL('{$this->requestName}') + '&s=' + board_sort + ( board_page != 1 ? '&p=' + board_page : '' );\n"
+                . "}\n"
+                . "\n"
+                . "var board_sort_reload = function(sort) {\n"
+                .     "\n"
+                .     "board_sort = sort;\n"
+                .     "\n"
+                .     "board_reload();\n"
+                .     "\n"
+                . "}\n"
+                . "\n"
+                . "var board_page_reload = function(page) {\n"
                 .     "\n"
                 .     "switch ( page ) {\n"
                 .         "case 'first':\n"
@@ -190,7 +231,7 @@ class Board_LIB {
                 .             "break;\n"
                 .     "}\n"
                 .     "\n"
-                .     "window.location.href = getURL('{$this->requestName}') + '&p=' + board_page;\n"
+                .     "board_reload();\n"
                 .     "\n"
                 . "}\n";
         Page_LIB::addJavascript($script);

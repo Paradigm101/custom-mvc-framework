@@ -46,3 +46,6 @@ define('WEBSITE_IS_ONLINE', false);
 
 // Boards
 define('DEFAULT_PAGE_SIZE', 22);
+
+// Database size
+define('DATABASE_IS_BIG', false);

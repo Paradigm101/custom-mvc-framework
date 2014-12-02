@@ -8,13 +8,12 @@ class Users_PAG_M extends Base_LIB_Model {
 
         // Sort
         if ( $sort = Url_LIB::getRequestParam('s') ) {
-            $sort = $sort . ' ASC ';
+            $sortQuery = ( $sort[0] == '_' ? substr( $sort, 1 ) . ' DESC ' : $sort . ' ASC ' );
         }
-        else if ( $sort = Url_LIB::getRequestParam('is') ) {
-            $sort = $sort . ' DESC ';
-        }
+        // Default
         else {
-            $sort = 'c2 ASC';
+            $sortQuery = 'c2 ASC';
+            $sort = 'c2';
         }
 
         // TBD Filter
@@ -35,7 +34,7 @@ class Users_PAG_M extends Base_LIB_Model {
                 . '     users u '
                 . '     INNER JOIN roles r ON '
                 . '         r.id = u.id_role '
-                . "ORDER BY $sort "
+                . "ORDER BY $sortQuery "
                 . "LIMIT $startingRow, $pageSize ";
 
         $this->query( $query );
@@ -50,6 +49,6 @@ class Users_PAG_M extends Base_LIB_Model {
         $pageNumber = ceil( $resultNumber / $pageSize );
 
         // Set data ready to retrieve
-        return array( $data, $resultNumber, $currentPage, $pageNumber );
+        return array( $data, $currentPage, $pageNumber, $sort );
     }
 }

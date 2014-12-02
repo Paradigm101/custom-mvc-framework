@@ -13,7 +13,6 @@
  *      - rn: request name, name for the page, ajax or api
  *      - rt: request type, page, ajax or api REQUEST_TYPE_XXX (null = page)
  *      - s: sort parameter (for board)
- *      - is: inverse sort parameter (for board)
  *      - f_<xxx>: filter of variable <xxx> (for board)
  *      - p: page (for board)
  */

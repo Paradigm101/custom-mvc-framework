@@ -75,12 +75,12 @@ class Board_LIB {
         while ( $line = fgetcsv( $csvFile ) ) {
 
             // Add metadata
-            $metadata[$line[0]] = array( 'type'            => trim( $line[1] ),
-                                         'is_shown'        => trim( $line[2] ) ? true : false,
-                                         'label'           => trim( $line[3] ),
-                                         'is_filtered'     => trim( $line[4] ) ? true : false,
-                                         'is_sortable'     => trim( $line[5] ) ? true : false,
-                                         'column_size'     => trim( $line[6] ) );
+            $metadata[$line[0]] = array( 'type'        => trim( $line[1] ),
+                                         'is_shown'    => trim( $line[2] ) ? true : false,
+                                         'label'       => trim( $line[3] ),
+                                         'is_filtered' => trim( $line[4] ) ? true : false,
+                                         'is_sortable' => trim( $line[5] ) ? true : false,
+                                         'column_size' => trim( $line[6] ) + 0 );
         }
 
         $this->metadata = $metadata;
@@ -115,7 +115,7 @@ class Board_LIB {
             }
         }
 
-        // Yay, it's valid!
+        // Yay, that's valid!
         return true;
     }
 
@@ -185,7 +185,7 @@ class Board_LIB {
         $toDisplay .= "<thead>\n"
                         . "<tr>\n"
                             // Checkbox
-                            . '<th style="width:25px;"></th>' . "\n";
+                            . '<th style="width:20px;"></th>' . "\n";
 
         // Display each field title
         foreach( $this->metadata as $key => $param ) {
@@ -193,44 +193,72 @@ class Board_LIB {
             // Check if this field is displayed
             if ( $param['is_shown'] ) {
 
-                // If this is NOT a sortable field
-                if ( !$param['is_sortable'] ) {
+                // Manage column size
+                $size = '';
+                if ( $param['column_size'] ) {
 
-                    // Display it with the caret and link to inverse sort
-                    $toDisplay .= '<th>' . ucfirst( $param['label'] ) . '</th>' . "\n";
+                    $size = "width:{$param['column_size']}px;";
                 }
-                // If this is the sorted field
-                else if ( $this->sort == $key ) {
+                
+                // Label to display
+                $label = ucfirst( $param['label'] ) . "\n";
+                
+                // Tooltip
+                $title = '';
+                
+                // Sortable column: add stuff
+                if ( $param['is_sortable'] ) {
 
-                    // Display it with the caret and link to inverse sort
-                    $toDisplay .= '<th title="Click to reverse the sorting">'
-                                    . '<a onclick="board_sort_reload(\'_' . $key . '\');">'
-                                        . ucfirst( $param['label'] )
-                                    . '</a>'
-                                    . '<span class="caret"></span>'
-                                . '</th>' . "\n";
-                }
-                // If this is the reverse sorted field
-                else if ( $this->sort == '_' . $key ) {
+                    // Sorted column
+                    if ( $this->sort == $key ) {
 
-                    // Display it with the inversed caret and link to regular sort
-                    $toDisplay .= '<th title="Click to reverse the sorting">'
-                                    . '<a onclick="board_sort_reload(\'' . $key . '\');">'
-                                        . ucfirst( $param['label'] )
-                                    . '</a>'
-                                    . '<span class="dropup"><span class="caret"></span></span>'
-                                . '</th>' . "\n";
-                }
-                // Not the sorted field
-                else {
+                        // Reverse sort on click
+                        $sortKey = '_' . $key;
+                        
+                        // Symbol displayed : caret
+                        $symbol = '<span class="caret"></span>';
+                        
+                        // Tooltip
+                        $title = 'Click to reverse the sorting';
+                    }
+                    // Reverse sorted column
+                    else if ( $this->sort == '_' . $key ) {
 
-                    // Display it with NO caret and link to regular sort
-                    $toDisplay .= '<th title="Click to sort by ' . ucfirst( $param['label'] ) . '">'
-                                    . '<a onclick="board_sort_reload(\'' . $key . '\');">'
-                                        . ucfirst( $param['label'] )
-                                    . '</a>'
-                                . '</th>' . "\n";
+                        // Sort on click
+                        $sortKey = $key;
+                        
+                        // Symbol displayed : reverse caret
+                        $symbol = '<span class="dropup"><span class="caret"></span></span>';
+                
+                        // Tooltip
+                        $title = 'Click to reverse the sorting';
+                    }
+                    // NOT sorted column (yet)
+                    else {
+
+                        // Sort on click
+                        $sortKey = $key;
+
+                        // Symbol displayed : none
+                        $symbol = '';
+
+                        // Tooltip
+                        $title = 'Click to sort by ' . ucfirst( $param['label'] );
+                    }
+                    
+                    $startAnchor = "<a onclick=\"board_sort_reload('$sortKey');\">\n";
+                    $endAnchor   = "</a>\n";
+                    
+                    $label = $startAnchor . $label . $endAnchor . $symbol . "\n";
                 }
+
+                // Filtered column, add other stuff
+                $filter = '';
+                if ( $param['is_filtered'] ) {
+                    $filter = "<br/><input id=\"f_$key\" title=\"Filter {$param['label']}\">";
+                }
+                
+                $toDisplay .= "<th style=\"$size;\">\n" . '<span title="' . $title . '">' . $label . '</span>' . "$filter</th>\n";
             }
         }
 
@@ -251,8 +279,8 @@ class Board_LIB {
 
                 // Start with the checkbox
                 $toDisplay .= "<tr>\n"
-                                . '<td><input type="checkbox" id="checkbox_' . $id . '"></td>' . "\n";
-                
+                                . '<td title="Click to select/unselect this item"><input type="checkbox" id="checkbox_' . $id . '"></td>' . "\n";
+
                 // Display each fields
                 foreach( $row as $name => $value ) {
        
@@ -291,20 +319,20 @@ class Board_LIB {
         // End table
         $toDisplay .= "</table>\n";
 
+        /***********************************************************************************/
+        
         // Start of pagination
         $toDisplay .= '<div align="right">';
         
-        // Button states
-        if ( $this->currentPage > 1 ) {
-            $previousState = '';
-        }
-        else {
+        // Manage back buttons
+        $previousState = '';
+        if ( $this->currentPage == 1 ) {
             $previousState = 'disabled';
         }
-        if ( $this->currentPage < $this->pageNumber ) {
-            $nextState = '';
-        }
-        else {
+        
+        // Manage next buttons
+        $nextState = '';
+        if ( $this->currentPage >= $this->pageNumber ) {
             $nextState = 'disabled';
         }
 
@@ -318,6 +346,7 @@ class Board_LIB {
         // End of pagination
         $toDisplay .= '</div>';
 
+        // Eventually return the whole thing for display
         return $toDisplay;
     }
 }

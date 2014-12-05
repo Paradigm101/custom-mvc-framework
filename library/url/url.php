@@ -92,9 +92,35 @@ abstract class Url_LIB {
                 break;
 
             default:
-                Log_LIB::trace( $_SERVER, '[Url_Parser_LIB] Unknown server request method : ' . $_SERVER['REQUEST_METHOD'] );
+                Log_LIB::trace( $_SERVER, '[Url_LIB] Unknown server request method : ' . $_SERVER['REQUEST_METHOD'] );
         }
         
         return $data;
+    }
+    
+    // Specific board: retrieve filters
+    static public function getBoardFilter() {
+        
+        $filters = array();
+        
+        // Retrieving GET filters
+        foreach ( $_GET as $key => $value ) {
+
+            if ( substr( $key, 0, 2) == 'f_' ) {
+
+                $filters[ substr( $key, 2) ] = $value;
+            }
+        }
+        
+        // Retrieving POST filters
+        foreach ( $_POST as $key => $value ) {
+
+            if ( substr( $key, 0, 2) == 'f_' ) {
+
+                $filters[ substr( $key, 2) ] = $value;
+            }
+        }
+        
+        return $filters;
     }
 }

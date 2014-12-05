@@ -16,7 +16,8 @@ abstract class Users_PAG_C extends Base_PAG_C {
                 ->setPageNumber(static::$model->getBoardPageNumber())
                 ->setRequestName('users')
                 ->setSort(static::$model->getBoardSort())
-                ->setCurrentPage(static::$model->getBoardCurrentPage());
+                ->setCurrentPage(static::$model->getBoardCurrentPage())
+                ->setFilters(static::$model->getBoardFilters());
 
         // Send board to view
         static::assign('board', $board);

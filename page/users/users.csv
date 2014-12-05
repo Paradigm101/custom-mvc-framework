@@ -1,4 +1,4 @@
-c1, int, 0, ID,       0, 0, 
-c2, txt, 1, username, 0, 1, 
-c3, txt, 1, email,    1, 1, 
-c4, txt, 1, role,     1, 0, 
+users1, int, 0, ID,       0, 0, 
+users2, txt, 1, username, 0, 1, 
+users3, txt, 1, email,    1, 1, 
+users4, txt, 1, role,     1, 0, 

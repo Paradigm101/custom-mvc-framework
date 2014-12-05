@@ -45,7 +45,7 @@ define('REQUEST_TYPE_LIBRARY',  4);
 define('WEBSITE_IS_ONLINE', false);
 
 // Boards
-define('DEFAULT_PAGE_SIZE', 22);
+define('DEFAULT_PAGE_SIZE', 20);
 
 // Database size
 define('DATABASE_IS_BIG', false);

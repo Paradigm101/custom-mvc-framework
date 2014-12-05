@@ -51,6 +51,14 @@ class Board_LIB {
         return $this;
     }
 
+    // Filters
+    private $filters = null;
+    
+    public function setFilters( $filters ) {
+        $this->filters = $filters;
+        return $this;
+    }
+    
     // For interface, data description
     private $metadata;
     
@@ -121,51 +129,71 @@ class Board_LIB {
 
     // Javascript to manage filter, sort and pagination
     private function getBoardScript() {
+
+        return <<<EOD
+
+        // Page variables
+        var board_page_{$this->requestName} = {$this->currentPage};
+        var board_sort_{$this->requestName} = '{$this->sort}';
+
+        // Reload page
+        var board_reload_{$this->requestName} = function() {
+
+            var sort_url = '&s=' + board_sort_{$this->requestName};
+            var page_url = ( board_page_{$this->requestName} != 1 ? '&p=' + board_page_{$this->requestName} : '' );
+
+            var filter_url = '';
+            $('input[name=board_filter_{$this->requestName}]').each(function() {
+                if ( $(this).val() ) {
+                    filter_url += '&f_' + $(this).attr('id') + '=' + $(this).val();
+                }
+            });
+
+            window.location.href = getURL('{$this->requestName}') + sort_url + page_url + filter_url;
+        }
+
+        // When sorting column title clicked
+        var board_sort_reload_{$this->requestName} = function(sort) {
+
+            board_sort_{$this->requestName} = sort;
+            board_reload_{$this->requestName}();
+        }
+
+        // When pagination button clicked
+        var board_page_reload_{$this->requestName} = function(page) {
         
-        return "var board_page = {$this->currentPage};\n"
-                . "var board_sort = '{$this->sort}';\n"
-                . "\n"
-                . "var board_reload = function() {\n"
-                .     "\n"
-                .     "window.location.href = getURL('{$this->requestName}') + '&s=' + board_sort + ( board_page != 1 ? '&p=' + board_page : '' );\n"
-                . "}\n"
-                . "\n"
-                . "var board_sort_reload = function(sort) {\n"
-                .     "\n"
-                .     "board_sort = sort;\n"
-                .     "\n"
-                .     "board_reload();\n"
-                .     "\n"
-                . "}\n"
-                . "\n"
-                . "var board_page_reload = function(page) {\n"
-                .     "\n"
-                .     "switch ( page ) {\n"
-                .         "case 'first':\n"
-                .             "board_page = 1;\n"
-                .             "break;\n"
-                .         "case 'previous':\n"
-                .             "board_page--;\n"
-                .             "if ( board_page <= 0 ) board_page = 1;"
-                .             "break;\n"
-                .         "case 'next':\n"
-                .             "board_page++;\n"
-                .             "if ( board_page > {$this->pageNumber} ) board_page = {$this->pageNumber};"
-                .             "break;\n"
-                .         "case 'last':\n"
-                .             "board_page = {$this->pageNumber};\n"
-                .             "break;\n"
-                .     "}\n"
-                .     "\n"
-                .     "board_reload();\n"
-                .     "\n"
-                . "}\n";
+            switch ( page ) {
+                case 'first':
+                    board_page_{$this->requestName} = 1;
+                    break;
+
+                case 'previous':
+                    board_page_{$this->requestName}--;
+                    if ( board_page_{$this->requestName} <= 0 ) {
+                        board_page_{$this->requestName} = 1;
+                    }
+                    break;
+
+                case 'next':
+                    board_page_{$this->requestName}++;
+                    if ( board_page_{$this->requestName} > {$this->pageNumber} ) {
+                        board_page_{$this->requestName} = {$this->pageNumber};
+                    }
+                    break;
+
+                case 'last':
+                    board_page_{$this->requestName} = {$this->pageNumber};
+                    break;
+                }
+
+            board_reload_{$this->requestName}();
+        };
+EOD;
     }
 
     // Display board (for template)
     // TBD: fixed column size
     // TBD: put pagination buttons at bottom of the page for incomplete board
-    // TBD: filters
     public function display() {
 
         // Check validity first: data/metadata alignment, etc...
@@ -246,7 +274,7 @@ class Board_LIB {
                         $title = 'Click to sort by ' . ucfirst( $param['label'] );
                     }
                     
-                    $startAnchor = "<a onclick=\"board_sort_reload('$sortKey');\">\n";
+                    $startAnchor = "<a onclick=\"board_sort_reload_{$this->requestName}('$sortKey');\">\n";
                     $endAnchor   = "</a>\n";
                     
                     $label = $startAnchor . $label . $endAnchor . $symbol . "\n";
@@ -255,10 +283,24 @@ class Board_LIB {
                 // Filtered column, add other stuff
                 $filter = '';
                 if ( $param['is_filtered'] ) {
-                    $filter = "<br/><input id=\"f_$key\" title=\"Filter {$param['label']}\">";
+                    
+                    $value = '';
+                    foreach ( $this->filters as $filterName => $filterValue ) {
+                        if ( $filterName == $key ) {
+                            $value = $filterValue;
+                        }
+                    }
+                    
+                    $filter = "<br/><input id=\"$key\" "
+                            . "name=\"board_filter_{$this->requestName}\" "
+                            . "onkeydown=\"if (event.which===13) board_reload_{$this->requestName}();\" "
+                            . "title=\"Filter " . ucfirst( $param['label'] ) . "\" value=\"$value\" />";
                 }
-                
-                $toDisplay .= "<th style=\"$size;\">\n" . '<span title="' . $title . '">' . $label . '</span>' . "$filter</th>\n";
+
+                $toDisplay .= "<th style=\"$size;\">\n"
+                                . '<span title="' . $title . '">' . $label . '</span>'
+                                . "$filter"
+                            . "</th>\n";
             }
         }
 
@@ -337,11 +379,11 @@ class Board_LIB {
         }
 
         // Display
-        $toDisplay .= '<button class="btn btn-default glyphicon glyphicon-backward ' . $previousState . '"     onclick="board_page_reload(\'first\')"></button>'
-                   .  '<button class="btn btn-default glyphicon glyphicon-chevron-left ' . $previousState . '" onclick="board_page_reload(\'previous\')"></button>'
+        $toDisplay .= '<button class="btn btn-default glyphicon glyphicon-backward ' . $previousState . '"     onclick="board_page_reload_' . $this->requestName . '(\'first\')"></button>'
+                   .  '<button class="btn btn-default glyphicon glyphicon-chevron-left ' . $previousState . '" onclick="board_page_reload_' . $this->requestName . '(\'previous\')"></button>'
                    .  '<span style="margin:10px;">Page ' . $this->currentPage . ' / ' . $this->pageNumber . '</span>'
-                   .  '<button class="btn btn-default glyphicon glyphicon-chevron-right ' . $nextState . '"    onclick="board_page_reload(\'next\')"></button>'
-                   .  '<button class="btn btn-default glyphicon glyphicon-forward ' . $nextState . '"          onclick="board_page_reload(\'last\')"></button>';
+                   .  '<button class="btn btn-default glyphicon glyphicon-chevron-right ' . $nextState . '"    onclick="board_page_reload_' . $this->requestName . '(\'next\')"></button>'
+                   .  '<button class="btn btn-default glyphicon glyphicon-forward ' . $nextState . '"          onclick="board_page_reload_' . $this->requestName . '(\'last\')"></button>';
         
         // End of pagination
         $toDisplay .= '</div>';

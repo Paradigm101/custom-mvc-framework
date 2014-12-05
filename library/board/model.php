@@ -70,6 +70,20 @@ class Board_LIB_Model extends Base_LIB_Model {
         return $this->boardPageNumber;
     }
 
+    // Filters
+    private $boardFilters;
+    
+    public function getBoardFilters() {
+        
+        if ( !$this->initDone ) {
+            $this->computeBoardData();
+            $this->initDone = true;
+        }
+        
+        return $this->boardFilters;
+    }
+    
+    // Page size
     private $boardPageSize = DEFAULT_PAGE_SIZE;
     
     public function setBoardPageSize( $pageSize ) {
@@ -78,7 +92,7 @@ class Board_LIB_Model extends Base_LIB_Model {
     
     // Retrieve data and store
     private function computeBoardData() {
-        
+
         // Retrieve sort from URL and default sorting
         if ( !($sort = $this->getStringForQuery( Url_LIB::getRequestParam('s') ) ) ) {
 
@@ -97,7 +111,7 @@ class Board_LIB_Model extends Base_LIB_Model {
         $limitQuery = ' LIMIT ' . ( $currentPage - 1 ) * $this->boardPageSize . ', ' . $this->boardPageSize . ' ';
 
         // First request data of the current page
-        $query = 'SELECT SQL_CALC_FOUND_ROWS ' . substr($this->getBoardQuery(), 7)
+        $query = 'SELECT SQL_CALC_FOUND_ROWS ' . substr($this->getBoardQuery(), 7) . ' '
                 . $sortQuery . ' '
                 . $limitQuery;
 
@@ -113,6 +127,7 @@ class Board_LIB_Model extends Base_LIB_Model {
         $this->boardSort        = $sort;
         $this->boardData        = $data;
         $this->boardCurrentPage = $currentPage;
-        $this->boardPageNumber  = ceil( $resultNumber / $this->boardPageSize );
+        $this->boardPageNumber  = max( ceil( $resultNumber / $this->boardPageSize ), 1 );
+        $this->boardFilters     = Url_LIB::getBoardFilter();
     }
 }

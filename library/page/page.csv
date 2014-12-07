@@ -5,3 +5,4 @@ api,            p, 1, A<strong>P</strong>I,           API access
 about,          o, 1, Ab<strong>o</strong>ut,         About page : my resume
 commands,       m, 1, Co<strong>m</strong>mands,      Allow user the send commands, mainly manage database
 probabilities,  i, 1, Probab<strong>i</strong>lities, Hearthstone probabilities
+game,           g, 1, <strong>G</strong>ame,          Testing page for games: drag-and-drop, switch images, ...

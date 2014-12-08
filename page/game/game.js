@@ -14,11 +14,12 @@ $('img[name=dice_image]').contextmenu( function(event) {
 // When user click a dice image from the reserve pool
 $('img[name=dice_image]').mousedown( function(event) {
 
+    // Get global attributes
     var reserve = window[$(this).attr('color') + '_reserve'];
     var tempo   = window[$(this).attr('color') + '_tempo'];
     
     var is_reserve  = ( $(this).attr('pool') == 'reserve' );
-    var is_tempo    = !is_reserve;
+    var is_tempo    = ( $(this).attr('pool') == 'tempo' );
     var left_click  = ( event.which == 1 );
     var right_click = ( event.which == 3 );
 
@@ -35,9 +36,14 @@ $('img[name=dice_image]').mousedown( function(event) {
         reserve--;
     }
 
-    $('img[name=dice_image][pool=reserve]').attr('src', 'page/game/image/black dice ' + reserve + ' no_shadow.png');
-    $('img[name=dice_image][pool=tempo]').attr('src', 'page/game/image/black dice ' + tempo + ' no_shadow.png');
+    // Modify pools and images if needed
+    if ( window[$(this).attr('color') + '_reserve'] != reserve ) {
+        
+        $('img[name=dice_image][pool=reserve]').attr('src', 'page/game/image/black dice ' + reserve + ' no_shadow.png');
+        $('img[name=dice_image][pool=tempo]').attr('src', 'page/game/image/black dice ' + tempo + ' no_shadow.png');
 
-    window[$(this).attr('color') + '_reserve'] = reserve;
-    window[$(this).attr('color') + '_tempo']   = tempo;
+        // Set global attributes
+        window[$(this).attr('color') + '_reserve'] = reserve;
+        window[$(this).attr('color') + '_tempo']   = tempo;
+    }
 });

@@ -29,3 +29,14 @@
                class="unselectable" 
                title="Left click to add a Black dice, right click to remove a Black dice"
                src="page/game/image/black dice 0 no_shadow.png"/></div>
+ <br>
+ <hr>
+ <br>
+<div class="row" style="border:solid 1px;">
+  <div class="col-xs-6" style="background-color: red;height: 500px;">.col-md-6</div>
+  <div class="col-xs-6" style="background-color: green;">.col-md-6</div>
+</div>
+<div style="border:solid 1px;">
+  <div class="col-md-6" style="background-color: yellow;">.col-md-6</div>
+  <div class="col-md-6" style="background-color: blue;">.col-md-6</div>
+</div>

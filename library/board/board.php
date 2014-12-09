@@ -128,7 +128,7 @@ class Board_LIB extends Base_LIB_Model {
     }
 
     // Javascript to manage filter, sort and pagination
-    private function getBoardScript() {
+    private function getBoardScript( $temporaryTableName ) {
 
         return <<<EOD
 
@@ -189,10 +189,22 @@ class Board_LIB extends Base_LIB_Model {
             board_reload_{$this->requestName}();
         };
 
-        $('input[name=cb_board_{$this->requestName}]').click( function() {
-        
-            console.log('this.checked : ' + this.checked);
-            console.log('$(this).attr(\'id\') : ' + $(this).attr('id'));
+        // Store checkbox modifications in temporary table
+        $('input:checkbox[name=board_{$this->requestName}]').click( function() {
+
+            // Launch ajax
+            $.ajax({
+                type: "POST",
+                url: "",
+                global: false,
+                data: {
+                    rt:         REQUEST_TYPE_AJAX,  // request type
+                    rn:         'cb_change',        // request name
+                    cb_id:      $(this).attr('id'),
+                    is_checked: this.checked,
+                    table_name: '{$temporaryTableName}'
+                }
+            });
         });
 EOD;
     }
@@ -208,9 +220,11 @@ EOD;
             return 'Internal error';
         }
 
+        $temporaryTableName = 'TMP_Board_' . $this->requestName . '_' . Session_LIB::getSessionId();
+        
         // Add Javascript to manage this nice board
         // will be added at the end of the page, after template displays
-        Page_LIB::addJavascript($this->getBoardScript());
+        Page_LIB::addJavascript($this->getBoardScript($temporaryTableName));
 
         // Create a temporary table for this specific user and session and board
         //      - to store checked items
@@ -219,7 +233,7 @@ EOD;
         if ( Session_LIB::isUserLoggedIn() ) {
 
             // Create table only the first time the user arrives on this page
-            $query = 'CREATE TABLE IF NOT EXISTS `TMP_Board_' . $this->requestName . '_' . Session_LIB::getSessionId() . '` ('
+            $query = "CREATE TABLE IF NOT EXISTS `$temporaryTableName` ("
                     . '`id` INT NOT NULL AUTO_INCREMENT, '
                     . 'PRIMARY KEY (`id`), '
                     . 'UNIQUE KEY `id` (`id`) ) '
@@ -350,7 +364,7 @@ EOD;
                 if ( Session_LIB::isUserLoggedIn() ) {
 
                     $toDisplay .= '<td title="Click to select/unselect this item">'
-                                    . '<input type="checkbox" name="cb_board_' . $this->requestName . '" id="' . $id . '">'
+                                    . '<input type="checkbox" name="board_' . $this->requestName . '" id="' . $id . '">'
                                 . '</td>' . "\n";
                 }
 

@@ -1,7 +1,7 @@
 <?php
 
 // Generic class to manage table/board display
-class Board_LIB {
+class Board_LIB extends Base_LIB_Model {
 
     // Data to display in board
     private $data = array();
@@ -10,10 +10,10 @@ class Board_LIB {
         $this->data = $data;
         return $this;
     }
-    
+
     // Pagination: current page
     private $currentPage = null;
-    
+
     public function setCurrentPage( $currentPage ) {
         $this->currentPage = $currentPage;
         return $this;
@@ -53,15 +53,15 @@ class Board_LIB {
 
     // Filters
     private $filters = null;
-    
+
     public function setFilters( $filters ) {
         $this->filters = $filters;
         return $this;
     }
-    
+
     // For interface, data description
     private $metadata;
-    
+
     public function setMetadata( $metadataFile ) {
         
         // Manage No metadata file
@@ -188,6 +188,12 @@ class Board_LIB {
 
             board_reload_{$this->requestName}();
         };
+
+        $('input[name=cb_board_{$this->requestName}]').click( function() {
+        
+            console.log('this.checked : ' + this.checked);
+            console.log('$(this).attr(\'id\') : ' + $(this).attr('id'));
+        });
 EOD;
     }
 
@@ -206,14 +212,32 @@ EOD;
         // will be added at the end of the page, after template displays
         Page_LIB::addJavascript($this->getBoardScript());
 
+        // Create a temporary table for this specific user and session and board
+        //      - to store checked items
+        //      - to allow batch commands
+        //      - user has to be logged in
+        if ( Session_LIB::isUserLoggedIn() ) {
+
+            // Create table only the first time the user arrives on this page
+            $query = 'CREATE TABLE IF NOT EXISTS `TMP_Board_' . $this->requestName . '_' . Session_LIB::getSessionId() . '` ('
+                    . '`id` INT NOT NULL AUTO_INCREMENT, '
+                    . 'PRIMARY KEY (`id`), '
+                    . 'UNIQUE KEY `id` (`id`) ) '
+                    . 'ENGINE=InnoDB DEFAULT CHARSET=latin1;';
+
+            $this->query($query);
+        }
+
+        /******************************** TABLE HEAD ******************************************/
+        
         // Start table
         $toDisplay = "<table class=\"table table-hover table-bordered table-condensed table-striped\">\n";
 
         // Start header
         $toDisplay .= "<thead>\n"
                         . "<tr>\n"
-                            // Checkbox
-                            . '<th style="width:20px;"></th>' . "\n";
+                            // Checkbox (only for logged-in users
+                            . ( Session_LIB::isUserLoggedIn() ? '<th style="width:20px;"></th>' . "\n" : '' );
 
         // Display each field title
         foreach( $this->metadata as $key => $param ) {
@@ -227,7 +251,7 @@ EOD;
 
                     $size = "width:{$param['column_size']}px;";
                 }
-                
+
                 // Label to display
                 $label = ucfirst( $param['label'] ) . "\n";
                 
@@ -297,7 +321,7 @@ EOD;
                             . "title=\"Filter " . ucfirst( $param['label'] ) . "\" value=\"$value\" />";
                 }
 
-                $toDisplay .= "<th style=\"$size;\">\n"
+                $toDisplay .= "<th style=\"$size;vertical-align:top;text-align:center;\">\n"
                                 . '<span title="' . $title . '">' . $label . '</span>'
                                 . "$filter"
                             . "</th>\n";
@@ -308,7 +332,7 @@ EOD;
         $toDisplay .= "</tr>\n"
                 . "</thead>\n";
 
-        /***********************************************************************************/
+        /********************************** TABLE BODY *****************************************/
         
         // Start body
         $toDisplay .= "<tbody>\n";
@@ -319,9 +343,16 @@ EOD;
             // Display all rows
             foreach( $this->data as $id => $row ) {
 
-                // Start with the checkbox
-                $toDisplay .= "<tr>\n"
-                                . '<td title="Click to select/unselect this item"><input type="checkbox" id="checkbox_' . $id . '"></td>' . "\n";
+                // Start row
+                $toDisplay .= "<tr>\n";
+
+                // Checkbox for logged-in user
+                if ( Session_LIB::isUserLoggedIn() ) {
+
+                    $toDisplay .= '<td title="Click to select/unselect this item">'
+                                    . '<input type="checkbox" name="cb_board_' . $this->requestName . '" id="' . $id . '">'
+                                . '</td>' . "\n";
+                }
 
                 // Display each fields
                 foreach( $row as $name => $value ) {
@@ -361,17 +392,17 @@ EOD;
         // End table
         $toDisplay .= "</table>\n";
 
-        /***********************************************************************************/
-        
+        /********************************** FOOTER : PAGINATION ************************************/
+
         // Start of pagination
-        $toDisplay .= '<div align="right">';
-        
+        $toDisplay .= '<div style="float: right;">';
+
         // Manage back buttons
         $previousState = '';
         if ( $this->currentPage == 1 ) {
             $previousState = 'disabled';
         }
-        
+
         // Manage next buttons
         $nextState = '';
         if ( $this->currentPage >= $this->pageNumber ) {

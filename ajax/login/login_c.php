@@ -4,8 +4,8 @@ abstract class Login_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
-        $email     = Url_LIB::getRequestParam('email');
-        $password  = Url_LIB::getRequestParam('password');
+        $email    = Url_LIB::getRequestParam('email');
+        $password = Url_LIB::getRequestParam('password');
 
         // Verify that email is not empty
         if ( !$email ) {
@@ -16,13 +16,14 @@ abstract class Login_AJA_C extends Base_AJA_C {
         // TBD: Manage user already logged in
 
         // Retrieving user id, No data: wrong user/password
-        if ( ( $id_user = static::$model->checkPassword( $email, $password ) ) == null ) {
+        if ( ( $idUser = ( 0 + static::$model->checkPassword( $email, $password ) ) ) == null ) {
 
             static::addAnswer('error', 'Wrong email and/or password.');
             return;
         }
 
-        // Register session
-        static::$model->storeSession( $id_user, session_id() );
+        // Start user session
+        // TBD: manage error
+        $result = Session_LIB::startUserSession( $idUser, session_id() );
     }
 }

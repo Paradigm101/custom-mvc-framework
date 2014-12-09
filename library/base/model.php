@@ -112,7 +112,7 @@ class Base_LIB_Model {
     // DB Wrappers
     //------------
     protected function getQuotedValue( $data ) {
-        
+
         return $this->db->getQuotedValue( $data );
     }
     protected function getInsertId() {

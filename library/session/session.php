@@ -27,10 +27,40 @@ abstract class Session_LIB {
         self::$idUser = static::$model->getUserForSession( session_id() );
     }
 
+    // For log-in
+    static public function startUserSession( $idUser, $idSession ) {
+
+        return self::$model->startUserSession( $idUser, $idSession );
+    }
+
+    // For log-out
+    static public function closeUserSession( $idUser = null, $idSession = null ) {
+
+        // No user => assume current user
+        if ( !$idUser ) {
+
+            $idUser = static::getUserId();
+        }
+
+        return self::$model->closeUserSession( $idUser, $idSession );
+    }
+
     // Get user id for this session (if exists)
     static public function getUserId() {
 
         return static::$idUser;
+    }
+
+    // TBD: return a session id for any user
+    static public function getSessionId( $idUser = null ) {
+
+        // No user => assume current user
+        if ( !$idUser ) {
+
+            $idUser = static::getUserId();
+        }
+
+        return self::$model->getSessionIdByUserId( $idUser );
     }
 
     // Check if user is logged in

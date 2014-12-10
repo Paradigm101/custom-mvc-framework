@@ -59,6 +59,9 @@ class Board_LIB extends Base_LIB_Model {
         return $this;
     }
 
+    // Store primary board id
+    private $primaryId = null;
+
     // For interface, data description
     private $metadata;
 
@@ -89,6 +92,10 @@ class Board_LIB extends Base_LIB_Model {
                                          'is_filtered' => trim( $line[4] ) ? true : false,
                                          'is_sortable' => trim( $line[5] ) ? true : false,
                                          'column_size' => trim( $line[6] ) + 0 );
+
+            if ( $line[7] ) {
+                $this->primaryId = $line[0];
+            }
         }
 
         $this->metadata = $metadata;
@@ -190,7 +197,7 @@ class Board_LIB extends Base_LIB_Model {
         };
 
         // Store checkbox modifications in temporary table
-        $('input:checkbox[name=board_{$this->requestName}]').click( function() {
+        $('input:checkbox[name=board_{$this->requestName}_cb_select]').click( function() {
 
             // Launch ajax
             $.ajax({
@@ -201,7 +208,7 @@ class Board_LIB extends Base_LIB_Model {
                     rt:         REQUEST_TYPE_AJAX,  // request type
                     rn:         'cb_change',        // request name
                     cb_id:      $(this).attr('id'),
-                    is_checked: this.checked,
+                    is_checked: this.checked ? 1 : 0,
                     table_name: '{$temporaryTableName}'
                 }
             });
@@ -234,12 +241,28 @@ EOD;
 
             // Create table only the first time the user arrives on this page
             $query = "CREATE TABLE IF NOT EXISTS `$temporaryTableName` ("
-                    . '`id` INT NOT NULL AUTO_INCREMENT, '
-                    . 'PRIMARY KEY (`id`), '
-                    . 'UNIQUE KEY `id` (`id`) ) '
+                    . '`id_item` VARCHAR(255) NOT NULL, '
+                    . 'UNIQUE KEY `id_item` (`id_item`) ) '
                     . 'ENGINE=InnoDB DEFAULT CHARSET=latin1;';
 
             $this->query($query);
+            
+            // Retrieve this page item's IDs
+            $ids = '';
+            foreach ($this->data as $row) {
+                $ids .= "'cb_sel_{$row[$this->primaryId]}', ";
+            }
+            $ids = substr($ids, 0, -2);
+
+            // Retrive checked checkbox selector
+            $query = "SELECT id_item FROM `$temporaryTableName` WHERE id_item IN ($ids)";
+            
+            $this->query($query);
+            
+            $ids = array();
+            foreach( $this->fetchAll() as $item ) {
+                $ids[] = $item->id_item;
+            }
         }
 
         /******************************** TABLE HEAD ******************************************/
@@ -363,8 +386,14 @@ EOD;
                 // Checkbox for logged-in user
                 if ( Session_LIB::isUserLoggedIn() ) {
 
+                    $cbId = 'cb_sel_' . $row[$this->primaryId];
+                    $checked = ( in_array( $cbId, $ids) ? 'checked="checked"' : '' );
+                    
                     $toDisplay .= '<td title="Click to select/unselect this item">'
-                                    . '<input type="checkbox" name="board_' . $this->requestName . '" id="' . $id . '">'
+                                    . '<input type="checkbox" '
+                                            . 'name="board_' . $this->requestName . '_cb_select" '
+                                            . 'id="' . $cbId . '"'
+                                            . "$checked />"
                                 . '</td>' . "\n";
                 }
 

@@ -19,7 +19,7 @@ abstract class Base_PAG_C extends Base_LIB_Controller {
     static protected function launch() {
 
         // LSB for View name, will based on inherited controller name
-        $viewName = str_replace( '_C', '_V', get_called_class());
+        $viewName = substr(get_called_class(), 0, -2) . '_V';
 
         // If specific view doesn't exists, take the generic one
         if ( !isClassExists($viewName )) {

@@ -13,8 +13,9 @@ abstract class Base_LIB_Controller {
     static public function start() {
 
         // LSB for Model name, will based on inherited controller name
-        $modelName = str_replace( '_C', '_M', get_called_class());
-        
+        // Remove _C for _M
+        $modelName = substr(get_called_class(), 0, -2) . '_M';
+
         // If specific model doesn't exists, take the generic one
         if ( !isClassExists($modelName )) {
 

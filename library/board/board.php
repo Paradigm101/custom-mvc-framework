@@ -1,63 +1,16 @@
 <?php
 
 // Generic class to manage table/board display
-class Board_LIB extends Base_LIB_Model {
+class Board_LIB {
 
-    // Data to display in board
-    private $data = array();
+    // For database access
+    private $model;
 
-    public function setData( $data ) {
-        $this->data = $data;
-        return $this;
-    }
-
-    // Pagination: current page
-    private $currentPage = null;
-
-    public function setCurrentPage( $currentPage ) {
-        $this->currentPage = $currentPage;
-        return $this;
-    }
-    
-    // Pagination: number of page
-    private $pageNumber = null;
-    
-    public function setPageNumber( $pageNumber ) {
-        $this->pageNumber = $pageNumber;
-        return $this;
-    }
-    
-    // Sort: column (start with '_' for reverse)
-    private $sort = null;
-    
-    public function setSort( $sort ) {
-        $this->sort = $sort;
-        return $this;
-    }
-    
-    // Calling page (or ajax or api) for sort/pagination reload
+    // Page name (or ajax/api name)
     private $requestName;
-    
-    public function setRequestName( $requestName ) {
-        $this->requestName = $requestName;
-        return $this;
-    }
-    
+
     // In case no data, message to display user
-    private $noDataMessage = 'No data';
-
-    public function setNoDataMessage( $message ) {
-        $this->noDataMessage = $message;
-        return $this;
-    }
-
-    // Filters
-    private $filters = null;
-
-    public function setFilters( $filters ) {
-        $this->filters = $filters;
-        return $this;
-    }
+    private $noDataMessage;
 
     // Store primary board id
     private $primaryId = null;
@@ -65,9 +18,43 @@ class Board_LIB extends Base_LIB_Model {
     // For interface, data description
     private $metadata;
 
-    public function setMetadata( $metadataFile ) {
+    // Data to display in board
+    private $data = array();
+
+    // Pagination: current page
+    private $currentPage = null;
+
+    // Pagination: number of page
+    private $pageNumber = null;
+
+    // Sort: column (start with '_' for reverse)
+    private $sort = null;
+    
+    // Filters
+    private $filters = null;
+
+    // Selected items
+    private $selected = array();
+    
+    // One entry point for board temporay table name
+    private function getTemporaryTableName() {
+
+        return 'TMP_Board_' . $this->requestName . '_' . Session_LIB::getSessionId();
+    }
+    
+    // TBD: manage bad construction (missing data, etc...)
+    public function __construct( $requestName,
+                                 $metadataFile,
+                                 $query,
+                                 $sort,
+                                 $noDataMsg = 'No data' ) {
         
-        // Manage No metadata file
+        // Very important: do first!
+        $this->requestName   = $requestName;
+        $this->noDataMessage = $noDataMsg;
+
+        /****************************************** METADATA *********************************************************/
+        // Retrieve metadata and primary id
         if ( !$metadataFile ) {
 
             // Get call stack
@@ -93,27 +80,30 @@ class Board_LIB extends Base_LIB_Model {
                                          'is_sortable' => trim( $line[5] ) ? true : false,
                                          'column_size' => trim( $line[6] ) + 0 );
 
+            // Set primary id (for batch actions)
             if ( $line[7] ) {
                 $this->primaryId = $line[0];
             }
         }
 
         $this->metadata = $metadata;
-        return $this;
-    }
-
-    private function isValid() {
         
-        // Check for mandatory data
-        if ( !$this->metadata    ||
-             !$this->currentPage ||
-             !$this->pageNumber  ||
-             !$this->sort        ||
-             !$this->requestName ) {
+        /****************************************** MODEL *********************************************************/
+        $this->model = new Board_LIB_Model( $query,
+                                            $sort,
+                                            $this->getTemporaryTableName(),
+                                            $this->primaryId,
+                                            DEFAULT_PAGE_SIZE );
+        
+        // Get information from model
+        $this->data        = $this->model->getBoardData();
+        $this->currentPage = $this->model->getBoardCurrentPage();
+        $this->pageNumber  = $this->model->getBoardPageNumber();
+        $this->sort        = $this->model->getBoardSort();
+        $this->filters     = $this->model->getBoardFilters();
+        $this->selected    = $this->model->getBoardSelected();
 
-            return false;
-        }
-
+        /****************************************** ALIGNMENT *********************************************************/
         // Check alignment (data can be empty though)
         if ( count($this->data) ) {
 
@@ -125,17 +115,17 @@ class Board_LIB extends Base_LIB_Model {
 
                 // Log error for dev
                 Log_LIB::trace('[Board_LIB] Metadata/Data no aligned for [' . $backTrace[1]['class'] . ']');
-
-                return false;
             }
         }
 
-        // Yay, that's valid!
-        return true;
+        /****************************************** SCRIPT *********************************************************/
+        // Add Javascript to manage this nice board
+        // will be added at the end of the page, after template displays
+        Page_LIB::addJavascript( $this->getBoardScript() );
     }
 
     // Javascript to manage filter, sort and pagination
-    private function getBoardScript( $temporaryTableName ) {
+    private function getBoardScript() {
 
         return <<<EOD
 
@@ -209,7 +199,7 @@ class Board_LIB extends Base_LIB_Model {
                     rn:         'cb_change',        // request name
                     cb_id:      $(this).attr('id'),
                     is_checked: this.checked ? 1 : 0,
-                    table_name: '{$temporaryTableName}'
+                    table_name: '{$this->getTemporaryTableName()}'
                 }
             });
         });
@@ -220,50 +210,6 @@ EOD;
     // TBD: fixed column size
     // TBD: put pagination buttons at bottom of the page for incomplete board
     public function display() {
-
-        // Check validity first: data/metadata alignment, etc...
-        if ( !$this->isValid() ) {
-
-            return 'Internal error';
-        }
-
-        $temporaryTableName = 'TMP_Board_' . $this->requestName . '_' . Session_LIB::getSessionId();
-        
-        // Add Javascript to manage this nice board
-        // will be added at the end of the page, after template displays
-        Page_LIB::addJavascript($this->getBoardScript($temporaryTableName));
-
-        // Create a temporary table for this specific user and session and board
-        //      - to store checked items
-        //      - to allow batch commands
-        //      - user has to be logged in
-        if ( Session_LIB::isUserLoggedIn() ) {
-
-            // Create table only the first time the user arrives on this page
-            $query = "CREATE TABLE IF NOT EXISTS `$temporaryTableName` ("
-                    . '`id_item` VARCHAR(255) NOT NULL, '
-                    . 'UNIQUE KEY `id_item` (`id_item`) ) '
-                    . 'ENGINE=InnoDB DEFAULT CHARSET=latin1;';
-
-            $this->query($query);
-            
-            // Retrieve this page item's IDs
-            $ids = '';
-            foreach ($this->data as $row) {
-                $ids .= "'cb_sel_{$row[$this->primaryId]}', ";
-            }
-            $ids = substr($ids, 0, -2);
-
-            // Retrive checked checkbox selector
-            $query = "SELECT id_item FROM `$temporaryTableName` WHERE id_item IN ($ids)";
-            
-            $this->query($query);
-            
-            $ids = array();
-            foreach( $this->fetchAll() as $item ) {
-                $ids[] = $item->id_item;
-            }
-        }
 
         /******************************** TABLE HEAD ******************************************/
         
@@ -387,7 +333,7 @@ EOD;
                 if ( Session_LIB::isUserLoggedIn() ) {
 
                     $cbId = 'cb_sel_' . $row[$this->primaryId];
-                    $checked = ( in_array( $cbId, $ids) ? 'checked="checked"' : '' );
+                    $checked = ( in_array( $cbId, $this->selected) ? 'checked="checked"' : '' );
                     
                     $toDisplay .= '<td title="Click to select/unselect this item">'
                                     . '<input type="checkbox" '

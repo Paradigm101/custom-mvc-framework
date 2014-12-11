@@ -1,20 +1,20 @@
 <?php
 
 // Users management model
-class Users_PAG_M extends Board_LIB_Model {
+class Users_PAG_M extends Base_LIB_Model {
 
-    protected function getBoardDefaultSort() {
-        
+    public function getBoardDefaultSort() {
+
         return 'users2';
     }
 
-    protected function getBoardQuery() {
+    public function getBoardQuery() {
         
         $fields = array( 'users1' => 'u.id',
                          'users2' => 'u.username',
                          'users3' => 'u.email',
                          'users4' => 'r.label' );
-        
+
         // Filters
         $whereQuery = ' WHERE 1 = 1 ';
         foreach ( Url_LIB::getBoardFilter() as $key => $value ) {

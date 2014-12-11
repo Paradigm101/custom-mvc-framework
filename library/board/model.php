@@ -1,32 +1,12 @@
 <?php
 
-// A base model to implement boards
 class Board_LIB_Model extends Base_LIB_Model {
-    
-    // Custom method: default sort
-    protected function getBoardDefaultSort() {
-        
-        Log_LIB::trace('[Board_LIB_Model] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
-    }
 
-    // Custom method: query
-    protected function getBoardQuery() {
-        
-        Log_LIB::trace('[Board_LIB_Model] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
-    }
-
-    private $initDone = false;
-    
     // Sort (with default)
     private $boardSort;
 
     public function getBoardSort() {
 
-        if ( !$this->initDone ) {
-            $this->computeBoardData();
-            $this->initDone = true;
-        }
-        
         return $this->boardSort;
     }
 
@@ -34,12 +14,6 @@ class Board_LIB_Model extends Base_LIB_Model {
     private $boardData;
     
     public function getBoardData() {
-        
-        if ( !$this->initDone ) {
-        
-            $this->computeBoardData();
-            $this->initDone = true;
-        }
         
         return $this->boardData;
     }
@@ -49,11 +23,6 @@ class Board_LIB_Model extends Base_LIB_Model {
     
     public function getBoardCurrentPage() {
         
-        if ( !$this->initDone ) {
-            $this->computeBoardData();
-            $this->initDone = true;
-        }
-        
         return $this->boardCurrentPage;
     }
 
@@ -61,11 +30,6 @@ class Board_LIB_Model extends Base_LIB_Model {
     private $boardPageNumber;
     
     public function getBoardPageNumber() {
-        
-        if ( !$this->initDone ) {
-            $this->computeBoardData();
-            $this->initDone = true;
-        }
         
         return $this->boardPageNumber;
     }
@@ -75,28 +39,31 @@ class Board_LIB_Model extends Base_LIB_Model {
     
     public function getBoardFilters() {
         
-        if ( !$this->initDone ) {
-            $this->computeBoardData();
-            $this->initDone = true;
-        }
-        
         return $this->boardFilters;
     }
     
-    // Page size
-    private $boardPageSize = DEFAULT_PAGE_SIZE;
+    // Selected checkboxes
+    private $boardSelected;
     
-    public function setBoardPageSize( $pageSize ) {
-        $this->boardPageSize = $pageSize;
+    public function getBoardSelected() {
+        
+        return $this->boardSelected;
     }
     
-    // Retrieve data and store
-    private function computeBoardData() {
+    // Compute everything during creation
+    public function __construct( $boardQuery,
+                                 $defaultSort,
+                                 $temporaryTableName,
+                                 $primaryId,
+                                 $pageSize = DEFAULT_PAGE_SIZE ) {
 
-        // Retrieve sort from URL and default sorting
+        // Do parent and then some interesting stuff...
+        parent::__construct();
+
+        // Retrieve sort from URL or default sorting
         if ( !($sort = $this->getStringForQuery( Url_LIB::getRequestParam('s') ) ) ) {
 
-            $sort = $this->getBoardDefaultSort();
+            $sort = $defaultSort;
         }
 
         // Prepare sort for query
@@ -108,10 +75,10 @@ class Board_LIB_Model extends Base_LIB_Model {
             $currentPage = 1;
         }
         
-        $limitQuery = ' LIMIT ' . ( $currentPage - 1 ) * $this->boardPageSize . ', ' . $this->boardPageSize . ' ';
+        $limitQuery = ' LIMIT ' . ( $currentPage - 1 ) * $pageSize . ', ' . $pageSize . ' ';
 
         // First request data of the current page
-        $query = 'SELECT SQL_CALC_FOUND_ROWS ' . substr($this->getBoardQuery(), 7) . ' '
+        $query = 'SELECT SQL_CALC_FOUND_ROWS ' . substr($boardQuery, 7) . ' '
                 . $sortQuery . ' '
                 . $limitQuery;
 
@@ -123,11 +90,41 @@ class Board_LIB_Model extends Base_LIB_Model {
         $result = $this->fetchNext('array');
         $resultNumber = $result['FOUND_ROWS()'];
 
-        // Store data for use
+        // Manage user session for this board
+        $ids = array();
+        if ( Session_LIB::isUserLoggedIn() ) {
+
+            /************************************* TEMPORARY TABLE ************************************************/
+            $this->query("CREATE TABLE IF NOT EXISTS `$temporaryTableName` ("
+                        . '`id_item` VARCHAR(255) NOT NULL, '
+                        . 'UNIQUE KEY `id_item` (`id_item`) ) '
+                        . 'ENGINE=InnoDB DEFAULT CHARSET=latin1;');
+
+            /************************************* SELECTED CHECKBOX ************************************************/
+            // Retrieve this page item's IDs
+            $ids = '';
+            foreach ($data as $row) {
+                $ids .= "'cb_sel_{$row[$primaryId]}', ";
+            }
+            $ids = substr($ids, 0, -2);
+
+            // Retrive checked checkbox selector
+            $query = "SELECT id_item FROM `$temporaryTableName` WHERE id_item IN ($ids)";
+
+            $this->query($query);
+
+            $ids = array();
+            foreach( $this->fetchAll() as $item ) {
+                $ids[] = $item->id_item;
+            }
+        }
+
+        /************************************* STORE DATA ************************************************/
         $this->boardSort        = $sort;
         $this->boardData        = $data;
         $this->boardCurrentPage = $currentPage;
-        $this->boardPageNumber  = max( ceil( $resultNumber / $this->boardPageSize ), 1 );
+        $this->boardPageNumber  = max( ceil( $resultNumber / $pageSize ), 1 );
         $this->boardFilters     = Url_LIB::getBoardFilter();
+        $this->boardSelected    = $ids;
     }
 }

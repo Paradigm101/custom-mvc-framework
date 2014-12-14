@@ -1,7 +1,7 @@
 <?php
 
 // Users management model
-class Users_PAG_M extends Base_LIB_Model {
+class Users_PAG_M extends Base_PAG_M {
 
     public function getBoardDefaultSort() {
 

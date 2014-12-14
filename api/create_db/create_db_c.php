@@ -5,6 +5,9 @@ abstract class Create_Db_API_C extends Base_API_C {
 
     static protected function process () {
 
+        // Very important!
+        parent::process();
+
         $timeBefore = microtime( true );
         
         // Start answer
@@ -20,9 +23,9 @@ abstract class Create_Db_API_C extends Base_API_C {
 
         // Adding time spent
         $duration = microtime( true ) - $timeBefore;
-        $answer .= "Total time duration : $duration" . ALL_EOL;
+        $answer .= ALL_EOL . 'Total time duration : ' . round( $duration, 3 ) . 's' . ALL_EOL;
         
-        // Return answer
-        static::setAnswer($answer);
+        // Store answer
+        static::$view->assign('message', $answer);
     }
 }

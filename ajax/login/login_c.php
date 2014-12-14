@@ -1,15 +1,20 @@
 <?php
 
+// Manage user log-in
 abstract class Login_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
+        // Very important!
+        parent::process();
+        
         $email    = Url_LIB::getRequestParam('email');
         $password = Url_LIB::getRequestParam('password');
 
         // Verify that email is not empty
         if ( !$email ) {
-            static::addAnswer('error', 'Email has to be set.');
+            
+            static::$view->assign('error', 'Email has to be set.');
             return;
         }
 
@@ -18,7 +23,7 @@ abstract class Login_AJA_C extends Base_AJA_C {
         // Retrieving user id, No data: wrong user/password
         if ( ( $idUser = ( 0 + static::$model->checkPassword( $email, $password ) ) ) == null ) {
 
-            static::addAnswer('error', 'Wrong email and/or password.');
+            static::$view->assign('error', 'Wrong email and/or password.');
             return;
         }
 

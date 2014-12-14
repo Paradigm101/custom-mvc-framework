@@ -1,9 +1,12 @@
 <?php
 
-// Ajax commande that create the database
+// Ajax commande that reset the database
 abstract class Reset_Db_AJA_C extends Base_AJA_C {
 
     static protected function process () {
+
+        // Very important!
+        parent::process();
 
         $timeBefore = microtime( true );
         
@@ -33,8 +36,8 @@ abstract class Reset_Db_AJA_C extends Base_AJA_C {
         // Adding time spent
         $duration = microtime( true ) - $timeBefore;
         $answer .= ALL_EOL . 'Total time duration : ' . round( $duration, 3 ) . 's' . ALL_EOL;
-        
-        // Return answer
-        static::addAnswer('message', $answer);
+
+        // Store answer
+        static::$view->assign('message', $answer);
     }
 }

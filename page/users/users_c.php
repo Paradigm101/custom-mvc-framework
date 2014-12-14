@@ -1,10 +1,13 @@
 <?php
 
-// User manager page
+// Manage users
 abstract class Users_PAG_C extends Base_PAG_C {
 
     // Main process
     static protected function process() {
+
+        // Very important!
+        parent::process();
 
         // Create board
         $board = new Board_LIB( 'users',
@@ -14,6 +17,6 @@ abstract class Users_PAG_C extends Base_PAG_C {
                                 'No users' );
 
         // Send board to view
-        static::assign('board', $board);
+        static::$view->assign('board', $board);
     }
 }

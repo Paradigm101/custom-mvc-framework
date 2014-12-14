@@ -1,11 +1,15 @@
 <?php
 
+// Starting/Main page
 class Main_PAG_V extends Base_PAG_V {
 
-    public function __construct() {
+    // Core method
+    protected function process() {
+        
+        // Very important!
+        parent::process();
 
-        parent::__construct();
-
-        $this->setTitle( 'Home' );
+        // Set page title
+        $this->setTitle('Home');
     }
 }

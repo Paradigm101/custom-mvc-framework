@@ -1,6 +1,7 @@
 <?php
 
-class Cb_Change_AJA_M extends Base_LIB_Model {
+// Manage checkbox change for a board
+class Cb_Change_AJA_M extends Base_AJA_M {
 
     public function storeCheckboxChange( $idCb, $isChecked, $tableName ) {
 

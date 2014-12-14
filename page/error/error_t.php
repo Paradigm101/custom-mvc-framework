@@ -1,3 +1,3 @@
 
 This is the error template<br/>
-<?= $data['message'] . ALL_EOL; ?>
+<?= $data['error'] . ALL_EOL; ?>

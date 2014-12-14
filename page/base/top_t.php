@@ -3,11 +3,11 @@
     <head>
         <!-- Metadata -->
         <meta charset="utf-8">
-        <meta name="description" content="My first website using a custom made PHP MVC framework and Bootstrap 3">
-        <title><?=  $data['title'] ?></title>
+        <meta name="description" content="Website example using a custom made PHP MVC framework, Bootstrap 3 and JQuery">
+        <title><?=  $title ?></title>
 
         <!-- CSS files -->
-<?php   foreach( $data['css_files'] as $cssFile ) { ?>
+<?php   foreach( $cssFiles as $cssFile ) { ?>
         <link type="text/css" rel="stylesheet" href="<?= $cssFile ?>" />
 <?php   } ?>
 

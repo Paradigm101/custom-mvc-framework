@@ -1,14 +1,10 @@
 <?php
 
-class Signup_AJA_M extends Base_LIB_Model {
+// Manage user sign-up
+class Signup_AJA_M extends Base_AJA_M {
 
     /** Add user in DB
-     * 
-     * @param type $email (NOT NULL, UNIQUE)
-     * @param type $username (NOT NULL)
-     * @param type $password
-     * 
-     * @return int (DB id or 0 if problem)
+     *      return 0 (problem) or Id user
      */
     public function addUser( $email, $username, $password ) {
 

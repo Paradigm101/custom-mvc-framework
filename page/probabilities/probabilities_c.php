@@ -7,11 +7,9 @@ define('PROBA_POST_MULLIGAN', 1);
 define('PROBA_KEEP_ONE',      0);
 define('PROBA_NO_KEEP',       1);
 
-/**
- * Probabilities page
- */
+// Probabilities page for heartstone
 abstract class Probabilities_PAG_C extends Base_PAG_C {
-    
+
     /**
      *  Probability to NOT draw a card out of a deck
      * 
@@ -25,6 +23,9 @@ abstract class Probabilities_PAG_C extends Base_PAG_C {
 
     // Main method
     static protected function process() {
+
+        // Very important!
+        parent::process();
 
         // Create a structure to store results
         $tmp   = array( PROBA_NO_KEEP      => array(), PROBA_KEEP_ONE      => array() );
@@ -82,6 +83,7 @@ abstract class Probabilities_PAG_C extends Base_PAG_C {
                                                                                          * static::probaNotDraw($twoDropNumber, 25);
         }
 
-        static::assign('proba', $proba);
+        // Send data to view
+        static::$view->assign('proba', $proba);
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-// Manage Ajax error
+// Manage wrong Ajax requests
 abstract class Error_AJA_C extends Base_AJA_C {
 
-    static private $message = 'Error message not initialized';
+    static private $message = 'Ajax error message not initialized';
 
     static public function setMessage( $message = '' ) {
 
@@ -12,6 +12,10 @@ abstract class Error_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
-        static::addAnswer('error', static::$message);
+        // Very important!
+        parent::process();
+
+        // Store answer
+        static::$view->assign('error', static::$message);
     }
 }

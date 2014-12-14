@@ -1,8 +1,9 @@
 <?php
 
+// Manage wrong API requests
 abstract class Error_API_C extends Base_API_C {
-    
-    static private $message = 'Error message not initialized';
+
+    static private $message = 'API error message not initialized';
 
     static public function setMessage( $message = '' ) {
 
@@ -10,7 +11,11 @@ abstract class Error_API_C extends Base_API_C {
     }
 
     static protected function process () {
-        
-        static::setAnswer(static::$message);
+
+        // Very important!
+        parent::process();
+
+        // Store answer
+        static::$view->assign('error', static::$message);
     }
 }

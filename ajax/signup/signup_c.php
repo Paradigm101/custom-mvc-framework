@@ -6,6 +6,9 @@ abstract class Signup_AJA_C extends Base_AJA_C {
     // Main process
     static protected function process() {
 
+        // Very important!
+        parent::process();
+
         // Retrieve parameters
         $email     = Url_LIB::getRequestParam('email');
         $username  = Url_LIB::getRequestParam('username');
@@ -14,21 +17,26 @@ abstract class Signup_AJA_C extends Base_AJA_C {
 
         // Check same passwords
         if ( $password != $password2 ) {
-            static::addAnswer('error',  'The passwords you entered are different.');
+
+            static::$view->assign('error', 'The passwords you entered are different.');
             return;
         }
 
         // Verify that email is not empty
         if ( !$email ) {
 
-            static::addAnswer('error',  'Email has to be set.');
-            return;
+            static::$view->assign('error', 'Email has to be set.');
         }
 
         // Verify that username is not empty
         if ( !$username ) {
 
-            static::addAnswer('error',  'Username has to be set.');
+            static::$view->assign('error', 'Username has to be set.');
+        }
+
+        // Username or email missing, no need to continue
+        if ( !$username || !$email ) {
+
             return;
         }
 
@@ -40,19 +48,19 @@ abstract class Signup_AJA_C extends Base_AJA_C {
 
                 // User already exists
                 case BLM_ERROR_STATUS_DUPLICATE_ENTRY:
-                    static::addAnswer('error',  'This email already exists in our system.');
+                    static::$view->assign('error', 'This email already exists in our system.');
                     break;
 
                 // Unexpected error
                 default:
-                    static::addAnswer('error',  'Something wrong happened, try again later.');
+                    static::$view->assign('error', 'Something wrong happened, try again later.');
             }
         }
         // Everthing went well, send userId
         else {
-            static::addAnswer('userId', $userId);
+            static::$view->assign('userId', $userId);
         }
 
-        // TBD: login (and reload page)
+        // TBD: login (and reload page) (front side?)
     }
 }

@@ -10,6 +10,7 @@ abstract class Error_AJA_C extends Base_AJA_C {
         static::$message = $message;
     }
 
+    // Core method
     static protected function process() {
 
         // Store answer

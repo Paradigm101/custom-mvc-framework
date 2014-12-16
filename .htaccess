@@ -1,0 +1,42 @@
+Options -Indexes
+
+# remove access to specific php files
+<Files config.php>
+    order allow,deny
+    deny from all
+</Files>
+<Files global_functions.php>
+    order allow,deny
+    deny from all
+</Files>
+
+<FilesMatch "\.(md|txt|example|csv|xml)$">
+    order allow,deny
+    deny from all
+</FilesMatch>
+
+# In case page not found, redirect to a bad request
+#ErrorDocument 404 http://localhost/custom-mvc-framework?rn=xyz
+
+# Turn Rewrite Engine On
+RewriteEngine On
+
+# if request is an unknown directory/file
+# (seems to do the same thing...)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# QSA: Query String Appen (keep the arguments)
+RewriteRule ^(.*)$ index.php?rn=$1 [QSA,L]
+
+# Redirect test to ?rn=test (hidden in URL)
+# NC: Non-case sensitive
+# L : Last rule that this specific condition will match
+#RewriteRule ^main ?rn=main [NC,L]
+
+# Rewrite rule for test2/xxx index.php?rn=xxx
+# TBD: problem with css/js/image files
+#RewriteRule ^test2/([0-9a-zA-Z]+) ?rn=$1 [NC,L]
+
+# Rewrite for ?rn=users&s=xxx&f_... to xxx/?rn=users&f_...
+#RewriteRule ^users/([0-9a-zA-Z]+) ?rn=users&s=$1

@@ -89,6 +89,9 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
     return;
 });
 
+// DEBUG
+Log_LIB::trace($_SERVER['REQUEST_URI'], '[INDEX] $_SERVER[\'REQUEST_URI\']');
+
 // Start user session
 //-------------------
 Session_LIB::initSession();
@@ -170,6 +173,11 @@ if ( !Session_LIB::hasAccess( $requestName, $requestTypeCode ) ) {
 
     // And leave
     exit();
+}
+
+//Log_LIB::trace($_SERVER, "SERVER for [$className]");
+if ( ( array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER)) && ( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' ) ) {
+    Log_LIB::trace('This is an ajax!');
 }
 
 // Start Request

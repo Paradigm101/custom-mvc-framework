@@ -3,45 +3,25 @@
 // Generic class to manage table/board display
 class Board_LIB {
 
-    // For database access
-    private $model;
+    // Internal attributes
+    private $model;                 // For database access
+    private $requestName;           // Page name (or ajax/api name)
+    private $noDataMessage;         // In case no data, message to display user
+    private $primaryId = null;      // Store primary board id
+    private $metadata;              // For interface, data description
+    private $data = array();        // Data to display in board
+    private $currentPage = null;    // Pagination: current page
+    private $pageNumber = null;     // Pagination: number of page
+    private $sort = null;           // Sort: column (start with '_' for reverse)
+    private $filters = null;        // Filters
+    private $selected = array();    // Selected items
 
-    // Page name (or ajax/api name)
-    private $requestName;
-
-    // In case no data, message to display user
-    private $noDataMessage;
-
-    // Store primary board id
-    private $primaryId = null;
-
-    // For interface, data description
-    private $metadata;
-
-    // Data to display in board
-    private $data = array();
-
-    // Pagination: current page
-    private $currentPage = null;
-
-    // Pagination: number of page
-    private $pageNumber = null;
-
-    // Sort: column (start with '_' for reverse)
-    private $sort = null;
-    
-    // Filters
-    private $filters = null;
-
-    // Selected items
-    private $selected = array();
-    
     // One entry point for board temporay table name
     private function getTemporaryTableName() {
 
         return 'TMP_Board_' . $this->requestName . '_' . Session_LIB::getSessionId();
     }
-    
+
     // TBD: manage bad construction (missing data, etc...)
     public function __construct( $requestName,
                                  $metadataFile,

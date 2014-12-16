@@ -6,9 +6,6 @@ abstract class Signup_AJA_C extends Base_AJA_C {
     // Main process
     static protected function process() {
 
-        // Very important!
-        parent::process();
-
         // Retrieve parameters
         $email     = Url_LIB::getRequestParam('email');
         $username  = Url_LIB::getRequestParam('username');

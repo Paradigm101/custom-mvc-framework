@@ -174,4 +174,4 @@ if ( !Session_LIB::hasAccess( $requestName, $requestTypeCode ) ) {
 
 // Start Request
 //--------------
-$className::start();
+$className::launch();

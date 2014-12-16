@@ -6,9 +6,6 @@ abstract class Users_PAG_C extends Base_PAG_C {
     // Main process
     static protected function process() {
 
-        // Very important!
-        parent::process();
-
         // Create board
         $board = new Board_LIB( 'users',
                                 'page/users/users.csv',

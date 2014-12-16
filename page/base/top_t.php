@@ -15,4 +15,4 @@
     <body>
 
         <!-- Start of body -->
-        <div class="container" style="margin-bottom: 70px">
+        <div class="container" style="margin-bottom: 70px;">

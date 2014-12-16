@@ -18,9 +18,5 @@ abstract class Base_LIB_View {
     }
 
     // display page (send answer)
-    public function render() {
-
-        // No default, has to be overwritter
-        Log_LIB::trace('[Base_LIB_View] Method ' . __METHOD__ . ' has to be overwritten from [' . get_called_class() . ']');
-    }
+    abstract public function render();
 }

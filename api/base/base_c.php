@@ -16,4 +16,13 @@ abstract class Base_API_C extends Base_LIB_Controller {
 
         return 'Base_API_V';
     }
+    
+    // Core method: does nothing (yet)
+    static protected function pLaunch() {
+
+        static::process();
+    }
+    
+    // Core method: for children
+    static protected function process() {}
 }

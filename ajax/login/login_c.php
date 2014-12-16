@@ -5,9 +5,6 @@ abstract class Login_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
-        // Very important!
-        parent::process();
-        
         $email    = Url_LIB::getRequestParam('email');
         $password = Url_LIB::getRequestParam('password');
 

@@ -26,7 +26,7 @@ abstract class Base_LIB_Controller {
     //      Set model, view
     //      Pass the relay to children
     //      Render view
-    static public function start() {
+    static public function launch() {
 
         // LSB for Model name, will based on inherited controller name
         $modelName = substr(get_called_class(), 0, -2) . '_M';
@@ -50,11 +50,11 @@ abstract class Base_LIB_Controller {
         
         self::$view = new $viewName();
         
-        static::process();
+        static::pLaunch();
         
         self::$view->render();
     }
 
-    // Core method, children have to call it!
-    static protected function process() {}
+    // Core method: for children
+    static protected function pLaunch() {}
 }

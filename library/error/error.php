@@ -17,7 +17,7 @@ abstract class Error_LIB {
 
                 // Launch error page for user
                 $errorClass::setMessage($message);
-                $errorClass::start();
+                $errorClass::launch();
                 break;
 
             // Other request type: log

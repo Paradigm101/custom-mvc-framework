@@ -33,10 +33,17 @@
  <hr>
  <br>
 <div class="row" style="border:solid 1px;">
-  <div class="col-xs-6" style="background-color: red;height: 500px;">.col-md-6</div>
-  <div class="col-xs-6" style="background-color: green;">.col-md-6</div>
+  <div class="col-xs-6" style="background-color: red;height: 500px;">.col-md-6 || height: 500px</div>
+  <div class="col-xs-3" style="border:solid 1px;background-color: green;">.col-md-3</div>
+  <div class="col-xs-3" style="border:solid 1px;background-color: green;">
+      <div class="col-xs-3" style="border:solid 1px;background-color: green;">1</div>
+      <div class="col-xs-3" style="border:solid 1px;background-color: green;">2</div>
+      <div class="col-xs-3" style="border:solid 1px;background-color: green;">3</div>
+      <div class="col-xs-3" style="border:solid 1px;background-color: green;">4</div>
+  </div>
 </div>
-<div style="border:solid 1px;">
+<div class="row" style="border:solid 1px;">
   <div class="col-md-6" style="background-color: yellow;">.col-md-6</div>
-  <div class="col-md-6" style="background-color: blue;">.col-md-6</div>
+  <div class="col-xs-3" style="border:solid 1px;background-color: green;">.col-md-3</div>
+  <div class="col-xs-3" style="border:solid 1px;background-color: green;">.col-md-3</div>
 </div>

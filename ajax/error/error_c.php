@@ -12,9 +12,6 @@ abstract class Error_AJA_C extends Base_AJA_C {
 
     static protected function process() {
 
-        // Very important!
-        parent::process();
-
         // Store answer
         static::$view->assign('error', static::$message);
     }

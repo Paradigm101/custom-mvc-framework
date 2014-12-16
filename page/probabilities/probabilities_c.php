@@ -24,9 +24,6 @@ abstract class Probabilities_PAG_C extends Base_PAG_C {
     // Main method
     static protected function process() {
 
-        // Very important!
-        parent::process();
-
         // Create a structure to store results
         $tmp   = array( PROBA_NO_KEEP      => array(), PROBA_KEEP_ONE      => array() );
         $tmp   = array( PROBA_PRE_MULLIGAN => $tmp,    PROBA_POST_MULLIGAN => $tmp );

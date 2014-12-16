@@ -3,12 +3,8 @@
 // Mother class of every Page view
 class Base_PAG_V extends Base_LIB_View {
 
-    // Internal information
-    private $page      = '';
-    private $title     = '';
-    private $templates = array();
-    private $header    = DEFAULT_HEADER;
-    private $footer    = DEFAULT_FOOTER;
+    // Page name
+    private $page = '';
 
     // Need page name to work!
     public function setPageName( $pageName ) {
@@ -16,24 +12,28 @@ class Base_PAG_V extends Base_LIB_View {
         $this->page = strtolower( $pageName );
     }
 
-    // Init title and templates
-    protected function process() {
+    // Title: override in children to change title
+    protected function getTitle() {
 
-        $this->title     = ucfirst( $this->page );
-        $this->templates = array( strtolower( $this->page ) );
+        return ucfirst( $this->page );
     }
 
-    // Set title
-    protected function setTitle( $title ) {
+    // Templates: override in children to add templates
+    protected function getExtraTemplates() {
 
-        $this->title = $title;
+        return array();
     }
 
-    // Add a template to the page
-    protected function addTemplate( $template ) {
+    // Header: override in children for a different header
+    protected function getHeader() {
 
-        // Carefull : storing template name instead of template file (i.e. with path) for front-end simplification
-        array_push( $this->templates, $template );
+        return DEFAULT_HEADER;
+    }
+
+    // Footer: override in children for a different footer
+    protected function getFooter() {
+
+        return DEFAULT_FOOTER;
     }
 
     // display page:
@@ -41,16 +41,17 @@ class Base_PAG_V extends Base_LIB_View {
     //      load templates
     public function render() {
 
-        // Allow children to do stuff
-        $this->process();
-        
         /******************************** DATA FOR TEMPLATES **********************************************/
-        // To do BEFORE requiring the templates
-        $data        = $this->getData();
-        $title       = $this->title;
+        // To do BEFORE including the templates
         $cssFiles    = array();
         $scriptFiles = array();
-        
+        $data        = $this->getData();
+        $title       = $this->getTitle();
+        $header      = $this->getHeader();
+        $footer      = $this->getFooter();
+        $templates   = array_merge( array( strtolower( $this->page ) ),
+                                    $this->getExtraTemplates() );
+
         // Add css files for every page
         //-------------------------
         $cssFiles[] = 'page/base/base.css';
@@ -77,10 +78,10 @@ class Base_PAG_V extends Base_LIB_View {
 
         // Add css/javascript files for header
         //------------------------------------
-        if ( $this->header ) {
+        if ( $header ) {
 
             // Getting css file name
-            $cssFile = 'page/' . $this->header . '/' . $this->header . '.css';
+            $cssFile = 'page/' . $header . '/' . $header . '.css';
 
             // If file exists, add it to be loaded
             if ( file_exists( $cssFile ) ) {
@@ -89,7 +90,7 @@ class Base_PAG_V extends Base_LIB_View {
             }
 
             // Getting javascript file name
-            $scriptFile = 'page/' . $this->header . '/' . $this->header . '.js';
+            $scriptFile = 'page/' . $header . '/' . $header . '.js';
 
             // If file exists, add it to be loaded
             if ( file_exists( $scriptFile ) ) {
@@ -100,10 +101,10 @@ class Base_PAG_V extends Base_LIB_View {
 
         // Add css/javascript files for footer
         //------------------------------------
-        if ( $this->footer ) {
+        if ( $footer ) {
 
             // Getting css file name
-            $cssFile = 'page/' . $this->footer . '/' . $this->footer . '.css';
+            $cssFile = 'page/' . $footer . '/' . $footer . '.css';
 
             // If file exists, add it to be loaded
             if ( file_exists( $cssFile ) ) {
@@ -112,7 +113,7 @@ class Base_PAG_V extends Base_LIB_View {
             }
 
             // Getting javascript file name
-            $scriptFile = 'page/' . $this->footer . '/' . $this->footer . '.js';
+            $scriptFile = 'page/' . $footer . '/' . $footer . '.js';
 
             // If file exists, add it to be loaded
             if ( file_exists( $scriptFile ) ) {
@@ -123,7 +124,7 @@ class Base_PAG_V extends Base_LIB_View {
 
         // Add css/javascript files for templates
         //---------------------------------------
-        foreach( $this->templates as $template ) {
+        foreach( $templates as $template ) {
 
             // Getting css file name
             $cssFile = 'page/' . $this->page . '/' . $template . '.css';
@@ -149,16 +150,16 @@ class Base_PAG_V extends Base_LIB_View {
         require 'page/base/top_t.php';
 
         // Add header if needed
-        if ( $this->header ) {
+        if ( $header ) {
 
-            require 'page/' . $this->header . '/' . $this->header . '_t.php';
+            require 'page/' . $header . '/' . $header . '_t.php';
         }
 
         // Base template
         require 'page/base/base_t.php';
         
         // Page template(s)
-        foreach( $this->templates as $template ) {
+        foreach( $templates as $template ) {
 
             // Check file exists
             if ( file_exists( $templateFile = 'page/' . $this->page . '/' . $template . '_t.php' ) ) {
@@ -169,9 +170,9 @@ class Base_PAG_V extends Base_LIB_View {
         }
 
         // Add footer if needed
-        if ( $this->footer ) {
+        if ( $footer ) {
 
-            require 'page/' . $this->footer . '/' . $this->footer . '_t.php';
+            require 'page/' . $footer . '/' . $footer . '_t.php';
         }
 
         // What is always on bottom

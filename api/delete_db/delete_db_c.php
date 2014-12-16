@@ -5,9 +5,6 @@ abstract class Delete_Db_API_C extends Base_API_C {
 
     static protected function process () {
 
-        // Very important!
-        parent::process();
-
         $timeBefore = microtime( true );
         
         // Start answer

@@ -13,9 +13,6 @@ abstract class Error_PAG_C extends Base_PAG_C {
     // Core method
     static protected function process() {
 
-        // Very important!
-        parent::process();
-
         // Store answer
         static::$view->assign('error', static::$message);
     }

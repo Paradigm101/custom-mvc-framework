@@ -20,18 +20,26 @@
                  class="unselectable" 
                  title="Left click to add a Black dice, right click to remove a Black dice"
                  src="page/game/image/black dice 5 no_shadow.png"/></div>
- <br>
- <hr>
- <br>
+<br>
+<hr>
+<br>
 <div>Tempo<img color="black" 
                name="dice_image" 
                pool="tempo"
                class="unselectable" 
                title="Left click to add a Black dice, right click to remove a Black dice"
                src="page/game/image/black dice 0 no_shadow.png"/></div>
- <br>
- <hr>
- <br>
+<br>
+<hr>
+<br>
+<div id="troll">Info</div>
+<a class="infoLink" href="" data-info="Info On XYZ1">XYZ1</a>
+<a class="infoLink" href="" data-info="Info On XYZ2">XYZ2</a>
+<a class="infoLink" href="" data-info="Info On XYZ3">XYZ3</a>
+<a class="infoLink" href="" data-info="Info On XYZ4">XYZ4</a>
+<br>
+<hr>
+<br>
 <div class="row" style="border:solid 1px;">
   <div class="col-xs-6" style="background-color: red;height: 500px;">.col-md-6 || height: 500px</div>
   <div class="col-xs-3" style="border:solid 1px;background-color: green;">.col-md-3</div>
@@ -47,3 +55,4 @@
   <div class="col-xs-3" style="border:solid 1px;background-color: green;">.col-md-3</div>
   <div class="col-xs-3" style="border:solid 1px;background-color: green;">.col-md-3</div>
 </div>
+ 

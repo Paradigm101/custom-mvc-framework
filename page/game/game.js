@@ -47,3 +47,14 @@ $('img[name=dice_image]').mousedown( function(event) {
         window[$(this).attr('color') + '_tempo']   = tempo;
     }
 });
+
+$('.infoLink').hover(
+  function()
+  {
+      $('#troll').html($(this).attr('data-info'));
+  },
+  function()
+  {
+      $('#troll').html('Info');
+  }
+);

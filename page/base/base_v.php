@@ -147,5 +147,7 @@ class Base_PAG_V extends Base_LIB_View {
 
         // What is always on bottom
         require 'page/base/bottom_t.php';
+        
+        // TBD: force leave script?
     }
 }

@@ -53,13 +53,18 @@ function getFileForClass( $className ) {
 
     // Parse out class name
     $exploded = explode('_', $className);
-
+    
     // Create complement
     $complement = array();
-
+    
     // While last element is not a class type, store it in complement
     while ( ( $requestTypeCode = convertRequestClassToCode( $last = strtolower( array_pop($exploded) ) ) ) == null ) {
 
+        // Arriving at the end of the class without finding a request type code
+        if ( !$last ) {
+            return null;
+        }
+//        file_put_contents(LOG_FILE, "[getFileForClass] last [" . print_r($last, true) . "]\n", FILE_APPEND);
         // In the good order
         array_unshift($complement, $last);
     }

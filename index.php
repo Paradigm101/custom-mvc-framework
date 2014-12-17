@@ -18,7 +18,7 @@ require_once 'global_functions.php';
 //      Complement: if request type is PAG, AJA, API then _M, _V, _C
 //           else can be empty or anything except a request type (PAG, AJA, API, LIB, TAB)
 //---------
-spl_autoload_register( function ( $className ) {
+spl_autoload_register( $myAutoload = function ( $className ) {
 
     // File
     $file = getFileForClass($className);
@@ -27,18 +27,20 @@ spl_autoload_register( function ( $className ) {
     if ( !file_exists( $file ) ) {
 
         file_put_contents(LOG_FILE, "[AUTOLOAD] File doesn't exists [$file] for [$className]\n", FILE_APPEND);
-        exit();
+        return 'No service';
     }
 
     // file exists: fetch it at last!
-    require_once $file;
+    require $file;
 
     // File loaded but class still doesn't exists ...
     if ( !class_exists ( $className ) ) {
 
         file_put_contents(LOG_FILE, "[AUTOLOAD] Class does not exist [$className] in [$file]\n", FILE_APPEND);
-        exit();
+        return 'Internal error';
     }
+
+    return '';
 });
 
 // Error handler
@@ -97,7 +99,7 @@ Session_LIB::initSession();
 //------------------------------
 $requestTypeCode = strtolower(Url_LIB::getRequestParam('rt'));
 
-// Wrong request type: log hacker
+// Wrong request type: log hacker/issue
 if ( !(in_array($requestTypeCode, array(null, REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
 
     // Log error
@@ -121,41 +123,11 @@ if ( !$requestName || $requestName == 'base' ) {
     if ( $requestTypeCode == REQUEST_TYPE_PAGE ) {
         $requestName = DEFAULT_PAGE;
     }
+    // Error for API or Ajax
     else {
-        Error_LIB::process("No request name set!", $requestType);
+        Error_LIB::process("Wrong service [$requestName]!", $requestTypeCode);
         exit();
     }
-}
-
-$directory = convertRequestCodeToDirectory($requestTypeCode);
-
-// Controller file doesn't exist
-if ( !( file_exists( $file = $directory . '/' . $requestName . '/' . $requestName . '_c.php' ) ) ) {
-
-    // Launch the user error answer: page/ajax/api
-    Error_LIB::process("The service you are trying to access doesn't exist", $requestTypeCode);
-
-    // Trace hacker
-    Log_LIB::trace("[INDEX] File does NOT exist [$file] for request [$requestName] of type [$requestTypeCode] from IP [" . Session_LIB::getUserIP() . ']');
-
-    // And leave
-    exit();
-}
-
-// File exists, fetch it
-require_once $file;
-
-// Controller doesn't exist
-if ( !( class_exists( $className = ucfirst($requestName) . '_' . convertRequestCodeToClass($requestTypeCode) . '_C' ) ) ) {
-
-    // Launch the user error page
-    Error_LIB::process("Something wrong happened, try again later", $requestType);
-
-    // Trace the missing class
-    Log_LIB::trace("[INDEX] Controller [$className] doesn't exist in file [$file]");
-
-    // And leave
-    exit();
 }
 
 // Manage security
@@ -163,10 +135,23 @@ if ( !( class_exists( $className = ucfirst($requestName) . '_' . convertRequestC
 if ( !Session_LIB::hasAccess( $requestName, $requestTypeCode ) ) {
 
     // Launch the user error page
-    Error_LIB::process("You do not have access to this service", $requestTypeCode);
+    Error_LIB::process("No access", $requestTypeCode);
 
     // Trace the missing class
-    Log_LIB::trace("[INDEX] User try to access forbidden service [$className] IP [" . Session_LIB::getUserIP() . "]");
+    Log_LIB::trace("[INDEX] User try to access forbidden service [$requestName] of type [$requestTypeCode] IP [" . Session_LIB::getUserIP() . "]");
+
+    // And leave
+    exit();
+}
+
+// Something went wrong
+if ( $myAutoload( $className = ucfirst( $requestName ) . '_' . convertRequestCodeToClass($requestTypeCode) . '_C' ) ) {
+
+    // Launch the user error answer: page/ajax/api
+    Error_LIB::process("No service", $requestTypeCode);
+
+    // TBD: Log? There's gonna be a lot! (maybe customize according to environment...
+    Log_LIB::trace("[INDEX] Wrong service [$requestName] of type [$requestTypeCode] from IP [" . Session_LIB::getUserIP() . ']');
 
     // And leave
     exit();

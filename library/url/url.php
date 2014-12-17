@@ -6,7 +6,7 @@
  *      create url
  * 
  * TBD: manage security, avoid SQL injection, ...
- * TBD: manage arrays
+ * TBD: manage arrays in URL
  * TBD: user filter_input, etc..
  * 
  * URL parameters:
@@ -45,19 +45,22 @@ abstract class Url_LIB {
     // Get URL for request
     static public function getUrlForRequest( $requestName = null, $requestType = null ) {
 
-        $extension = '';
+        // URL according to type
         switch ( $requestType ) {
+
+            // Ajax
             case REQUEST_TYPE_AJAX:
-                $extension = 'ajax/';
-                break;
+                return SITE_ROOT . '?rn='. $requestName . '&rt=' . $requestType;
+
+            // API
             case REQUEST_TYPE_API:
-                $extension = 'api/';
-                break;
+                return SITE_ROOT . '/api/' . $requestName . '/';
+
+            // Others/pages
             case REQUEST_TYPE_PAGE:
             default:
+                return SITE_ROOT . '/' . $requestName;
         }
-
-        return SITE_ROOT . '/' . $extension . $requestName;
     }
 
     // Get a parameter through GET method

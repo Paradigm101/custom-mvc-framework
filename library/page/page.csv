@@ -1,7 +1,7 @@
 main,           h, 1, <strong>H</strong>ome,          Home page : menu
 bootstrapdemo,  b, 1, <strong>B</strong>ootstrap,     Bootstrap demonstration page
 users,          s, 1, U<strong>s</strong>ers,         User management (admin only)
-api,            p, 1, A<strong>P</strong>I,           API access
+apidemo,        p, 1, A<strong>P</strong>I,           API access for demo
 commands,       m, 1, Co<strong>m</strong>mands,      Allow user the send commands, mainly manage database
 probabilities,  i, 1, Probab<strong>i</strong>lities, Hearthstone probabilities
 game,           g, 1, <strong>G</strong>ame,          Testing page for games: drag-and-drop, switch images, ...

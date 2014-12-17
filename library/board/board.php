@@ -126,7 +126,7 @@ class Board_LIB {
                 }
             });
 
-            window.location.href = getURL('{$this->requestName}') + sort_url + page_url + filter_url;
+            window.location.href = getURL('{$this->requestName}') + '?' + sort_url + page_url + filter_url;
         }
 
         // When sorting column title clicked

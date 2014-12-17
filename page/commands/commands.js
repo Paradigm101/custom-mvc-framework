@@ -13,8 +13,8 @@ $(function(){
             type: "POST",
             url: "",
             data: {
-                rt:     REQUEST_TYPE_AJAX,
-                rn:     'delete_db'
+                rt:     REQUEST_TYPE_AJAX,  // request type
+                rn:     'delete_db'         // request name
             },
             success: function( data ) {
 
@@ -35,8 +35,8 @@ $(function(){
             type: "POST",
             url: "",
             data: {
-                rt:     REQUEST_TYPE_AJAX,
-                rn:     'create_db'
+                rt:     REQUEST_TYPE_AJAX,  // request type
+                rn:     'create_db'         // request name
             },
             success: function( data ) {
 
@@ -57,8 +57,8 @@ $(function(){
             type: "POST",
             url: "",
             data: {
-                rt:     REQUEST_TYPE_AJAX,
-                rn:     'reset_db'
+                rt:     REQUEST_TYPE_AJAX,  // request type
+                rn:     'reset_db'         // request name
             },
             success: function( data ) {
 

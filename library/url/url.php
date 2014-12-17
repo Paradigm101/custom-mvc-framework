@@ -33,7 +33,7 @@ abstract class Url_LIB {
                 .  "            return '" . SITE_ROOT . "';\n"
                 .  "        }\n"
                 .  "\n"
-                .  "        return '" . SITE_ROOT . "?rn=' + request_name;\n"
+                .  "        return '" . SITE_ROOT . "/' + request_name;\n"
                 .  "    }\n"
                 .  "\n"
                 .  "    return '" . SITE_ROOT . "?rn=' + request_name + '&rt=' + request_type;\n"
@@ -45,7 +45,19 @@ abstract class Url_LIB {
     // Get URL for request
     static public function getUrlForRequest( $requestName = null, $requestType = null ) {
 
-        return SITE_ROOT . '?' . ( $requestName ? 'rn='. $requestName . '&' : '' ) . ( $requestType ? 'rt=' . $requestType : '' );
+        $extension = '';
+        switch ( $requestType ) {
+            case REQUEST_TYPE_AJAX:
+                $extension = 'ajax/';
+                break;
+            case REQUEST_TYPE_API:
+                $extension = 'api/';
+                break;
+            case REQUEST_TYPE_PAGE:
+            default:
+        }
+
+        return SITE_ROOT . '/' . $extension . $requestName;
     }
 
     // Get a parameter through GET method

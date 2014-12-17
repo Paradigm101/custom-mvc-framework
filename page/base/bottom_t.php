@@ -4,7 +4,7 @@
 
         <!-- script in the end to display the page as fast as possible -->
         <!-- JQuery -->
-        <script type="text/javascript" src="page/base/jquery/jquery.js"></script>
+        <script type="text/javascript" src="<?= SITE_ROOT ?>/page/base/jquery/jquery.js"></script>
 
         <!-- Transfer from PHP to Javascript -->
         <script type="text/javascript">

@@ -175,8 +175,8 @@ class Board_LIB {
                 url: "",
                 global: false,
                 data: {
-                    rt:         REQUEST_TYPE_AJAX,  // request type
-                    rn:         'cb_change',        // request name
+                    rt:         REQUEST_TYPE_AJAX,      // request type
+                    rn:         'cb_change',            // request name
                     cb_id:      $(this).attr('id'),
                     is_checked: this.checked ? 1 : 0,
                     table_name: '{$this->getTemporaryTableName()}'

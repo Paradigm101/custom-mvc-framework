@@ -54,7 +54,7 @@ class Base_PAG_V extends Base_LIB_View {
 
         // Add css files for every page
         //-------------------------
-        $cssFiles[] = 'page/base/base.css';
+        $cssFiles[] = SITE_ROOT . '/page/base/base.css';
 
         // Add css/javascript files for Bootstrap
         //---------------------------------------
@@ -66,36 +66,26 @@ class Base_PAG_V extends Base_LIB_View {
             $scriptFiles[] = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js';
         }
         else {
-            $cssFiles[] = 'page/base/bootstrap/css/bootstrap.min.css';
-            $cssFiles[] = 'page/base/bootstrap/css/bootstrap-theme.min.css';
-            
-            $scriptFiles[] = 'page/base/bootstrap/js/bootstrap.min.js';
+            $cssFiles[] = SITE_ROOT . '/page/base/bootstrap/css/bootstrap.min.css';
+            $cssFiles[] = SITE_ROOT . '/page/base/bootstrap/css/bootstrap-theme.min.css';
+
+            $scriptFiles[] = SITE_ROOT . '/page/base/bootstrap/js/bootstrap.min.js';
         }
 
         // Add Javascript files for every page
         //------------------------------------
-        $scriptFiles[] = 'page/base/base.js';
+        $scriptFiles[] = SITE_ROOT . '/page/base/base.js';
 
         // Add css/javascript files for header
         //------------------------------------
         if ( $header ) {
 
-            // Getting css file name
-            $cssFile = 'page/' . $header . '/' . $header . '.css';
-
-            // If file exists, add it to be loaded
-            if ( file_exists( $cssFile ) ) {
-
-                $cssFiles[] = $cssFile;
+            if ( file_exists( $file = 'page/' . $header . '/' . $header . '.css' ) ) {
+                $cssFiles[] = SITE_ROOT . '/' . $file;
             }
-
-            // Getting javascript file name
-            $scriptFile = 'page/' . $header . '/' . $header . '.js';
-
-            // If file exists, add it to be loaded
-            if ( file_exists( $scriptFile ) ) {
-
-                $scriptFiles[] = $scriptFile;
+            
+            if ( file_exists( $file = 'page/' . $header . '/' . $header . '.js' ) ) {
+                $scriptFiles[] = SITE_ROOT . '/' . $file;
             }
         }
 
@@ -103,22 +93,12 @@ class Base_PAG_V extends Base_LIB_View {
         //------------------------------------
         if ( $footer ) {
 
-            // Getting css file name
-            $cssFile = 'page/' . $footer . '/' . $footer . '.css';
-
-            // If file exists, add it to be loaded
-            if ( file_exists( $cssFile ) ) {
-
-                $cssFiles[] = $cssFile;
+            if ( file_exists( $file = 'page/' . $footer . '/' . $footer . '.css' ) ) {
+                $cssFiles[] = SITE_ROOT . '/' . $file;
             }
-
-            // Getting javascript file name
-            $scriptFile = 'page/' . $footer . '/' . $footer . '.js';
-
-            // If file exists, add it to be loaded
-            if ( file_exists( $scriptFile ) ) {
-
-                $scriptFiles[] = $scriptFile;
+            
+            if ( file_exists( $file = 'page/' . $footer . '/' . $footer . '.js' ) ) {
+                $scriptFiles[] = SITE_ROOT . '/' . $file;
             }
         }
 
@@ -126,22 +106,12 @@ class Base_PAG_V extends Base_LIB_View {
         //---------------------------------------
         foreach( $templates as $template ) {
 
-            // Getting css file name
-            $cssFile = 'page/' . $this->page . '/' . $template . '.css';
-
-            // If file exists, add it to be loaded
-            if ( file_exists( $cssFile ) ) {
-
-                $cssFiles[] = $cssFile;
+            if ( file_exists( $file = 'page/' . $this->page . '/' . $template . '.css' ) ) {
+                $cssFiles[] = SITE_ROOT . '/' . $file;
             }
 
-            // Getting javascript file name
-            $scriptFile = 'page/' . $this->page . '/' . $template . '.js';
-
-            // If file exists, add it to be loaded
-            if ( file_exists( $scriptFile ) ) {
-
-                $scriptFiles[] = $scriptFile;
+            if ( file_exists( $file = 'page/' . $this->page . '/' . $template . '.js' ) ) {
+                $scriptFiles[] = SITE_ROOT . '/' . $file;
             }
         }
 
@@ -157,7 +127,7 @@ class Base_PAG_V extends Base_LIB_View {
 
         // Base template
         require 'page/base/base_t.php';
-        
+
         // Page template(s)
         foreach( $templates as $template ) {
 

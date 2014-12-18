@@ -1,6 +1,5 @@
 
 <br/>
-<p>This is the commands page</p>
 <button type="button" class="btn btn-default" id="cmd_btn_create_db">Create database</button>
 <button type="button" class="btn btn-default" id="cmd_btn_delete_db">Delete database</button>
 <button type="button" class="btn btn-default" id="cmd_btn_reset_db">Reset database</button>

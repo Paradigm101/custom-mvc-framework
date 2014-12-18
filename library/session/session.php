@@ -27,22 +27,22 @@ abstract class Session_LIB {
         self::$idUser = static::$model->getUserForSession( session_id() );
     }
 
-    // For log-in
-    static public function startUserSession( $idUser, $idSession ) {
+    // Start session for user (log-in, ...)
+    static public function startUserSession( $idUser ) {
 
-        return self::$model->startUserSession( $idUser, $idSession );
+        self::$model->startUserSession( $idUser, session_id() );
     }
 
-    // For log-out
-    static public function closeUserSession( $idUser = null, $idSession = null ) {
+    // Close user session (for log-out, ...)
+    static public function closeUserSession( $idUser = null ) {
 
         // No user => assume current user
         if ( !$idUser ) {
 
-            $idUser = static::getUserId();
+            $idUser = self::getUserId();
         }
 
-        return self::$model->closeUserSession( $idUser, $idSession );
+        self::$model->closeUserSession( $idUser );
     }
 
     // Get user id for this session (if exists)
@@ -51,8 +51,8 @@ abstract class Session_LIB {
         return static::$idUser;
     }
 
-    // TBD: return a session id for any user
-    static public function getSessionId( $idUser = null ) {
+    // Return current active session id for any user
+    static public function getSession( $idUser = null, $is_active = true ) {
 
         // No user => assume current user
         if ( !$idUser ) {
@@ -60,7 +60,16 @@ abstract class Session_LIB {
             $idUser = static::getUserId();
         }
 
-        return self::$model->getSessionIdByUserId( $idUser );
+        $sessionId = self::$model->getSessionForUser( $idUser, $is_active );
+
+        // No session for user, assume current session
+        if ( !$sessionId ) {
+            
+            return session_id();
+        }
+        
+        // Finaly send session
+        return $sessionId;
     }
 
     // Check if user is logged in
@@ -103,7 +112,7 @@ abstract class Session_LIB {
 
             // Retrieving user role
             $userRole = static::$model->getUserRole( static::$idUser );
-
+            
             // By deny
             if ( !empty( $securityXML->role->deny ) ) {
 

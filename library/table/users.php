@@ -15,6 +15,19 @@ class Table_LIB_Users extends Table_LIB_Model {
         return TLM_INIT_CUSTOM;
     }
     
+    // SQL script to populate the table
+    protected function getInitScript() {
+        
+        // Big database
+        if ( DATABASE_IS_BIG ) {
+
+            return $this->getBigDBScript();
+        }
+        
+        // Small database
+        return $this->getSmallDBScript();
+    }
+    
     private function getBigDBScript() {
         
         // Start and add first user (admin)
@@ -91,18 +104,5 @@ class Table_LIB_Users extends Table_LIB_Model {
         $query = substr($query, 0, -1);
 
         return $query;
-    }
-    
-    // SQL script to populate the table
-    protected function getInitScript() {
-        
-        // Big database
-        if ( DATABASE_IS_BIG ) {
-
-            return $this->getBigDBScript();
-        }
-        
-        // Small database
-        return $this->getSmallDBScript();
     }
 }

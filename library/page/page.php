@@ -1,6 +1,9 @@
 <?php
 
-// Page Manager: manage data displayed in the requested page        
+// Page Manager
+//      provide with displayed page for user
+//      manage script in page
+//      provide time spent to create the page
 abstract class Page_LIB {
 
     // Page list (should be const but seems impossible to be private and const for whatever reason...)

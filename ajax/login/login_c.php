@@ -15,8 +15,6 @@ abstract class Login_AJA_C extends Base_AJA_C {
             return;
         }
 
-        // TBD: Manage user already logged in
-
         // Retrieving user id, No data: wrong user/password
         if ( ( $idUser = ( 0 + static::$model->checkPassword( $email, $password ) ) ) == null ) {
 
@@ -25,7 +23,7 @@ abstract class Login_AJA_C extends Base_AJA_C {
         }
 
         // Start user session
-        // TBD: manage error
-        $result = Session_LIB::startUserSession( $idUser, session_id() );
+        // TBD: Manage user already logged in
+        Session_LIB::startUserSession( $idUser );
     }
 }

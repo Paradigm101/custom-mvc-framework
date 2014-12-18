@@ -20,7 +20,7 @@ class Board_LIB {
     // One entry point for board temporay table name
     private function getTemporaryTableName() {
 
-        return 'TMP_Board_' . $this->requestName . '_' . Session_LIB::getSessionId();
+        return 'TMP_Board_' . $this->requestName . '_' . Session_LIB::getSession();
     }
 
     // TBD: manage bad construction (missing data, etc...)

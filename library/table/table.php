@@ -5,7 +5,7 @@
 abstract class Table_LIB {
 
     // Table list
-    static private $tables = array( 'male_first_names', 'female_first_names', 'surnames', 'sessions', 'roles', 'users' );
+    static private $tables = array( 'male_first_names', 'female_first_names', 'surnames', 'roles', 'users', 'sessions' );
 
     static private function executeCommandForAllTables( $command, $stopOnFail = false ) {
 

@@ -1,0 +1,8 @@
+delete,           users_delete_item, delete.png, 1, 0, 0
+delete,          users_delete_batch,           , 0, 1, 0
+delete,            users_delete_all,           , 0, 0, 1
+export,          users_export_batch,           , 0, 1, 0
+export,            users_export_all,           , 0, 0, 1
+modify user,      users_delete_item,   edit.png, 1, 0, 0
+change role for, users_modify_batch,           , 0, 1, 0
+chabge role for,   users_modify_all,           , 0, 0, 1

@@ -145,6 +145,7 @@ if ( !Session_LIB::hasAccess( $requestName, $requestTypeCode ) ) {
 }
 
 // Something went wrong
+//---------------------
 if ( $myAutoload( $className = ucfirst( $requestName ) . '_' . convertRequestCodeToClass($requestTypeCode) . '_C' ) ) {
 
     // Launch the user error answer: page/ajax/api

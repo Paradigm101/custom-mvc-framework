@@ -15,6 +15,7 @@ class Board_LIB {
     private $sort = null;           // Sort: column (start with '_' for reverse)
     private $filters = null;        // Filters
     private $selected = array();    // Selected items
+    private $actions = array();     // Page actions
 
     // One entry point for board temporay table name
     private function getTemporaryTableName() {
@@ -25,10 +26,11 @@ class Board_LIB {
     // TBD: manage bad construction (missing data, etc...)
     public function __construct( $requestName,
                                  $metadataFile,
+                                 $actionFile,
                                  $query,
                                  $sort,
                                  $noDataMsg = 'No data' ) {
-        
+
         // Very important: do first!
         $this->requestName   = $requestName;
         $this->noDataMessage = $noDataMsg;
@@ -68,6 +70,26 @@ class Board_LIB {
 
         $this->metadata = $metadata;
         
+        /****************************************** METADATA *********************************************************/
+        // Retrieve actions if any
+        if ( $actionFile ) {
+            
+            // Get config file for pages
+            $csvFile = fopen( $actionFile, 'r' );
+
+            // Parsing file and storing data
+            while ( $line = fgetcsv( $csvFile ) ) {
+
+                // Add metadata
+                $this->actions[] = array( 'name'         => trim( $line[0] ),
+                                          'javascriptCB' => trim( $line[1] ),
+                                          'icone'        => trim( $line[2] ),
+                                          'is_item'      => trim( $line[3] ) ? true : false,
+                                          'is_batch'     => trim( $line[4] ) ? true : false,
+                                          'is_all'       => trim( $line[5] ) ? true : false );
+            }
+        }
+
         /****************************************** MODEL *********************************************************/
         $this->model = new Board_LIB_Model( $query,
                                             $sort,
@@ -183,6 +205,19 @@ class Board_LIB {
                 }
             });
         });
+
+        // Page checkbox: check/uncheck all checkboxes
+        $('input:checkbox[name=board_{$this->requestName}_cb_select_all]').click( function() {
+
+            // If global selector is checked: click every unchecked item checkbox selector
+            if ( this.checked ) {
+                $('input:checkbox:not(:checked)[name=board_{$this->requestName}_cb_select]').click();
+            }
+            // Else, global selector is NOT checked: click every checked item checkbox selector
+            else {
+                $('input:checkbox:checked[name=board_{$this->requestName}_cb_select]').click();
+            }
+        });
 EOD;
     }
 
@@ -191,16 +226,35 @@ EOD;
     // TBD: put pagination buttons at bottom of the page for incomplete board
     public function display() {
 
+        // By default no global action display
+        $isGlobalActions = false;
+
+        // User needs to be logged in to have access to global actions
+        if ( Session_LIB::isUserLoggedIn() ) {
+
+            // Is there any global action in the list?
+            foreach ( $this->actions as $action ) {
+                
+                $isGlobalActions = $isGlobalActions || $action['is_batch'] || $action['is_all'];
+            }
+        }
+
         /******************************** TABLE HEAD ******************************************/
-        
         // Start table
         $toDisplay = "<table class=\"table table-hover table-bordered table-condensed table-striped\">\n";
 
         // Start header
         $toDisplay .= "<thead>\n"
-                        . "<tr>\n"
-                            // Checkbox (only for logged-in users
-                            . ( Session_LIB::isUserLoggedIn() ? '<th style="width:20px;"></th>' . "\n" : '' );
+                        . "<tr>\n";
+
+        // Global checkbox: select/unselect on every row in the page
+        if ( $isGlobalActions ) {
+
+            $toDisplay .= '<th title="Click to select/unselect all items in this page" style="width:20px;">'
+                            . '<input type="checkbox" '
+                                   . 'name="board_' . $this->requestName . '_cb_select_all" />'
+                        . '</th>' . "\n";
+        }
 
         // Display each field title
         foreach( $this->metadata as $key => $param ) {
@@ -309,8 +363,8 @@ EOD;
                 // Start row
                 $toDisplay .= "<tr>\n";
 
-                // Checkbox for logged-in user
-                if ( Session_LIB::isUserLoggedIn() ) {
+                // Checkbox for specific row
+                if ( $isGlobalActions ) {
 
                     $cbId = 'cb_sel_' . $row[$this->primaryId];
                     $checked = ( in_array( $cbId, $this->selected) ? 'checked="checked"' : '' );
@@ -361,9 +415,64 @@ EOD;
         // End table
         $toDisplay .= "</table>\n";
 
-        /********************************** FOOTER : PAGINATION ************************************/
+        /********************************** FOOTER : GLOBAL ACTIONS & PAGINATION ************************************/
 
-        // Start of pagination
+        // Global actions
+        //---------------
+        if ( $isGlobalActions ) {
+
+            // Add dropup menu
+            $toDisplay .= '<div class="btn-group dropup" style="float: left;">'
+                            . '<button class="btn btn-default" type="button">Global actions</button>'
+                            . '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
+                                . '<span class="caret"></span>'
+                                . '<span class="sr-only">Toggle Dropdown</span>'
+                            . '</button>'
+                            . '<ul class="dropdown-menu" role="menu">';
+
+            // Preparing list items
+            $batchActions  = '';
+            $separator     = '';
+            $globalActions = '';
+
+            // Add actions according to their type
+            foreach ( $this->actions as $action ) {
+
+                // Batch
+                if ( $action['is_batch'] ) {
+                    
+                    $batchActions .= '<li role="presentation">'
+                                        . '<a role="menuitem" onclick="' . $action['javascriptCB'] . '();">'
+                                            . ucfirst( $action['name'] ) . ' selected items'
+                                        . '</a>'
+                                    . '</li>' . "\n";
+                }
+                // Global
+                else if ( $action['is_all'] ) {
+                    
+                    $globalActions .= '<li role="presentation">'
+                                        . '<a role="menuitem" onclick="' . $action['javascriptCB'] . '();">'
+                                            . ucfirst( $action['name'] ) . ' all items in this table'
+                                        . '</a>'
+                                    . '</li>' . "\n";
+                }
+            }
+
+            // Action seperator if needed
+            if ( $batchActions || $globalActions ) {
+                $separator = '<li role="presentation" class="divider"></li>';
+            }
+
+            $toDisplay .= $batchActions
+                        . $separator
+                        . $globalActions;
+
+            $toDisplay .= '</ul>'
+                    . '</div>';
+        }
+
+        // Pagination
+        //-----------
         $toDisplay .= '<div style="float: right;">';
 
         // Manage back buttons

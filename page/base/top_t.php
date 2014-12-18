@@ -12,7 +12,7 @@
 <?php   } ?>
 
     </head>
-    <body>
+    <body style="background-image: url('<?= SITE_ROOT ?>/page/base/background.png');">
 
         <!-- Start of body -->
         <div class="container" style="margin-bottom: 70px;">

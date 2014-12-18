@@ -147,13 +147,15 @@
 
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-                <a class="navbar-brand" href="<?= Url_LIB::getUrlForRequest('main') ?>">Brand</a>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand"
+                   href="<?= Url_LIB::getUrlForRequest('main') ?>"
+                   style="background: url('<?= SITE_ROOT ?>/page/header/brand.png') no-repeat center;width: 50px; display: block;" ></a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->

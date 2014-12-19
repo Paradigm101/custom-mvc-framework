@@ -1,0 +1,5 @@
+<security>
+    <role>
+        <allow>guest</allow>
+    </role>
+</security>

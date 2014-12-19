@@ -155,7 +155,7 @@
                 </button>
                 <a class="navbar-brand"
                    href="<?= Url_LIB::getUrlForRequest('main') ?>"
-                   style="background: url('<?= SITE_ROOT ?>/page/header/brand.png') no-repeat center;width: 50px; display: block;" ></a>
+                   style="background: url('<?= SITE_ROOT ?>/page/base/image/brand.png') no-repeat center;width: 50px; display: block;" ></a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->

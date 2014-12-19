@@ -80,11 +80,11 @@ class Base_PAG_V extends Base_LIB_View {
         //------------------------------------
         if ( $header ) {
 
-            if ( file_exists( $file = 'page/' . $header . '/' . $header . '.css' ) ) {
+            if ( file_exists( $file = 'page/base/header/' . $header . '/' . $header . '.css' ) ) {
                 $cssFiles[] = SITE_ROOT . '/' . $file;
             }
             
-            if ( file_exists( $file = 'page/' . $header . '/' . $header . '.js' ) ) {
+            if ( file_exists( $file = 'page/base/header/' . $header . '/' . $header . '.js' ) ) {
                 $scriptFiles[] = SITE_ROOT . '/' . $file;
             }
         }
@@ -93,11 +93,11 @@ class Base_PAG_V extends Base_LIB_View {
         //------------------------------------
         if ( $footer ) {
 
-            if ( file_exists( $file = 'page/' . $footer . '/' . $footer . '.css' ) ) {
+            if ( file_exists( $file = 'page/base/footer/' . $footer . '/' . $footer . '.css' ) ) {
                 $cssFiles[] = SITE_ROOT . '/' . $file;
             }
             
-            if ( file_exists( $file = 'page/' . $footer . '/' . $footer . '.js' ) ) {
+            if ( file_exists( $file = 'page/base/footer/' . $footer . '/' . $footer . '.js' ) ) {
                 $scriptFiles[] = SITE_ROOT . '/' . $file;
             }
         }
@@ -122,7 +122,7 @@ class Base_PAG_V extends Base_LIB_View {
         // Add header if needed
         if ( $header ) {
 
-            require 'page/' . $header . '/' . $header . '_t.php';
+            require 'page/base/header/' . $header . '/' . $header . '_t.php';
         }
 
         // Base template
@@ -142,7 +142,7 @@ class Base_PAG_V extends Base_LIB_View {
         // Add footer if needed
         if ( $footer ) {
 
-            require 'page/' . $footer . '/' . $footer . '_t.php';
+            require 'page/base/footer/' . $footer . '/' . $footer . '_t.php';
         }
 
         // What is always on bottom

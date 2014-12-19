@@ -4,6 +4,9 @@
 // TBD manage foreign key, ...
 abstract class Table_LIB {
 
+    // Model
+    static private $model = null;
+    
     // Table list
     static private $tables = array( 'male_first_names', 'female_first_names', 'surnames', 'roles', 'users', 'sessions' );
 
@@ -49,8 +52,20 @@ abstract class Table_LIB {
 
     // Delete all DB tables
     // TBD: manage foreign key, delete before
+    // TBD: manage if user is logged in
     static public function deleteAllTables( $stopOnFail = false ) {
 
-        return self::executeCommandForAllTables('deleteTable', $stopOnFail);
+        // Delete recorded tables
+        $results = self::executeCommandForAllTables('deleteTable', $stopOnFail);
+
+        // Get model if not done
+        if ( !static::$model ) {
+            static::$model = new Table_LIB_Model();
+        }
+
+        // Delete temporary tables
+        static::$model->deleteTemporaryTables();
+        
+        return $results;
     }
 }

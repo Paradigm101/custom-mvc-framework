@@ -14,7 +14,7 @@ class Board_LIB {
     private $pageNumber = null;     // Pagination: number of page
     private $sort = null;           // Sort: column (start with '_' for reverse)
     private $filters = null;        // Filters
-    private $selected = array();    // Selected items
+    private $selectedIds = array(); // Selected items
     private $actions = array();     // Page actions
 
     // One entry point for board temporay table name
@@ -103,7 +103,7 @@ class Board_LIB {
         $this->pageNumber  = $this->model->getBoardPageNumber();
         $this->sort        = $this->model->getBoardSort();
         $this->filters     = $this->model->getBoardFilters();
-        $this->selected    = $this->model->getBoardSelected();
+        $this->selectedIds = $this->model->getBoardSelected();
 
         /****************************************** ALIGNMENT *********************************************************/
         // Check alignment (data can be empty though)
@@ -369,14 +369,11 @@ EOD;
                 // Checkbox for specific row
                 if ( $isGlobalActions ) {
 
-                    $cbId = 'cb_sel_' . $row[$this->primaryId];
-                    $checked = ( in_array( $cbId, $this->selected) ? 'checked="checked"' : '' );
-                    
                     $toDisplay .= '<td title="Click to select/unselect this item">'
                                     . '<input type="checkbox" '
                                             . 'name="board_' . $this->requestName . '_cb_select" '
-                                            . 'id="' . $cbId . '"'
-                                            . "$checked />"
+                                            . 'id="' . $row[$this->primaryId] . '"'
+                                            . ( in_array( $row[$this->primaryId], $this->selectedIds ) ? 'checked="checked"' : '' ) . ' />'
                                 . '</td>' . "\n";
                 }
 

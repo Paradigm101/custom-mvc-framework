@@ -1,7 +1,7 @@
 <?php
 
 // Table users
-class Table_LIB_Users extends Table_LIB_Model {
+class Table_LIB_Users extends Table_LIB_Origin {
 
     // Table Name (mandatory)
     protected function getTableName() {

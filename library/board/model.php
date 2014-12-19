@@ -96,26 +96,26 @@ class Board_LIB_Model extends Base_LIB_Model {
 
             /************************************* TEMPORARY TABLE ************************************************/
             $this->query("CREATE TABLE IF NOT EXISTS `$temporaryTableName` ("
-                        . '`id_item` VARCHAR(255) NOT NULL, '
+                        . '`id_item` INT NOT NULL, '
                         . 'UNIQUE KEY `id_item` (`id_item`) ) '
                         . 'ENGINE=InnoDB DEFAULT CHARSET=latin1;');
 
             /************************************* SELECTED CHECKBOX ************************************************/
             // Retrieve this page item's IDs
-            $ids = '';
+            $pageIds = '';
             foreach ($data as $row) {
-                $ids .= "'cb_sel_{$row[$primaryId]}', ";
+                $pageIds .= $row[$primaryId] . ', ';
             }
-            $ids = substr($ids, 0, -2);
+            $pageIds = substr($pageIds, 0, -2);     // Remove last coma
 
             // Retrive checked checkbox selector
-            $query = "SELECT id_item FROM `$temporaryTableName` WHERE id_item IN ($ids)";
+            $query = "SELECT id_item FROM `$temporaryTableName` WHERE id_item IN ($pageIds)";
 
             $this->query($query);
 
-            $ids = array();
+            $selectedIds = array();
             foreach( $this->fetchAll() as $item ) {
-                $ids[] = $item->id_item;
+                $selectedIds[] = $item->id_item;
             }
         }
 
@@ -125,6 +125,6 @@ class Board_LIB_Model extends Base_LIB_Model {
         $this->boardCurrentPage = $currentPage;
         $this->boardPageNumber  = max( ceil( $resultNumber / $pageSize ), 1 );
         $this->boardFilters     = Url_LIB::getBoardFilter();
-        $this->boardSelected    = $ids;
+        $this->boardSelected    = $selectedIds;
     }
 }

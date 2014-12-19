@@ -1,7 +1,7 @@
 <?php
 
 // Table roles
-class Table_LIB_Male_First_Names extends Table_LIB_Model {
+class Table_LIB_Male_First_Names extends Table_LIB_Origin {
 
     // Table Name (mandatory)
     protected function getTableName() {

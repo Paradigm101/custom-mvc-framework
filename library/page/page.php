@@ -58,38 +58,47 @@ abstract class Page_LIB {
 
     /****************************************************************************************************************/
 
+    // Injected javascript by ojects
     static private $extraScript;
 
-    // Others can push extra script
+    // For an object to inject javascript in the page
     static public function addJavascript( $script ) {
         
         static::$extraScript .= ";\n" . $script . ";\n";
     }
 
-    // Manage javascript to inject in page
-    static private $classWithJavascript = array( 'Url_LIB' );
+    // List of abstract classes with javascript for all pages
+    static private $classWithJavascript = array();
 
-    // Send javascript to client
+    // Add an abstract class for its Javascript
+    // class needs to have static method getJavascript implemented
+    static public function subscribeClassForJavascript( $className ) {
+
+        // Avoid duplicates (would be really bad)
+        if ( !in_array($className, static::$classWithJavascript)) {
+            static::$classWithJavascript[] = $className;
+        }
+    }
+
+    // Return javascript to client
     static public function getJavascript() {
 
         // Start script
         $script = "";
 
-        // Constantes
-        //-----------
+        /************************* Constantes ******************/
         $script .= "// Constantes\n"
                 . "//-----------\n"
                 . "REQUEST_TYPE_AJAX = " . REQUEST_TYPE_AJAX . ";\n"
                 . "REQUEST_TYPE_PAGE = " . REQUEST_TYPE_PAGE . ";\n"
                 . "\n";
 
-        // Retrieve javascript from each subscribed class
+        /************************* Abstract class scripts ******************/
         foreach ( static::$classWithJavascript as $class ) {
             $script .= $class::getJavascript() . "\n\n";
         }
 
-        // Start shortcuts
-        //----------------
+        /************************* Shortcuts ******************/
         $script .= "// Shortcuts\n"
                 . "//----------\n"
                 . "$(function () {\n"
@@ -110,7 +119,7 @@ abstract class Page_LIB {
         $script .= "    });\n"
                 . "});\n\n";
 
-        // Add extra script
+        /************************* Object-injected scripts ******************/
         $script .= static::$extraScript;
         
         // Send all
@@ -142,7 +151,7 @@ abstract class Page_LIB {
         static::$curlTime += $time;
     }
 
-    // Get page generation time (in PHP/DB)
+    // Display time spent for page generation (in PHP, DB or Curl)
     static public function getPageGeneration() {
 
         // Get page generation time

@@ -94,11 +94,11 @@ $(function(){
 
                 $('#logoutOkModal').modal('show');
 
-                // After 2 seconds, hide modal and refresh page
+                // After 2 seconds, hide modal and reload page
                 setTimeout(function(){
 
                     $('#logoutOkModal').modal('hide');
-                    window.location.href = getURL();
+                    location.reload();
                 }, 2000);
             }
         });

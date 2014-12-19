@@ -124,6 +124,9 @@ class Board_LIB {
         // Add Javascript to manage this nice board
         // will be added at the end of the page, after template displays
         Page_LIB::addJavascript( $this->getBoardScript() );
+        
+        // Need URL_LIB javascript
+        Page_LIB::subscribeClassForJavascript('Url_LIB');
     }
 
     // Javascript to manage filter, sort and pagination

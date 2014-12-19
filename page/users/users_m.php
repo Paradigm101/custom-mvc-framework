@@ -16,7 +16,7 @@ class Users_PAG_M extends Base_PAG_M {
                          'users4' => 'r.label' );
 
         // Filters
-        $whereQuery = ' WHERE 1 = 1 ';
+        $whereQuery = '';
         foreach ( Url_LIB::getBoardFilter() as $key => $value ) {
             $whereQuery .= " AND {$fields[$key]} like '%$value%' ";
         }
@@ -30,6 +30,9 @@ class Users_PAG_M extends Base_PAG_M {
                 . '     users u '
                 . '     INNER JOIN roles r ON '
                 . '         r.id = u.id_role '
+                . '     AND r.name NOT LIKE \'%admin%\''
+                . ' WHERE '
+                . '     1 = 1 '
                 . $whereQuery . ' ';
     }
 }

@@ -107,7 +107,7 @@ class Session_LIB_Model extends Base_LIB_Model {
         if ( !$idUser ) {
             return;
         }
-        
+
         // Sanitize data and add quotes
         $idUser = $this->getQuotedValue($idUser);
 
@@ -116,14 +116,17 @@ class Session_LIB_Model extends Base_LIB_Model {
         // Retrieve user active session id
         $this->query( "SELECT id_session FROM sessions WHERE id_user = $idUser AND is_active = 1;" );
 
-        $result    = $this->fetchNext();
-        $sessionId = $result->id_session;
+        // No session found, job is done
+        if ( !($result = $this->fetchNext() ) )
+        {
+            return;
+        }
         
         // Get all tables
         $this->query( 'SELECT * FROM information_schema.tables' );
 
-        while( $table = $this->fetchNext() ) {
-
+        while( $table = $this->fetchNext() )
+        {
             // Check name
             $tableName = $table->TABLE_NAME;
             
@@ -132,7 +135,7 @@ class Session_LIB_Model extends Base_LIB_Model {
             $last    = array_pop( $explode );
 
             // If table is temporary and session has to be deleted
-            if ( ( $first == 'tmp' ) && ( $last == $sessionId ) ) {
+            if ( ( $first == 'tmp' ) && ( $last == $result->id_session ) ) {
 
                 $this->query( "DROP TABLE $tableName" );
             }
@@ -140,6 +143,7 @@ class Session_LIB_Model extends Base_LIB_Model {
 
         // Set inactive user active session
         //---------------------------------
+        // TBD: is it faster to not check is_active = 1??
         $this->query( "UPDATE sessions SET is_active = 0 WHERE id_user = $idUser AND is_active = 1;" );
     }
 }

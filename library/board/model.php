@@ -71,10 +71,11 @@ class Board_LIB_Model extends Base_LIB_Model {
 
         // Pagination (with protection)
         $currentPage = ( Url_LIB::getRequestParam('p') ? ( 0 + Url_LIB::getRequestParam('p') ) : 1 );
-        if ( $currentPage < 1 ) {
+        if ( $currentPage < 1 )
+        {
             $currentPage = 1;
         }
-        
+
         $limitQuery = ' LIMIT ' . ( $currentPage - 1 ) * $pageSize . ', ' . $pageSize . ' ';
 
         // First request data of the current page
@@ -124,7 +125,7 @@ class Board_LIB_Model extends Base_LIB_Model {
         $this->boardData        = $data;
         $this->boardCurrentPage = $currentPage;
         $this->boardPageNumber  = max( ceil( $resultNumber / $pageSize ), 1 );
-        $this->boardFilters     = Url_LIB::getBoardFilter();
+        $this->boardFilters     = Url_LIB::getBoardFilters();
         $this->boardSelected    = $selectedIds;
     }
 }

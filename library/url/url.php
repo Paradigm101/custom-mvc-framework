@@ -114,10 +114,10 @@ abstract class Url_LIB {
     }
     
     // Specific board: retrieve filters
-    static public function getBoardFilter() {
+    static public function getBoardFilters() {
         
         $filters = array();
-        
+
         // Retrieving GET filters
         foreach ( $_GET as $key => $value ) {
 
@@ -126,7 +126,7 @@ abstract class Url_LIB {
                 $filters[ substr( $key, 2) ] = $value;
             }
         }
-        
+
         // Retrieving POST filters
         foreach ( $_POST as $key => $value ) {
 
@@ -135,7 +135,7 @@ abstract class Url_LIB {
                 $filters[ substr( $key, 2) ] = $value;
             }
         }
-        
+
         return $filters;
     }
 }

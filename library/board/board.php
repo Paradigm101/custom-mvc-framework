@@ -1,6 +1,7 @@
 <?php
 
 // Generic class to manage table/board display
+// TBD: when changing sort or filter, reset tmp table
 class Board_LIB {
 
     // Internal attributes
@@ -83,8 +84,8 @@ class Board_LIB {
                 // Add metadata
                 $this->actions[] = array( 'name'         => trim( $line[0] ),
                                           'javascriptCB' => trim( $line[1] ),
-                                          'icone'        => trim( $line[2] ),
-                                          'is_item'      => trim( $line[3] ) ? true : false,
+                                          'icon'         => trim( $line[2] ),
+                                          'is_single'    => trim( $line[3] ) ? true : false,
                                           'is_batch'     => trim( $line[4] ) ? true : false,
                                           'is_all'       => trim( $line[5] ) ? true : false );
             }
@@ -229,16 +230,18 @@ EOD;
     // TBD: put pagination buttons at bottom of the page for incomplete board
     public function display() {
 
-        // By default no global action display
+        // By default no global action display and no action column
         $isGlobalActions = false;
+        $isSingleActions = false;
 
-        // User needs to be logged in to have access to global actions
+        // User needs to be logged in to have access to actions
         if ( Session_LIB::isUserLoggedIn() ) {
 
-            // Is there any global action in the list?
+            // Is there any global/single action in the list?
             foreach ( $this->actions as $action ) {
                 
                 $isGlobalActions = $isGlobalActions || $action['is_batch'] || $action['is_all'];
+                $isSingleActions = $isSingleActions || $action['is_single'];
             }
         }
 
@@ -259,6 +262,12 @@ EOD;
                         . '</th>' . "\n";
         }
 
+        // Action column
+        if ( $isSingleActions )
+        {
+            $toDisplay .= "<th  style=\"vertical-align:top;text-align:center;\">Actions</th>\n";
+        }
+        
         // Display each field title
         foreach( $this->metadata as $key => $param ) {
 
@@ -367,14 +376,32 @@ EOD;
                 $toDisplay .= "<tr>\n";
 
                 // Checkbox for specific row
-                if ( $isGlobalActions ) {
-
+                if ( $isGlobalActions )
+                {
                     $toDisplay .= '<td title="Click to select/unselect this item">'
                                     . '<input type="checkbox" '
                                             . 'name="board_' . $this->requestName . '_cb_select" '
                                             . 'id="' . $row[$this->primaryId] . '"'
                                             . ( in_array( $row[$this->primaryId], $this->selectedIds ) ? 'checked="checked"' : '' ) . ' />'
                                 . '</td>' . "\n";
+                }
+
+                // Single action column
+                if ( $isSingleActions )
+                {
+                    $toDisplay .= '<td>';
+                    
+                    foreach ( $this->actions as $action )
+                    {
+                        if ( $action['is_single'] )
+                        {
+                            $toDisplay .= '<a onclick="' . $action['javascriptCB'] . '(' . $row[$this->primaryId] . ');">'
+                                            . '<span class="glyphicon glyphicon-' . $action['icon'] . '"></span>'
+                                        . '</a>';
+                        }
+                    }
+
+                    $toDisplay .= "</td>\n";
                 }
 
                 // Display each fields
@@ -442,16 +469,16 @@ EOD;
                 if ( $action['is_batch'] ) {
                     
                     $batchActions .= '<li role="presentation">'
-                                        . '<a role="menuitem" onclick="' . $action['javascriptCB'] . '();">'
+                                        . '<a role="menuitem" onclick="' . $action['javascriptCB'] . '( \'' . $this->getTemporaryTableName() . '\' );">'
                                             . ucfirst( $action['name'] ) . ' selected items'
                                         . '</a>'
                                     . '</li>' . "\n";
                 }
                 // Global
                 else if ( $action['is_all'] ) {
-                    
+
                     $globalActions .= '<li role="presentation">'
-                                        . '<a role="menuitem" onclick="' . $action['javascriptCB'] . '();">'
+                                        . '<a role="menuitem" onclick="' . $action['javascriptCB'] . '( \'' . $this->getTemporaryTableName() . '\' );">'
                                             . ucfirst( $action['name'] ) . ' all items in this table'
                                         . '</a>'
                                     . '</li>' . "\n";
@@ -488,11 +515,15 @@ EOD;
         }
 
         // Display
-        $toDisplay .= '<button class="btn btn-default glyphicon glyphicon-backward ' . $previousState . '"     onclick="board_page_reload_' . $this->requestName . '(\'first\')"></button>'
-                   .  '<button class="btn btn-default glyphicon glyphicon-chevron-left ' . $previousState . '" onclick="board_page_reload_' . $this->requestName . '(\'previous\')"></button>'
+        $toDisplay .= '<button class="btn btn-default glyphicon glyphicon-backward ' . $previousState . '"'
+                            . 'onclick="board_page_reload_' . $this->requestName . '(\'first\')"></button>'
+                   .  '<button class="btn btn-default glyphicon glyphicon-chevron-left ' . $previousState . '"'
+                            . ' onclick="board_page_reload_' . $this->requestName . '(\'previous\')"></button>'
                    .  '<span style="margin:10px;">Page ' . $this->currentPage . ' / ' . $this->pageNumber . '</span>'
-                   .  '<button class="btn btn-default glyphicon glyphicon-chevron-right ' . $nextState . '"    onclick="board_page_reload_' . $this->requestName . '(\'next\')"></button>'
-                   .  '<button class="btn btn-default glyphicon glyphicon-forward ' . $nextState . '"          onclick="board_page_reload_' . $this->requestName . '(\'last\')"></button>';
+                   .  '<button class="btn btn-default glyphicon glyphicon-chevron-right ' . $nextState . '"'
+                            . 'onclick="board_page_reload_' . $this->requestName . '(\'next\')"></button>'
+                   .  '<button class="btn btn-default glyphicon glyphicon-forward ' . $nextState . '"'
+                            . 'onclick="board_page_reload_' . $this->requestName . '(\'last\')"></button>';
         
         // End of pagination
         $toDisplay .= '</div>';

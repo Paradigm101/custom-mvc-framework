@@ -17,7 +17,7 @@ class Users_PAG_M extends Base_PAG_M {
 
         // Filters
         $whereQuery = '';
-        foreach ( Url_LIB::getBoardFilter() as $key => $value ) {
+        foreach ( Url_LIB::getBoardFilters() as $key => $value ) {
             $whereQuery .= " AND {$fields[$key]} like '%$value%' ";
         }
 

@@ -35,4 +35,11 @@ class Users_PAG_M extends Base_PAG_M {
                 . '     1 = 1 '
                 . $whereQuery . ' ';
     }
+    
+    public function getRolesForModification()
+    {
+        $this->query("SELECT * FROM roles WHERE name != 'admin' AND name != 'guest' ;");
+        
+        return $this->fetchAll();
+    }
 }

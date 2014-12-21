@@ -5,18 +5,19 @@
 class Board_LIB {
 
     // Internal attributes
-    private $model;                 // For database access
-    private $requestName;           // Page name (or ajax/api name)
-    private $noDataMessage;         // In case no data, message to display user
-    private $primaryId = null;      // Store primary board id
-    private $metadata;              // For interface, data description
-    private $data = array();        // Data to display in board
-    private $currentPage = null;    // Pagination: current page
-    private $pageNumber = null;     // Pagination: number of page
-    private $sort = null;           // Sort: column (start with '_' for reverse)
-    private $filters = null;        // Filters
-    private $selectedIds = array(); // Selected items
-    private $actions = array();     // Page actions
+    private $model;                  // For database access
+    private $requestName;            // Page name (or ajax/api name)
+    private $noDataMessage;          // In case no data, message to display user
+    private $primaryId = null;       // Store primary board id
+    private $metadata;               // For interface, data description
+    private $data = array();         // Data to display in board
+    private $currentPage = null;     // Pagination: current page
+    private $pageNumber = null;      // Pagination: number of page
+    private $sort = null;            // Sort: column (start with '_' for reverse)
+    private $filters = null;         // Filters
+    private $selectedIds = array();  // Selected items
+    private $selectedItemNumber = 0; // Selected item Number
+    private $actions = array();      // Page actions
 
     // One entry point for board temporay table name
     private function getTemporaryTableName() {
@@ -99,13 +100,14 @@ class Board_LIB {
                                             DEFAULT_PAGE_SIZE );
         
         // Get information from model
-        $this->data        = $this->model->getBoardData();
-        $this->currentPage = $this->model->getBoardCurrentPage();
-        $this->pageNumber  = $this->model->getBoardPageNumber();
-        $this->sort        = $this->model->getBoardSort();
-        $this->filters     = $this->model->getBoardFilters();
-        $this->selectedIds = $this->model->getBoardSelected();
-
+        $this->data               = $this->model->getBoardData();
+        $this->currentPage        = $this->model->getBoardCurrentPage();
+        $this->pageNumber         = $this->model->getBoardPageNumber();
+        $this->sort               = $this->model->getBoardSort();
+        $this->filters            = $this->model->getBoardFilters();
+        $this->selectedIds        = $this->model->getBoardSelectedIds();
+        $this->selectedItemNumber = $this->model->getBoardSelectedItemNumber();
+        
         /****************************************** ALIGNMENT *********************************************************/
         // Check alignment (data can be empty though)
         if ( count($this->data) ) {
@@ -136,8 +138,9 @@ class Board_LIB {
         return <<<EOD
 
         // Page variables
-        var board_page_{$this->requestName} = {$this->currentPage};
-        var board_sort_{$this->requestName} = '{$this->sort}';
+        var board_page_{$this->requestName}                 = {$this->currentPage};
+        var board_sort_{$this->requestName}                 = '{$this->sort}';
+        var board_selected_item_number_{$this->requestName} = '{$this->selectedItemNumber}';
 
         // Reload page
         var board_reload_{$this->requestName} = function() {
@@ -195,6 +198,19 @@ class Board_LIB {
         // Store checkbox modifications in temporary table
         $('input:checkbox[name=board_{$this->requestName}_cb_select]').click( function() {
 
+            if ( this.checked ) {
+                board_selected_item_number_{$this->requestName}++;
+                if ( board_selected_item_number_{$this->requestName} == 1 ) {
+                    $('li[name=batch_action]').attr('class', '');
+                }
+            }
+            else {
+                board_selected_item_number_{$this->requestName}--;
+                if ( board_selected_item_number_{$this->requestName} == 0 ) {
+                    $('li[name=batch_action]').attr('class', 'disabled');
+                }
+            }
+
             // Launch ajax
             $.ajax({
                 type: "POST",
@@ -238,8 +254,8 @@ EOD;
         if ( Session_LIB::isUserLoggedIn() ) {
 
             // Is there any global/single action in the list?
-            foreach ( $this->actions as $action ) {
-                
+            foreach ( $this->actions as $action )
+            {
                 $isGlobalActions = $isGlobalActions || $action['is_batch'] || $action['is_all'];
                 $isSingleActions = $isSingleActions || $action['is_single'];
             }
@@ -458,17 +474,21 @@ EOD;
                             . '<ul class="dropdown-menu" role="menu">';
 
             // Preparing list items
-            $batchActions  = '';
+            $batchActions  = '<li role="presentation" class="dropdown-header">Actions on selected items</li>';
             $separator     = '';
-            $globalActions = '';
+            $globalActions = '<li role="presentation" class="dropdown-header">Actions on all items</li>';
 
             // Add actions according to their type
             foreach ( $this->actions as $action ) {
 
                 // Batch
                 if ( $action['is_batch'] ) {
-                    
-                    $batchActions .= '<li role="presentation">'
+
+                    // TBD: disable batch action if nothing is selected
+                    //  NB: has to be changed/checked everytime an item checkbox is clicked
+                    $disabled = ( $this->selectedItemNumber ? '' : 'disabled' );
+
+                    $batchActions .= '<li name="batch_action" role="presentation" class="' . $disabled . '">'
                                         . '<a role="menuitem" onclick="' . $action['javascriptCB'] . '( \'' . $this->getTemporaryTableName() . '\' );">'
                                             . ucfirst( $action['name'] ) . ' selected items'
                                         . '</a>'

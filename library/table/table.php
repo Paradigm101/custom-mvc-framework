@@ -2,6 +2,7 @@
 
 // A nice class that provide an access to table type classes
 // TBD manage foreign key, ...
+// TBD: new design?
 abstract class Table_LIB {
 
     // Model

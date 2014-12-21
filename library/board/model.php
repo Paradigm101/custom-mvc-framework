@@ -43,11 +43,19 @@ class Board_LIB_Model extends Base_LIB_Model {
     }
     
     // Selected checkboxes
-    private $boardSelected;
+    private $boardSelectedIds;
     
-    public function getBoardSelected() {
+    public function getBoardSelectedIds() {
         
-        return $this->boardSelected;
+        return $this->boardSelectedIds;
+    }
+    
+    // Number of selected items in the whole table
+    private $boardSelectedItemNumber;
+    
+    public function getBoardSelectedItemNumber() {
+        
+        return $this->boardSelectedItemNumber;
     }
     
     // Compute everything during creation
@@ -118,14 +126,21 @@ class Board_LIB_Model extends Base_LIB_Model {
             foreach( $this->fetchAll() as $item ) {
                 $selectedIds[] = $item->id_item;
             }
+            
+            /************************************* NUMBER OF SELECTED CHECKBOX ************************************************/
+            // For allowing batch actions
+            $this->query( "SELECT COUNT(1) selected_items FROM `$temporaryTableName`" );
+            
+            $selectedItemNumber = $this->fetchNext()->selected_items;
         }
 
         /************************************* STORE DATA ************************************************/
-        $this->boardSort        = $sort;
-        $this->boardData        = $data;
-        $this->boardCurrentPage = $currentPage;
-        $this->boardPageNumber  = max( ceil( $resultNumber / $pageSize ), 1 );
-        $this->boardFilters     = Url_LIB::getBoardFilters();
-        $this->boardSelected    = $selectedIds;
+        $this->boardSort               = $sort;
+        $this->boardData               = $data;
+        $this->boardCurrentPage        = $currentPage;
+        $this->boardPageNumber         = max( ceil( $resultNumber / $pageSize ), 1 );
+        $this->boardFilters            = Url_LIB::getBoardFilters();
+        $this->boardSelectedIds        = $selectedIds;
+        $this->boardSelectedItemNumber = $selectedItemNumber;
     }
 }

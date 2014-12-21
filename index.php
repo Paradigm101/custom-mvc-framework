@@ -137,8 +137,8 @@ if ( !Session_LIB::hasAccess( $requestName, $requestTypeCode ) ) {
     // Launch the user error page
     Error_LIB::process("No access", $requestTypeCode);
 
-    // Trace the missing class
-    Log_LIB::trace("[INDEX] User try to access forbidden service [$requestName] of type [$requestTypeCode] IP [" . Session_LIB::getUserIP() . "]");
+    // Trace the missing class (or not)
+//    Log_LIB::trace("[INDEX] User try to access forbidden service [$requestName] of type [$requestTypeCode] IP [" . Session_LIB::getUserIP() . "]");
 
     // And leave
     exit();

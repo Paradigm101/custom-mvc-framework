@@ -411,7 +411,7 @@ EOD;
                     {
                         if ( $action['is_single'] )
                         {
-                            $toDisplay .= '<a onclick="' . $action['javascriptCB'] . '(' . $row[$this->primaryId] . ');">'
+                            $toDisplay .= '<a title="' . ucfirst( $action['name'] ) . '" onclick="' . $action['javascriptCB'] . '(' . $row[$this->primaryId] . ');">'
                                             . '<span class="glyphicon glyphicon-' . $action['icon'] . '"></span>'
                                         . '</a>';
                         }

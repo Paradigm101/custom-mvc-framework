@@ -25,5 +25,8 @@ class Koth_Concede_AJA_M extends Base_AJA_M
 
         // Delete game-player links
         $this->query("DELETE FROM koth_game_players WHERE id_game = $idGame");
+
+        // Delete game-dice links
+        $this->query("DELETE FROM koth_game_dice WHERE id_game = $idGame");
     }
 }

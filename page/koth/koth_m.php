@@ -49,8 +49,41 @@ EOD;
         return $players;
     }
     
-    public function getBoard()
+    public function getBoard( $idUser, $diceNumber = 6 )
     {
-        return new Koth_LIB_Board();
+        $query = <<<EOD
+SELECT
+    gd.id       id,
+    d.name      name,
+    d.label     label,
+    d.picture   picture
+FROM
+    koth_dice d
+    INNER JOIN koth_game_dice gd ON
+        gd.id_dice = d.id
+        INNER JOIN koth_games g ON
+            g.id        = gd.id_game
+        AND g.is_active = 1
+            INNER JOIN koth_game_players gp ON
+                gp.id_game = g.id
+                INNER JOIN koth_players p ON
+                    p.id      = gp.id_player
+                AND p.id_user = $idUser
+WHERE
+    p.id_user = $idUser;
+EOD;
+
+        // Get dice in DB
+        $this->query($query);
+        $dice = $this->fetchAll();
+
+        // Store in a board sent
+        $board = new Koth_LIB_Board();
+        foreach ( $dice as $die )
+        {
+            $board->addDie( new Koth_LIB_Die( $die ) );
+        }
+
+        return $board;
     }
 }

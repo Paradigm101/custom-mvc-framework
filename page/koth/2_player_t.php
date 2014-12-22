@@ -1,16 +1,14 @@
-<?php
-$players = $data['players'];
-?>
-
 <br/>
+
 <!-- players -->
 <div class="row">
-  <div class="col-xs-6"><?= $players[1]->display(); ?></div>
-  <div class="col-xs-6"><?= $players[2]->display(); ?></div>
+  <div class="col-xs-6"><?= $data['players'][1]->display(); ?></div>
+  <div class="col-xs-6"><?= $data['players'][2]->display(); ?></div>
 </div>
 <br/>
 <hr/>
 <br/>
+
 <!-- board -->
 <div class="row">
   <div class="col-xs-12"><?= $data['board']->display(); ?></div>

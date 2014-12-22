@@ -21,5 +21,8 @@ class Koth_Start_AJA_M extends Base_AJA_M
 
         // Associate player and game
         $this->query("INSERT INTO koth_game_players (id_game, id_player) VALUES ($gameId, $playerId1), ($gameId, $playerId2);");
+
+        // Initialize board with unknown dice
+        $this->query("INSERT INTO koth_game_dice (id_game, id_dice, keep) VALUES ($gameId, 1, 0),($gameId, 1, 0),($gameId, 1, 0),($gameId, 1, 0),($gameId, 1, 0),($gameId, 1, 0);");
     }
 }

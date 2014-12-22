@@ -9,6 +9,7 @@ abstract class Table_LIB {
     static private $model = null;
     
     // Table list
+    // TBD: remove for a csv file
     static private $tables = array( 'male_first_names',
                                     'female_first_names',
                                     'surnames',
@@ -19,8 +20,8 @@ abstract class Table_LIB {
                                     'koth_players',
                                     'koth_games',
                                     'koth_game_players',
-                                    'koth_slots',
-                                    'koth_game_slots' );
+                                    'koth_dice',
+                                    'koth_game_dice' );
 
     static private function executeCommandForAllTables( $command, $stopOnFail = false ) {
 

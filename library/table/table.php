@@ -9,7 +9,18 @@ abstract class Table_LIB {
     static private $model = null;
     
     // Table list
-    static private $tables = array( 'male_first_names', 'female_first_names', 'surnames', 'roles', 'users', 'sessions' );
+    static private $tables = array( 'male_first_names',
+                                    'female_first_names',
+                                    'surnames',
+                                    'roles',
+                                    'users',
+                                    'sessions',
+                                    'koth_heroes',
+                                    'koth_players',
+                                    'koth_games',
+                                    'koth_game_players',
+                                    'koth_slots',
+                                    'koth_game_slots' );
 
     static private function executeCommandForAllTables( $command, $stopOnFail = false ) {
 

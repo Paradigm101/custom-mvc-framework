@@ -251,7 +251,7 @@ EOD;
         $isSingleActions = false;
 
         // User needs to be logged in to have access to actions
-        if ( Session_LIB::isUserLoggedIn() ) {
+        if ( Session_LIB::isUserLoggedIn() && Session_LIB::getUserRole() == 'admin' ) {
 
             // Is there any global/single action in the list?
             foreach ( $this->actions as $action )

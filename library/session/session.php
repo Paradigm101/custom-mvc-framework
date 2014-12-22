@@ -78,6 +78,12 @@ abstract class Session_LIB {
         return ( static::$idUser ? true : false );
     }
 
+    // Get user role
+    static public function getUserRole()
+    {
+        return static::$model->getUserRole( static::$idUser );
+    }
+    
     // Getting user's IP address
     static public function getUserIP() {
 

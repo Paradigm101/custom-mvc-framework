@@ -1,15 +1,17 @@
 
 /************************************ Single actions ************************************/
-var users_edit_item = function( id_item ) {
+var users_edit_item = function( id_item )
+{
     alert('users_edit_item : ' + id_item);
 }
 
-var users_delete_item = function( id_item ) {
-    
+var users_delete_item = function( id_item )
+{
     $.ajax({
         type: "POST",
         url: "",
-        data: {
+        data:
+        {
             rt: REQUEST_TYPE_AJAX,      // request type
             rn: 'users_delete_item',    // request name
             id: id_item
@@ -37,15 +39,15 @@ $(".dropdown-menu-change-label li a").click(function()
 });
 
 // Role Form: Click button to submit
-$('#roleSubmitButton').click( function (e) {
-
+$('#roleSubmitButton').click( function (e)
+{
     e.preventDefault();
     $('#roleForm').submit();
 });
 
 // Role form is being submitted
-$('#roleForm').submit(function(e){
-
+$('#roleForm').submit( function(e)
+{
     e.preventDefault();
 
     $.ajax({
@@ -78,12 +80,13 @@ var users_modify_batch = function( table_name )
     $('#roleModal').modal('show');
 }
 
-var users_export_batch = function() {
+var users_export_batch = function()
+{
     alert('users_export_batch');
 }
 
-var users_delete_batch = function( tmp_table_name ) {
-
+var users_delete_batch = function( tmp_table_name )
+{
     $.ajax({
         type: "POST",
         url: "",
@@ -100,12 +103,13 @@ var users_delete_batch = function( tmp_table_name ) {
 }
 
 /************************************ Global actions ************************************/
-var users_export_all = function() {
+var users_export_all = function()
+{
     alert('users_export_all');
 }
 
-var users_delete_all = function( tmp_table_name ) {
-
+var users_delete_all = function( tmp_table_name )
+{
     $.ajax({
         type: "POST",
         url: "",

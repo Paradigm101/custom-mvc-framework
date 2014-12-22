@@ -192,6 +192,7 @@ abstract class Table_LIB_Origin extends Base_LIB_Model {
                 // Get data
                 $element = trim( array_shift( $elements ) );
                 
+                // TBD: manage null value
                 // TBD switch/case
                 // Manage numeric
                 if ( in_array($fields[$i]['type'], array('tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'decimal', 'float', 'double', 'real') ) ) {

@@ -1,0 +1,9 @@
+id,            int, , , 0, 1, 1, 1
+id_user,       int, , , 0, 0, 0, 0
+id_hero,       int, , , 0, 0, 0, 0
+current_VP,    int, , , 0, 0, 0, 0
+current_HP,    int, , , 0, 0, 0, 0
+is_active, boolean, , , 0, 0, 0, 0
+is_koth,   boolean, , , 0, 0, 0, 0
+roll_done,     int, , , 0, 0, 0, 0
+rank,          int, , , 0, 0, 0, 0

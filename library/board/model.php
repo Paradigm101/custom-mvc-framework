@@ -132,15 +132,16 @@ class Board_LIB_Model extends Base_LIB_Model {
             $this->query( "SELECT COUNT(1) selected_items FROM `$temporaryTableName`" );
             
             $selectedItemNumber = $this->fetchNext()->selected_items;
+            
+            $this->boardSelectedIds        = $selectedIds;
+            $this->boardSelectedItemNumber = $selectedItemNumber;
         }
 
         /************************************* STORE DATA ************************************************/
-        $this->boardSort               = $sort;
-        $this->boardData               = $data;
-        $this->boardCurrentPage        = $currentPage;
-        $this->boardPageNumber         = max( ceil( $resultNumber / $pageSize ), 1 );
-        $this->boardFilters            = Url_LIB::getBoardFilters();
-        $this->boardSelectedIds        = $selectedIds;
-        $this->boardSelectedItemNumber = $selectedItemNumber;
+        $this->boardSort        = $sort;
+        $this->boardData        = $data;
+        $this->boardCurrentPage = $currentPage;
+        $this->boardPageNumber  = max( ceil( $resultNumber / $pageSize ), 1 );
+        $this->boardFilters     = Url_LIB::getBoardFilters();
     }
 }

@@ -1,0 +1,6 @@
+id,              int,    ,   , 0, 1, 1, 1
+name,        varchar, 128,   , 0, 0, 0, 1
+label,       varchar, 128,   , 0, 0, 0, 1
+picture,     varchar,  64,   , 1, 0, 0, 1
+starting_VP,     int,    ,  0, 0, 0, 0, 0
+starting_HP,     int,    , 12, 0, 0, 0, 0

@@ -2,78 +2,95 @@
 
 class Koth_Roll_AJA_M extends Base_AJA_M
 {
-    public function roll( $idUser )
+    // Retrieve number of roll done for this user in the current game
+    public function getRollDone( $idUser )
     {
         $idUser = $this->getQuotedValue($idUser);
 
-        // First: get game id and roll_done
-        $query = <<<EOD
-SELECT
-    p.roll_done     roll_done,
-    g.id            id_game
-FROM
-    koth_players p
-    INNER JOIN koth_game_players gp ON
-        gp.id_player = p.id
-        INNER JOIN koth_games g ON
-            g.id        = gp.id_game
-        AND g.is_active = 1
-WHERE
-    p.id_user = $idUser ;
-EOD;
-
-        $this->query( $query );
-
+        $this->query( "SELECT roll_done FROM koth_players WHERE id_user = $idUser ;" );
         $result = $this->fetchNext();
 
-        $rollDone = $result->roll_done;
-        $idGame   = $this->getQuotedValue( 0 + $result->id_game );
+        return $result->roll_done;
+    }
 
-        // More than 3 roll done, nothing to do
-        if ( $rollDone >= 2 )
-        {
-            return;
-        }
+    public function getDiceNumberToReroll( $idUser )
+    {
+        $idUser = $this->getQuotedValue($idUser);
 
-        // Then get ids from dice to re-roll
         $query = <<<EOD
 SELECT
-    gd.id   id_dice
+    COUNT(1) to_roll_number
 FROM
-    koth_games g
-    INNER JOIN koth_game_dice gd ON
-        gd.id_game = g.id
-    AND gd.keep    = 0
+    koth_game_dice gd
+    INNER JOIN koth_game_players gp ON
+        gp.id_game = gd.id_game
+        INNER JOIN koth_players p ON
+            p.id      = gp.id_player
+        AND p.id_user = $idUser
 WHERE
-    g.id = $idGame ;
+    gd.keep = 0
+GROUP BY 
+    gd.id_game;
 EOD;
 
-        $this->query( $query );
+        $this->query($query);
+        $result = $this->fetchNext();
+        
+        return $result->to_roll_number;
+    }
 
-        $ids = array();
-        while( $result = $this->fetchNext() )
+    // update dice from game_dice: keep = 1 and change id_dice (how? get ids first?)
+    // Incremente roll_done for player
+    // TBD: should be done in the same transaction
+    public function updateDice( $idUser, $newDice )
+    {
+        $idUser = $this->getQuotedValue( 0 + $idUser );
+
+        // Get ids to dice to reroll
+        $query = <<<EOD
+SELECT
+    gd.id   id_gd
+FROM
+    koth_game_dice gd
+    INNER JOIN koth_game_players gp ON
+        gp.id_game = gd.id_game
+        INNER JOIN koth_players p ON
+            p.id      = gp.id_player
+        AND p.id_user = $idUser
+WHERE
+    gd.keep = 0;
+EOD;
+
+        $this->query($query);
+
+        // Update game_dice with new keep and id_dice
+        $queries = array();
+        foreach ( $newDice as $diceName )
         {
-            $ids[] = $result->id_dice;
+            $result = $this->fetchNext();
+
+            $idGd     = $this->getQuotedValue( 0 + $result->id_gd );
+            $diceName = $this->getQuotedValue( $diceName );
+
+            $queries[] = <<<EOD
+UPDATE
+    koth_game_dice gd
+    INNER JOIN koth_dice d ON
+        d.name = $diceName
+SET
+    gd.id_dice = d.id,
+    gd.keep    = 1
+WHERE
+    gd.id = $idGd;
+EOD;
         }
 
-        Log_LIB::trace($ids);
-
-        // If there are dice to roll
-        if ( count( $ids ) )
+        foreach ($queries as $query )
         {
-            // Find out new dice
-            $newDice = Koth_LIB::getRandomDieName( count( $ids ) );
-
-            // Remove entries in koth_game_dice
-            $this->query('DELETE FROM koth_game_dice WHERE id IN ( ' . implode(', ', $ids) . ' ) ;');
-   
-            // Create new entries in koth_game_dice
-            $this->query('');
+            $this->query($query);
         }
-
-        $newRollDone = $this->getQuotedValue( 1 + $rollDone );
 
         // Anyway, add a roll
-        $this->query("UPDATE koth_players SET roll_done = $newRollDone WHERE id = $idUser ;");
+        $this->query("UPDATE koth_players SET roll_done = roll_done + 1 WHERE id_user = $idUser ;");
     }
 }

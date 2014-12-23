@@ -109,6 +109,50 @@ class Base_LIB_Model {
         return false;
     }
 
+    // Multi-query (test)
+    // TBD: manage multiple results
+    protected function queryMulti( $query ) {
+
+        // Doing the job
+        $success = $this->db->queryMultiDB( $query );
+
+        // Success: retire
+        if ( $success ) {
+            $this->error = BLM_ERROR_STATUS_NO_ERROR;
+            return true;
+        }
+
+        // Error management
+        if ( strpos($this->getLastDBError(), 'Duplicate entry') !== false ) {
+            
+            $this->error = BLM_ERROR_STATUS_DUPLICATE_ENTRY;
+        }
+        else if ( strpos($this->getLastDBError(), 'cannot be null') !== false ) {
+            
+            $this->error = BLM_ERROR_STATUS_NULL_VALUE;
+        }
+        else if ( ( strpos($this->getLastDBError(), 'Table') !== false ) &&
+                  ( strpos($this->getLastDBError(), "doesn't exist") !== false ) ) {
+
+            $this->error = BLM_ERROR_STATUS_NO_TABLE;
+        }
+        else if ( ( strpos($this->getLastDBError(), 'Table') !== false ) &&
+                  ( strpos($this->getLastDBError(), 'already exists') !== false ) ) {
+
+            $this->error = BLM_ERROR_STATUS_TABLE_EXISTS;
+        }
+        else if ( strpos($this->getLastDBError(), 'Unknown table') !== false ) {
+
+            $this->error = BLM_ERROR_STATUS_UNKNOWN_TABLE;
+        }
+        else {
+            $this->error = BLM_ERROR_STATUS_UNKOWN;
+        }
+
+        // Problem
+        return false;
+    }
+
     // DB Wrappers
     //------------
     protected function getQuotedValue( $data ) {

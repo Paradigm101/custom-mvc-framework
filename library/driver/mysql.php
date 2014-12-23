@@ -185,6 +185,67 @@ class Driver_LIB_Mysql {
         return true;
     }
 
+    // Multi-query (test)
+    // TBD: manage multiple results
+    public function queryMultiDB( $query ) {
+
+        // Empty query
+        if ( !$query ) {
+
+            $this->error = 'Empty query';
+            Log_LIB::traceBT("[Driver_LIB_Mysql] Error empty query");
+            return false;
+        }
+
+        // Free existing results
+        $this->freeResult();
+
+        // Store query
+        $this->query = $query;
+
+        // Get time before query (float)
+        $timeBefore = microtime( true );
+
+        /** Everything is OK, do the job
+         *  Result is equal to:
+         *      false on failure
+         *      returned object if SELECT, SHOW, DESCRIBE or EXPLAIN
+         *      true else
+         */
+        try {
+            // Launch query
+            $result = mysqli_multi_query( $this->connection, $query );
+        }
+        // Unknown exception
+        catch(Exception $e) {
+
+            $this->error = $e->getMessage();
+            Log_LIB::trace("[Driver_LIB_Mysql] Exception in query [$query] : " . $this->error);
+            return false;
+        }
+
+        // Store time spent in DB (float precision)
+        Page_LIB::addTimeInDB( microtime( true ) - $timeBefore );
+
+        // Problem
+        if ( $result === false ) {
+
+            $this->error = mysqli_error( $this->connection );
+            Log_LIB::trace("[Driver_LIB_Mysql] Error in query [$query] : " . $this->error);
+            return false;
+        }
+
+        // Stock results and row number for SELECT, SHOW, DESCRIBE or EXPLAIN
+        if ( is_object($result) ) {
+
+            $this->result = $result;
+            $this->rows   = mysqli_num_rows( $this->result );
+        }
+
+        // Return success
+        return true;
+    }
+
     /**
      * Fetch a row from the query result
      *

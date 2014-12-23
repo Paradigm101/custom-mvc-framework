@@ -7,7 +7,7 @@ abstract class Table_LIB {
 
     // Model
     static private $model = null;
-    
+
     // Table list
     // TBD: remove for a csv file
     static private $tables = array( 'male_first_names',
@@ -23,8 +23,8 @@ abstract class Table_LIB {
                                     'koth_dice',
                                     'koth_game_dice' );
 
-    static private function executeCommandForAllTables( $command, $stopOnFail = false ) {
-
+    static private function executeCommandForAllTables( $command, $stopOnFail = false )
+    {
         // Prepare Answer : array( array( 'name' => tableName, 'error' => '...' ),
         //                         ... );
         $results = array();

@@ -17,6 +17,7 @@ abstract class Table_LIB {
                                     'users',
                                     'sessions',
                                     'koth_heroes',
+                                    'koth_status',
                                     'koth_players',
                                     'koth_games',
                                     'koth_game_players',

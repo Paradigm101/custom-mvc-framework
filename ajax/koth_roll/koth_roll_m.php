@@ -2,17 +2,6 @@
 
 class Koth_Roll_AJA_M extends Base_AJA_M
 {
-    // Retrieve number of roll done for this user in the current game
-    public function getRollDone( $idUser )
-    {
-        $idUser = $this->getQuotedValue($idUser);
-
-        $this->query( "SELECT roll_done FROM koth_players WHERE id_user = $idUser ;" );
-        $result = $this->fetchNext();
-
-        return $result->roll_done;
-    }
-
     public function getDiceNumberToReroll( $idUser )
     {
         $idUser = $this->getQuotedValue($idUser);
@@ -36,12 +25,11 @@ EOD;
         $this->query($query);
         $result = $this->fetchNext();
         
-        return $result->to_roll_number;
+        return ( $result ? $result->to_roll_number : 0 );
     }
 
     // update dice from game_dice: keep = 1 and change id_dice (how? get ids first?)
     // Incremente roll_done for player
-    // TBD: should be done in the same transaction
     public function updateDice( $idUser, $newDice )
     {
         $idUser = $this->getQuotedValue( 0 + $idUser );
@@ -89,8 +77,5 @@ EOD;
         {
             $this->query($query);
         }
-
-        // Anyway, add a roll
-        $this->query("UPDATE koth_players SET roll_done = roll_done + 1 WHERE id_user = $idUser ;");
     }
 }

@@ -74,7 +74,7 @@ class Base_PAG_V extends Base_LIB_View {
 
         // Add Javascript files for every page
         //------------------------------------
-        $scriptFiles[] = SITE_ROOT . '/page/base/base.js';
+//        $scriptFiles[] = SITE_ROOT . '/page/base/base.js';
 
         // Add css/javascript files for header
         //------------------------------------

@@ -11,8 +11,14 @@
 
 <!-- board -->
 <div class="row">
-  <div class="col-xs-12"><?= $data['board']->display(); ?></div>
+    <div class="col-xs-12"><?= $data['board']->display(); ?></div>
 </div>
+<br/>
+<hr/>
+<br/>
+
+<!-- new -->
+<?= $data['news']->display(); ?>
 <br/>
 <hr/>
 <br/>

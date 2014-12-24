@@ -6,6 +6,9 @@
         <!-- JQuery -->
         <script type="text/javascript" src="<?= SITE_ROOT ?>/page/base/jquery/jquery.js"></script>
 
+        <!-- Base for all pages -->
+        <script type="text/javascript" src="<?= SITE_ROOT ?>/page/base/base.js"></script>
+        
         <!-- Transfer from PHP to Javascript -->
         <script type="text/javascript">
 

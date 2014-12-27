@@ -2,7 +2,7 @@
 
 class Koth_Ack_After_Roll_AJA_M extends Base_AJA_M
 {
-    public function resetDice( $idUser )
+    public function resetPlayerDice( $idUser )
     {
         $idUser = $this->getQuotedValue( 0 + $idUser );
 

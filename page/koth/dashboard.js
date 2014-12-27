@@ -1,5 +1,5 @@
 
-// King of the hill: start new game
+// Button start new game
 $('#koth_btn_start').click( function (e)
 {
     // No mess-up!

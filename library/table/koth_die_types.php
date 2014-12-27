@@ -1,12 +1,12 @@
 <?php
 
 // Table roles
-class Table_LIB_Koth_Dice extends Table_LIB_Origin {
+class Table_LIB_Koth_Die_Types extends Table_LIB_Origin {
 
     // Table Name (mandatory)
     protected function getTableName() {
 
-        return 'koth_dice';
+        return 'koth_die_types';
     }
 
     // Init: without ID

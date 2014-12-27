@@ -15,4 +15,4 @@
     <body style="background-image: url('<?= SITE_ROOT ?>/page/base/image/background.png');">
 
         <!-- Start of body -->
-        <div class="container" style="margin-bottom: 70px;">
+        <div class="container" style="margin-bottom: 80px;">

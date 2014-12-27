@@ -1,12 +1,10 @@
 <?php
 
-// Heroes for King of the Hill
-class Table_LIB_Koth_Heroes extends Table_LIB_Origin {
+class Table_LIB_Koth_Heroes_Levels extends Table_LIB_Origin {
 
-    // Table Name (mandatory)
     protected function getTableName() {
 
-        return 'koth_heroes';
+        return 'koth_heroes_levels';
     }
     
     protected function getInitMode()

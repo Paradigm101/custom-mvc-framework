@@ -1,19 +1,20 @@
 <?php
 
 // Mother of all view/answer for pages/apis/ajaxs
-abstract class Base_LIB_View {
-
+abstract class Base_LIB_View
+{
     // Holds data/answer
     private $data = array();
 
     // For view
-    protected function getData() {
+    protected function getData()
+    {
         return $this->data;
     }
 
     // Push data from controller
-    public function assign( $key, $value ) {
-
+    public function assign( $key, $value )
+    {
         $this->data[ $key ] = $value;
     }
 

@@ -1,5 +1,5 @@
 
-// King of the hill: concede game
+// Button concede game
 $('#koth_btn_concede').click( function (e)
 {
     e.preventDefault();

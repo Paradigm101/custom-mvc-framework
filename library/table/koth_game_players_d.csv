@@ -1,3 +1,0 @@
-id,        int, , , 0, 1, 1, 1
-id_game,   int, , , 0, 0, 0, 0
-id_player, int, , , 0, 0, 0, 0

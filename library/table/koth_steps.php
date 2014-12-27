@@ -1,10 +1,10 @@
 <?php
 
-class Table_LIB_Koth_Status extends Table_LIB_Origin
+class Table_LIB_Koth_Steps extends Table_LIB_Origin
 {
     protected function getTableName()
     {
-        return 'koth_status';
+        return 'koth_steps';
     }
 
     // Init: without ID

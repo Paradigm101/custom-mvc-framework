@@ -1,0 +1,5 @@
+id,              int, ,  , 0, 1, 1, 1
+id_player,       int, ,  , 0, 0, 0, 0
+id_die_type,     int, , 1, 0, 0, 0, 0
+value,           int, ,  , 0, 0, 0, 0
+keep,        boolean, , 0, 0, 0, 0, 0

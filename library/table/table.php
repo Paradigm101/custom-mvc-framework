@@ -16,13 +16,17 @@ abstract class Table_LIB {
                                     'roles',
                                     'users',
                                     'sessions',
-                                    'koth_heroes',
-                                    'koth_status',
-                                    'koth_players',
+                                    'koth_die_types',
                                     'koth_games',
-                                    'koth_game_players',
-                                    'koth_dice',
-                                    'koth_game_dice' );
+                                    'koth_hero_xp_level',
+                                    'koth_heroes',
+                                    'koth_heroes_levels',
+                                    'koth_players',
+                                    'koth_players_dice',
+                                    'koth_steps',
+                                    'koth_user_xp',
+                                    'koth_user_xp_level',
+                                    'koth_users_heroes' );
 
     static private function executeCommandForAllTables( $command, $stopOnFail = false )
     {

@@ -6,22 +6,26 @@ class Koth_LIB_Die
     private $name;
     private $label;
     private $picture;
+    private $value;
+    private $rollable;
 
-    public function __construct( $die )
+    public function __construct( $die, $rollable )
     {
         Page_LIB::subscribeClassForJavascript( 'Koth_LIB_Die' );
 
-        $this->id      = $die->id;
-        $this->name    = $die->name;
-        $this->label   = $die->label;
-        $this->picture = 'page/koth/image/' . $die->picture;
+        $this->id       = $die->id;
+        $this->name     = $die->name;
+        $this->label    = $die->label;
+        $this->picture  = 'page/koth/image/' . $die->picture;
+        $this->value    = $die->value;
+        $this->rollable = $rollable;
     }
 
-    public function display( $isRollable = true )
+    public function display()
     {
         // Make image bigger on mouse over (not for unknown or non-rollable)
         $onMouseOver = '';
-        if ( $this->name != 'unknown' && $isRollable )
+        if ( $this->name != 'unknown' && $this->rollable )
         {
             $bigPicture = explode( '.', $this->picture );
             $bigPicture[0] .= '_big';
@@ -32,7 +36,7 @@ class Koth_LIB_Die
         }
 
         $toDiplay = '<img id="' . $this->id . '"
-                          name="die_image' . ( $isRollable ? '' : '_non_rollable' ) . '"
+                          name="die_image' . ( $this->rollable ? '' : '_non_rollable' ) . '"
                           class="unselectable" 
                           title="Click to keep or re-roll this die"
                           alt="' . $this->label . '"

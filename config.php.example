@@ -49,3 +49,9 @@ define('DEFAULT_PAGE_SIZE', 20);
 
 // Database size
 define('DATABASE_IS_BIG', false);
+
+// Specific KOTH
+define('KOTH_STEP_START',        'start_turn');
+define('KOTH_STEP_AFTER_ROLL_1', 'after_roll_1');
+define('KOTH_STEP_AFTER_ROLL_2', 'after_roll_2');
+define('KOTH_STEP_AFTER_ROLL_3', 'after_roll_3');

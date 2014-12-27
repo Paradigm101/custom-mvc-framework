@@ -1,0 +1,3 @@
+id_user,    int, , , 1, 0, 0, 1
+experience, int, , , 0, 0, 0, 0
+level,      int, , , 0, 0, 0, 0

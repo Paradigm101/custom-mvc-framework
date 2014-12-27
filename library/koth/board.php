@@ -2,30 +2,29 @@
 
 class Koth_LIB_Board
 {
-    private $dice     = array();
-    private $rollable = false;
+    private $model;
+    private $view;
 
     public function __construct( $idUser )
     {
-        // Add player's dice to this board
-        if ( $dice = Koth_LIB::getPlayerDice($idUser) )
-        {
-            // Add dice
-            foreach ( $dice as $die )
-            {
-                $this->dice[] = new Koth_LIB_Die( $die );
-            }
-        }
+        // TBD: it's not player's turn (PvP)
+        
+        // Now player is active
+        $this->model = new Koth_LIB_Board_Model( $idUser );
+        $this->view  = new Koth_LIB_Board_View();
+    }
 
-        // Check if user can roll dice
-        if ( in_array( Koth_LIB::getPlayerStatus($idUser), array( 'before_roll_1', 'after_roll_1', 'after_roll_2' ) ) )
+    public function render()
+    {
+        // Script
+        if ( $this->model->canUserRoll() )
         {
-            // Display
-            $this->rollable = true;
-
-            // Script
             Page_LIB::addJavascript($this->getScript());
         }
+
+        $this->view->assign('dice',     $this->model->getDice());
+        $this->view->assign('rollable', $this->model->canUserRoll());
+        $this->view->render();
     }
 
     private function getScript()
@@ -50,42 +49,5 @@ $('#koth_btn_roll').click( function (e)
     });
 });
 EOD;
-    }
-
-    public function display()
-    {
-        // Start row
-        $toDisplay  = '<div class="row">';
-        
-        // Margin left
-        $toDisplay .= '<div class="col-xs-1"></div>';
-
-        // Display dice
-        $toDisplay .= '<div class="col-xs-6"><div class="row">';
-        foreach ( $this->dice as $die )
-        {
-            $toDisplay .= '<div class="col-xs-2">';
-            $toDisplay .= $die->display( $this->rollable );
-            $toDisplay .= '</div>';
-        }
-        $toDisplay .= '</div></div>';
-
-        // Margin in-between
-        $toDisplay .= '<div class="col-xs-1"></div>';
-
-        // Button to roll/re-roll
-        $toDisplay .= '<div class="col-xs-1" style="height: 100px;">' . "\n"
-                        . '<button type="button" class="btn btn-default" id="koth_btn_roll" ' . ( $this->rollable ? '' : 'disabled' ) . '>' . "\n"
-                            . '<i class="glyphicon glyphicon-share-alt"></i>&nbsp;Roll' . "\n"
-                        . '</button>' . "\n"
-                    . '</div>' . "\n";
-
-        // Margin right
-        $toDisplay .= '<div class="col-xs-3"></div>';
-
-        // End row
-        $toDisplay .= '</div>';
-
-        return $toDisplay;
     }
 }

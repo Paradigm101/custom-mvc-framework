@@ -15,11 +15,7 @@ class Koth_LIB_Player_Model extends Base_LIB_Model
 
     public function getPlayerData()
     {
-        $playerCondition = ' AND p2.id_user = ' . $this->idUser;
-        if ( $this->isOther )
-        {
-            $playerCondition = ' AND p2.id_user != ' . $this->idUser;
-        }
+        $playerCondition = ' AND p2.id_user ' . ( $this->isOther ? '!' : '' ) . '= ' . $this->idUser;
         
         $query = <<<EOD
 SELECT
@@ -30,7 +26,7 @@ SELECT
     COALESCE( u.username, 'AI' )    user_name,
     COALESCE( ux.level, 1 )         user_level,
     h.label                         hero_label,
-    COALESCE( uh.level, 1 )         hero_level,
+    p2.hero_level                   hero_level,
     hl.start_hp                     max_hp,
     g.id_active_player              id_active_player,
     s.name                          step
@@ -48,11 +44,9 @@ FROM
                 ux.id_user = p2.id_user
             INNER JOIN koth_heroes h ON
                 h.id = p2.id_hero
-            LEFT OUTER JOIN koth_users_heroes uh ON
-                uh.id_hero = p2.id_hero
-            LEFT OUTER JOIN koth_heroes_levels hl ON
+            INNER JOIN koth_heroes_levels hl ON
                 hl.id_hero = p2.id_hero
-            AND hl.level   = COALESCE( uh.level, 1 )
+            AND hl.level   = p2.hero_level
         INNER JOIN koth_steps s ON
             s.id = g.id_step
 WHERE
@@ -73,7 +67,7 @@ EOD;
         $player->currentVP = $result->current_vp;
         $player->maxVP     = 100;
         $player->currentXP = $result->current_xp;
-        $player->maxXP     = 4;
+        $player->maxXP     = 10;
         $player->isActive  = ( $result->id_active_player == $result->id_player ? true : false );
         $player->step      = $result->step;
 

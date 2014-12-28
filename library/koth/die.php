@@ -16,9 +16,9 @@ class Koth_LIB_Die
         $this->id       = $die->id;
         $this->name     = $die->name;
         $this->label    = $die->label;
-        $this->picture  = 'page/koth/image/' . $die->picture;
         $this->value    = $die->value;
         $this->rollable = $rollable;
+        $this->picture  = 'page/koth/image/' . $die->name . '_' . $die->value . '.png';
     }
 
     public function display()
@@ -69,7 +69,7 @@ $('img[name=die_image_non_rollable]').contextmenu( function(event) {
 $('img[name=die_image]').mousedown( function(event)
 {
     // Unknown die or not left click: to nothing
-    if (  ( $(this).attr('src') == 'page/koth/image/unknown.png' )
+    if (  ( $(this).attr('src') == 'page/koth/image/unknown_0.png' )
         ||( event.which != 1 ) )
     {
         return;
@@ -109,7 +109,7 @@ $('img[name=die_image]').mousedown( function(event)
         $(this).attr('saved_onmouseout',  $(this).attr('onmouseout') );
 
         // Setting new state
-        $(this).attr('src',         'page/koth/image/unselected.png');
+        $(this).attr('src',         'page/koth/image/unselected.png' );
         $(this).attr('onmouseover', 'this.src=\'page/koth/image/unselected_big.png\'' );
         $(this).attr('onmouseout',  'this.src=\'page/koth/image/unselected.png\'' );
     }

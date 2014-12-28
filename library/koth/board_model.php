@@ -18,7 +18,6 @@ SELECT
     pd.id       id,
     dt.name     name,
     dt.label    label,
-    dt.picture  picture,
     pd.value    value,
     pd.keep     keep
 FROM

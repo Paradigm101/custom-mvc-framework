@@ -6,12 +6,6 @@ class Koth_LIB_Board_View extends Base_LIB_View
     {
         $data = $this->getData();
 
-        $dice = array();
-        foreach ( $data['dice'] as $die )
-        {
-            $dice[] = new Koth_LIB_Die( $die, $data['rollable'] );
-        }
-
         // Start row
         $toDisplay  = '<div class="row">';
         
@@ -34,11 +28,14 @@ class Koth_LIB_Board_View extends Base_LIB_View
         $toDisplay .= '<div class="col-xs-1"></div>';
 
         // Button to roll/re-roll
-        $toDisplay .= '<div class="col-xs-1" style="height: 100px;">' . "\n"
-                        . '<button type="button" class="btn btn-default" id="koth_btn_roll" ' . ( $data['rollable'] ? '' : 'disabled' ) . '>' . "\n"
+        $toDisplay .= '<div class="col-xs-1" style="height: 100px;">' . "\n";
+        if ( $data['rollable'] )
+        {
+            $toDisplay .= '<button type="button" class="btn btn-default" id="koth_btn_roll">' . "\n"
                             . '<i class="glyphicon glyphicon-share-alt"></i>&nbsp;Roll' . "\n"
-                        . '</button>' . "\n"
-                    . '</div>' . "\n";
+                        . '</button>' . "\n";
+        }
+        $toDisplay .= '</div>' . "\n";
 
         // Margin right
         $toDisplay .= '<div class="col-xs-3"></div>';

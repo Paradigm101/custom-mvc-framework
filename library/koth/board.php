@@ -30,7 +30,6 @@ class Koth_LIB_Board
     private function getScript()
     {
         return <<<EOD
-// Roll dices
 $('#koth_btn_roll').click( function (e)
 {
     e.preventDefault();

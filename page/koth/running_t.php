@@ -19,7 +19,7 @@
 
 <!-- new -->
 <div class="row">
-    <div class="col-xs-12">News</div>
+    <div class="col-xs-12"><? $data['game']->getNews()->render() ?></div>
 </div>
 <br/>
 <hr/>

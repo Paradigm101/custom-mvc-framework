@@ -8,7 +8,7 @@ class Koth_PAG_V extends Base_PAG_V
         
         if ( Session_LIB::isUserLoggedIn() )
         {
-            if ( $data['game']->isActive() )
+            if ( $data['game']->isGameActive() )
             {
                 $template = 'running';
             }

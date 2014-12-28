@@ -2,18 +2,39 @@
 
 class Koth_LIB_News
 {
+    private $model;
+    private $view;
     private $idUser;
 
     public function __construct( $idUser )
     {
+        $this->model  = new Koth_LIB_News_Model( $idUser );
+        $this->view   = new Koth_LIB_News_View();
         $this->idUser = $idUser;
+    }
+
+    public function render()
+    {
+        $step     = $this->model->getStep();
+        $isActive = $this->model->isActive();
+
+        if ( ( $step == KOTH_STEP_AFTER_ROLL_3 )
+          && $isActive )
+        {
+            Page_LIB::addJavascript($this->getScriptForAck());
+        }
+
+        $this->view->assign('step',           $step );
+        $this->view->assign('is_active',      $isActive );
+        $this->view->assign('other_results',  Koth_LIB_Results::getUserResults($this->idUser, false) );
+        $this->view->assign('player_results', Koth_LIB_Results::getUserResults($this->idUser) );
+        $this->view->render();
     }
 
     private function getScriptForAck()
     {
         return <<<EOD
-// Roll dices
-$('#koth_btn_ack').click( function (e)
+$('#koth_btn_news_ack').click( function (e)
 {
     e.preventDefault();
     
@@ -21,8 +42,8 @@ $('#koth_btn_ack').click( function (e)
         type: "POST",
         url: "",
         data: {
-            rt: REQUEST_TYPE_AJAX,      // request type
-            rn: 'koth_ack_after_roll'   // request name
+            rt: REQUEST_TYPE_AJAX,  // request type
+            rn: 'koth_ack_end'          // request name
         },
         success: function()
         {
@@ -31,51 +52,5 @@ $('#koth_btn_ack').click( function (e)
     });
 });
 EOD;
-    }
-
-    public function display()
-    {
-        $playerStatus = Koth_LIB::getPlayerStatus($this->idUser);
-        
-        $message = '';
-        $button  = '';
-
-        // Compute message
-        if ( $playerStatus == 'after_roll_3' )
-        {
-            // Retrieve player's results
-            list( $attack, $heal, $experience, $victory ) = Koth_LIB::getPlayerResults($this->idUser);
-
-            // User's message
-            $message = ( $attack ? "Damages: +$attack<br/>" : '' )
-                    . ( $heal ? "Heal: +$heal<br/>" : '' )
-                    . ( $experience ? "Experience: +$experience<br/>" : '' )
-                    . ( $victory ? "Victory points: +$victory" : '' )
-                    . ( $attack ? '<br/>You are the new King of the Hill!' : '' );
-
-            // Button
-            $button = '<button type="button" class="btn btn-default" id="koth_btn_ack" >' . "\n"
-                        . '<i class="glyphicon glyphicon-ok"></i>' . "\n"
-                    . '</button>' . "\n";
-
-            // Script for button
-            Page_LIB::addJavascript($this->getScriptForAck());
-        }
-
-        // Start
-        $toDisplay  = '<div class="row">' . "\n";
-        $toDisplay .= '<div class="col-xs-3"></div>' . "\n";
-        
-        // Message
-        $toDisplay .= '<div class="col-xs-3">' . $message . '</div>' . "\n";
-
-        // Action button
-        $toDisplay .= '<div class="col-xs-1">' . $button . '</div>' . "\n";
-
-        // End
-        $toDisplay .= '<div class="col-xs-5"></div>' . "\n";
-        $toDisplay .= '</div>' . "\n";
-        
-        return $toDisplay;
     }
 }

@@ -16,6 +16,6 @@ abstract class koth_Ack_End_AJA_C extends Base_AJA_C
             return;
         }
 
-        $game->processAck();
+        $game->processEndTurn();
     }
 }

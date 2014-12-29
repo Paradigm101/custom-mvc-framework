@@ -1,99 +1,122 @@
 <?php
 
-// TBD: first turn with only 3 dice
 class Koth_LIB_Game_Model extends Base_LIB_Model
 {
-    private $idUser;
+    private $idUser = 0;
+    private $idGame = 0;
+    private $idUserPlayer = 0;
+    private $idOtherPlayer = 0;
+    private $idOtherUser = 0;
+    private $idActivePlayer = 0;
+    private $idInactivePlayer = 0;
+    private $idActiveUser = 0;
+    private $idInactiveUser = 0;
 
     public function __construct( $idUser )
     {
         parent::__construct();
         
         $this->idUser = $this->getQuotedValue( 0 + $idUser );
+        
+        // Get ids
+        if ( $this->idUser )
+        {
+            $this->computeIds();
+        }
     }
 
-    public function getStep()
+    public function aiKeepBest()
     {
-        $query = <<<EOD
-SELECT
-    s.name  step
-FROM
-    koth_steps s
-    INNER JOIN koth_games g ON
-        g.id_step      = s.id
-    AND g.is_completed = 0
-        INNER JOIN koth_players p ON
-            p.id_game = g.id
-        AND p.id_user = {$this->idUser} 
-EOD;
-        $this->query($query);
-        return $this->fetchNext()->step;
-    }
-    
-    public function isUserActive()
-    {
-        $query = <<<EOD
-SELECT
-    COUNT(1)    is_active
-FROM
-    koth_players p
-    INNER JOIN koth_games g ON
-        g.id               = p.id_game
-    AND g.id_active_player = p.id   
-    AND g.is_completed     = 0
-WHERE
-    p.id_user = {$this->idUser} 
-EOD;
-        $this->query($query);
-        return ( $this->fetchNext()->is_active ? true : false );
+        $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < 3 AND id_player = {$this->idActivePlayer}");
     }
 
-    public function stepStart()
+    public function aiKeepMedium()
     {
+        $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < 2 AND id_player = {$this->idActivePlayer}");
+    }
+
+    private function computeIds()
+    {
+        // Get game id
         $query = <<<EOD
-UPDATE
+SELECT
+    g.id    id_game
+FROM
     koth_games g
-    INNER JOIN koth_players p ON
-        p.id_game = g.id
-    AND p.id_user = {$this->idUser}
-    INNER JOIN koth_steps s ON
-        s.name = 'start_turn'
-SET
-    g.id_step = s.id
+INNER JOIN koth_players p ON
+    p.id_game = g.id
+AND p.id_user = {$this->idUser}
 WHERE
     g.is_completed = 0
 EOD;
         $this->query($query);
+        $result = $this->fetchNext();
+
+        if ( $result )
+        {
+            // Game id
+            $this->idGame = $this->getQuotedValue( 0 + $result->id_game );
+
+            // User player
+            $this->query("SELECT id FROM koth_players WHERE id_game = {$this->idGame} AND id_user = {$this->idUser}");
+            $this->idUserPlayer = $this->getQuotedValue( 0 + $this->fetchNext()->id );
+
+            // Other player
+            $this->query("SELECT id FROM koth_players WHERE id_game = {$this->idGame} AND id_user != {$this->idUser}");
+            $this->idOtherPlayer = $this->getQuotedValue( 0 + $this->fetchNext()->id );
+
+            // Other user
+            $this->query("SELECT id_user FROM koth_players WHERE id_game = {$this->idGame} AND id = {$this->idOtherPlayer}");
+            $this->idOtherUser = $this->getQuotedValue( 0 + $this->fetchNext()->id_user );
+
+            // Active player
+            $this->query("SELECT id_active_player FROM koth_games WHERE id = {$this->idGame} ");
+            $this->idActivePlayer = $this->getQuotedValue( 0 + $this->fetchNext()->id_active_player );
+
+            // Inactive player
+            $this->query("SELECT id FROM koth_players WHERE id_game = {$this->idGame} AND id != {$this->idActivePlayer}");
+            $this->idInactivePlayer = $this->getQuotedValue( 0 + $this->fetchNext()->id );
+            
+            // Active user
+            $this->query("SELECT p.id_user id_user FROM koth_players p INNER JOIN koth_games g ON g.id = p.id_game AND g.id_active_player = p.id WHERE p.id_game = {$this->idGame} ");
+            $this->idActiveUser = $this->getQuotedValue( 0 + $this->fetchNext()->id_user );
+            
+            // Inactive user
+            $this->query("SELECT p.id_user id_user FROM koth_players p INNER JOIN koth_games g ON g.id = p.id_game AND g.id_active_player != p.id WHERE p.id_game = {$this->idGame} ");
+            $this->idInactiveUser = $this->getQuotedValue( 0 + $this->fetchNext()->id_user );
+
+        }
     }
     
-    // Reset active player's dice
-    // Set dice number to 6 if needed
-    public function resetDice()
+    public function isPvE()
     {
-        $query = <<<EOD
-UPDATE
-    koth_players_dice pd
-    INNER JOIN koth_players p ON
-        p.id = pd.id_player
-        INNER JOIN koth_games g ON
-            g.id               = p.id_game
-        AND g.is_completed     = 0
-        AND g.id_active_player = p.id
-            INNER JOIN koth_players p2 ON
-                p2.id_game = g.id
-            AND p2.id_user = {$this->idUser}
-    INNER JOIN koth_die_types dt ON
-        dt.name = 'unknown'
-SET
-    pd.id_die_type = dt.id,
-    pd.value       = 0,
-    pd.keep        = 0
-EOD;
-        $this->query($query);
+        return !$this->idOtherUser;
+    }
 
-        // Exactly 4 dice updated => insert 2 more
-        if ( $this->getAffectedRows() == 4 )
-        {
+    public function isPvP()
+    {
+        return $this->idOtherUser;
+    }
+
+    public function getStep()
+    {
+        $this->query("SELECT s.name  step FROM koth_steps s INNER JOIN koth_games g ON g.id_step = s.id AND g.id = {$this->idGame}");
+        return $this->fetchNext()->step;
+    }
+
+    public function isUserActive()
+    {
+        return ( $this->idUserPlayer && ( $this->idUserPlayer == $this->idActivePlayer ) );
+    }
+
+    public function stepStart()
+    {
+        $this->query("UPDATE koth_games g INNER JOIN koth_steps s ON s.name = 'start_turn' SET g.id_step = s.id WHERE g.id = {$this->idGame} ");
+    }
+    
+    // add any number of unknown dice for active player
+    private function addUnknownDice( $num )
+    {
             $query = <<<EOD
 INSERT INTO
     koth_players_dice (id_player, id_die_type, keep, value)
@@ -104,18 +127,53 @@ SELECT
     0
 FROM
     koth_players p
-    INNER JOIN koth_games g ON
-        g.id               = p.id_game
-    AND g.is_completed     = 0
-    AND g.id_active_player = p.id
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = {$this->idUser}
     INNER JOIN koth_die_types dt ON
         dt.name = 'unknown'
+WHERE
+    p.id = {$this->idActivePlayer}
 EOD;
+        for( $i = 0; $i < $num; $i++ )
+        {
             $this->query($query);
-            $this->query($query);
+        }
+    }
+    
+    // Get number of dice for active player
+    private function getDicePoolNumber() {
+
+        $query = <<<EOD
+SELECT
+    COUNT(1)    num
+FROM
+    koth_players_dice pd
+WHERE
+    pd.id_player = {$this->idActivePlayer}
+EOD;
+        $this->query($query);
+        return $this->fetchNext()->num;
+    }
+    
+    // Reset active player's dice
+    // Set dice number to 6 if needed
+    public function resetDice()
+    {
+        $query = <<<EOD
+UPDATE
+    koth_players_dice pd
+    INNER JOIN koth_die_types dt ON
+        dt.name = 'unknown'
+SET
+    pd.id_die_type = dt.id,
+    pd.value       = 0,
+    pd.keep        = 0
+WHERE
+    pd.id_player = {$this->idActivePlayer}
+EOD;
+        $this->query($query);
+
+        if ( $this->getDicePoolNumber() == KOTH_STARTING_DICE )
+        {
+            $this->addUnknownDice( 6 - KOTH_STARTING_DICE );
         }
     }
 
@@ -142,86 +200,164 @@ EOD;
 
     public function switchActivePlayer()
     {
-        $query = <<<EOD
-UPDATE
-    koth_games g
-    INNER JOIN koth_players p ON
-        p.id_game = g.id
-    AND p.id_user = {$this->idUser}
-    INNER JOIN koth_players p2 ON
-        p2.id_game = g.id
-    AND p2.id     != g.id_active_player
-SET
-    g.id_active_player = p2.id
-WHERE
-    g.is_completed = 0
-EOD;
-        $this->query($query);
+        // Update DB
+        $this->query("UPDATE koth_games SET id_active_player = {$this->idInactivePlayer} WHERE id = {$this->idGame} ");
+
+        // Update ids (probably useless)
+        $this->computeIds();
     }
 
     // Active player's victory over threshold
     // OR non-active player's health is 0 or less
     public function isVictory()
     {
+        $victoryWin = KOTH_VICTORY_WIN;
+
         $query = <<<EOD
 SELECT
     COUNT(1)    is_victory
 FROM
-    koth_players p
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id      = g.id_active_player
-        INNER JOIN koth_players p3 ON
-            p3.id_game  = g.id
-        AND p3.id      != g.id_active_player
+    koth_players pa,
+    koth_players pi
 WHERE
-    p.id_user = {$this->idUser} 
-AND (  ( p2.current_vp > 50 ) 
-     OR( p3.current_hp < 1 )  )
+    pa.id = {$this->idActivePlayer}
+AND pi.id = {$this->idInactivePlayer}
+AND (  ( pa.current_vp >= $victoryWin ) 
+     OR( pi.current_hp < 1 )  )
 EOD;
         $this->query($query);
 
         return ( $this->fetchNext()->is_victory ? true : false );
     }
 
-    // TBD: update game id_winning_user/id_losing_user
-    // TBD: update game is_completed
-    // TBD: update game xp for winning/losing from game_xp on players and add X%/Y% for winner/loser
-    // TBD: update xp on users'heroes and users from game xp
-    public function closeGame()
+    private function closeGame( $idWinningUser, $idLosingUser )
     {
-        Log_LIB::trace('close');
+        // Update winning/losing users in game
+        $this->query("UPDATE koth_games SET id_winning_user = {$idWinningUser}, id_losing_user = {$idLosingUser} WHERE id = {$this->idGame}");
+
+        // Update game xp for winning/losing from game_xp on players
+        $query = <<<EOD
+UPDATE
+    koth_games g
+    INNER JOIN koth_players pw ON
+        pw.id_game = g.id
+    AND pw.id_user = {$idWinningUser}
+    INNER JOIN koth_players pl ON
+        pl.id_game = g.id
+    AND pl.id_user = {$idLosingUser}
+SET
+    g.xp_winning_user = g.xp_winning_user + pw.game_xp,
+    g.xp_losing_user  = g.xp_losing_user  + pl.game_xp
+WHERE
+    g.id = {$this->idGame}
+EOD;
+        $this->query($query);
+
+        // Update Winner xp on users'heroes and users from game table
+        $query = <<<EOD
+UPDATE
+    koth_user_xp ux
+    INNER JOIN koth_games g ON
+        g.id_winning_user = ux.id_user
+    AND g.id              = {$this->idGame}
+SET
+    ux.experience = ux.experience + g.xp_winning_user
+EOD;
+        $this->query($query);
+
+        $query = <<<EOD
+UPDATE
+    koth_users_heroes uh
+    INNER JOIN koth_games g ON
+        g.id_winning_user = uh.id_user
+    AND g.id              = {$this->idGame}
+        INNER JOIN koth_players p ON
+            p.id_game = g.id
+        AND p.id_user = g.id_winning_user
+SET
+    uh.experience = uh.experience + g.xp_winning_user
+WHERE
+    uh.id_hero = p.id_hero
+EOD;
+        $this->query($query);
+
+        // Update Loser xp on users'heroes and users from game table
+        $query = <<<EOD
+UPDATE
+    koth_user_xp ux
+    INNER JOIN koth_games g ON
+        g.id_losing_user = ux.id_user
+    AND g.id             = {$this->idGame}
+SET
+    ux.experience = ux.experience + g.xp_losing_user
+EOD;
+        $this->query($query);
+
+        $query = <<<EOD
+UPDATE
+    koth_users_heroes uh
+    INNER JOIN koth_games g ON
+        g.id_losing_user = uh.id_user
+    AND g.id              = {$this->idGame}
+        INNER JOIN koth_players p ON
+            p.id_game = g.id
+        AND p.id_user = g.id_winning_user
+SET
+    uh.experience = uh.experience + g.xp_losing_user
+WHERE
+    uh.id_hero = p.id_hero
+EOD;
+        $this->query($query);
+
+        // TBD: Manage user/hero levels
+        
+        // Remove active and inactive players dice
+        $this->query("DELETE FROM koth_players_dice WHERE id_player = {$this->idActivePlayer} OR id_player = {$this->idInactivePlayer}");
+
+        // Update ids (probably useless)
+        $this->computeIds();
     }
 
-    // health add to active player, TBD: not more than starting
+    // Update game is_completed
+    public function setCompleted()
+    {
+        $this->query("UPDATE koth_games SET is_completed = 1 WHERE id = {$this->idGame} ");
+    }
+
+    // Active player win the game
+    public function activeWinGame()
+    {
+        // TBD update game xp for winning/losing with extra X%/Y% for winner/loser
+        //      or maybe gold or other
+
+        // Finish closing the game
+        $this->closeGame( $this->idActiveUser /* winner */, $this->idInactiveUser );
+    }
+
+    // User lose the game by conceding
+    public function userConcedeGame()
+    {
+        // Finish closing the game
+        $this->closeGame( $this->idOtherUser /* winner */, $this->idUser );
+    }
+
+    // health add to active player
     // experience add to active player
     // victory points add to active player
     // attack remove health from non-active player
     // update game_xp for active player
-    // TBD: Manage hero level through xp
-    public function storeResults( $results, $isActivePlayer = true )
+    public function storeResults( $results )
     {
-        $activeCondition = ' AND g.id_active_player ' . ( $isActivePlayer ? '' : '!' ) . '= p.id';
-
         $experience = $this->getQuotedValue( 0 + ( array_key_exists('experience', $results) ? $results['experience'] : 0 ) );
         $victory    = $this->getQuotedValue( 0 + ( array_key_exists('victory', $results) ? $results['victory'] : 0 ) );
         $health     = $this->getQuotedValue( 0 + ( array_key_exists('health', $results) ? $results['health'] : 0 ) );
         $attack     = $this->getQuotedValue( 0 + ( array_key_exists('attack', $results) ? $results['attack'] : 0 ) );
         $gameXp     = $this->getQuotedValue( 0 + $experience + $victory + $health + $attack );
 
+        // Update active player's health/victory/xp
         $query = <<<EOD
 UPDATE
     koth_players p
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-    $activeCondition
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = {$this->idUser}
     INNER JOIN koth_heroes_levels hl ON
         hl.id_hero = p.id_hero
     AND hl.level   = 1
@@ -230,32 +366,33 @@ SET
     p.current_vp = p.current_vp + $victory,
     p.current_hp = LEAST( p.current_hp + $health, hl.start_hp ),
     p.game_xp    = p.game_xp + $gameXp
+WHERE
+    p.id = {$this->idActivePlayer}
 EOD;
         $this->query($query);
 
-        $activeCondition = ' AND g.id_active_player ' . ( $isActivePlayer ? '!' : '' ) . '= p.id';
+        // Update inactive player's health
+        $this->query("UPDATE koth_players SET current_hp = current_hp - $attack WHERE id = {$this->idInactivePlayer}");
         
-        $query = <<<EOD
-UPDATE
-    koth_players p
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-    $activeCondition
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = {$this->idUser}
-SET
-    p.current_hp = p.current_hp - $attack ;
-EOD;
-        $this->query($query);
+        // Convert xp into something
+        $this->query("SELECT current_xp FROM koth_players WHERE id = {$this->idActivePlayer}");
+        $current_xp = $this->fetchNext()->current_xp;
+
+        // Second threshold, two extra dice
+        if ( ( $current_xp > 34 ) && ( $this->getDicePoolNumber() < 8 ) )
+        {
+            $this->addUnknownDice( 8 - $this->getDicePoolNumber() );
+        }
+        // First threshold, one extra die
+        else if ( ( $current_xp > 14 ) && ( $this->getDicePoolNumber() < 7 ) )
+        {
+            $this->addUnknownDice( 7 - $this->getDicePoolNumber() );
+        }
     }
 
     public function isGameActive()
     {
-        $this->query("SELECT COUNT(1) is_active FROM koth_games g INNER JOIN koth_players p ON p.id_game = g.id AND p.id_user = {$this->idUser} WHERE g.is_completed = 0;");
-
-        return ( $this->fetchNext()->is_active ? true : false );
+        return $this->idGame;
     }
 
     // TBD: manage different hero/level
@@ -264,7 +401,7 @@ EOD;
         // If a game is already active, do nothing
         // Front will refresh page and user will see current game
         // User can concede to start a new game
-        if ( $this->isGameActive() )
+        if ( $this->idGame )
         {
             return;
         }
@@ -297,11 +434,8 @@ EOD;
             $otherPlayerRank = $this->getQuotedValue(1);
         }
 
-        // TBD: manage when AI starts
-        $playerRank      = $this->getQuotedValue(1);
-        $otherPlayerRank = $this->getQuotedValue(2);
-
-        // Then create players
+        // Create user player
+        // TBD: Manage hero + hero level
         $query = <<<EOD
 INSERT INTO
     koth_players (id_user, id_game, id_hero, hero_level, current_vp, current_hp, current_xp, rank )
@@ -321,7 +455,15 @@ FROM
     AND hl.level   = 1
 WHERE
     h.id = 1
-UNION
+EOD;
+        $this->query($query);
+        
+        // Create other player
+        // TBD: Manage hero + hero level
+        // TBD: Manage PvP
+        $query = <<<EOD
+INSERT INTO
+    koth_players (id_user, id_game, id_hero, hero_level, current_vp, current_hp, current_xp, rank )
 SELECT
     0,
     $idGame,
@@ -358,7 +500,12 @@ EOD;
         // Insert starting dice for active player
         $query = <<<EOD
 INSERT INTO
-    koth_players_dice (id_player, id_die_type, keep, value)
+    koth_players_dice (
+        id_player,
+        id_die_type,
+        keep,
+        value
+    )
 SELECT
     p.id,
     dt.id,
@@ -366,26 +513,26 @@ SELECT
     0
 FROM
     koth_players p
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = {$this->idUser}
     INNER JOIN koth_die_types dt ON
         dt.name = 'unknown'
 WHERE
-    p.rank = 1
+    p.rank    = 1
+AND p.id_game = $idGame
 EOD;
-        for ( $i = 0; $i < 4; $i++ )
+        for ( $i = 0; $i < KOTH_STARTING_DICE; $i++ )
         {
             $this->query($query);
         }
-        
+
         // Insert starting dice for non-active player
         $query = <<<EOD
 INSERT INTO
-    koth_players_dice (id_player, id_die_type, keep, value)
+    koth_players_dice (
+        id_player,
+        id_die_type,
+        keep,
+        value
+    )
 SELECT
     p.id,
     dt.id,
@@ -393,61 +540,19 @@ SELECT
     0
 FROM
     koth_players p
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = {$this->idUser}
     INNER JOIN koth_die_types dt ON
         dt.name = 'unknown'
 WHERE
-    p.rank = 2
+    p.rank    = 2
+AND p.id_game = $idGame
 EOD;
         for ( $i = 0; $i < 6; $i++ )
         {
             $this->query($query);
         }
-    }
 
-    public function concedeGame()
-    {
-        // Rince players'dice
-        $query = <<<EOD
-DELETE
-    pd
-FROM
-    koth_players_dice pd
-    INNER JOIN koth_players p ON
-        p.id = pd.id_player
-        INNER JOIN koth_games g ON
-            g.id           = p.id_game
-        AND g.is_completed = 0
-            INNER JOIN koth_players p2 ON
-                p2.id_game = g.id
-            AND p2.id_user = {$this->idUser}
-EOD;
-        $this->query($query);
-
-        // TBD: Add xp to users and heroes
-
-        $query = <<<EOD
-UPDATE
-    koth_games g
-    INNER JOIN koth_players p ON
-        p.id_game = g.id
-    AND p.id_user  = {$this->idUser}
-    INNER JOIN koth_players p2 ON
-        p2.id_game  = g.id
-    AND p2.id_user != {$this->idUser}
-SET
-    g.is_completed    = 1,
-    g.id_winning_user = p2.id_user,
-    g.id_losing_user  = {$this->idUser}
-WHERE
-    g.is_completed = 0;
-EOD;
-        $this->query($query);
+        // Update this object fields (probably useless)
+        $this->computeIds();
     }
 
     // Number of dice to reroll for active player
@@ -488,13 +593,7 @@ FROM
     INNER JOIN koth_players p ON
         p.id_hero    = hl.id_hero
     AND p.hero_level = hl.level
-        INNER JOIN koth_games g ON
-            g.id               = p.id_game
-        AND g.is_completed     = 0
-        AND g.id_active_player = p.id
-            INNER JOIN koth_players p2 ON
-                p2.id_game = g.id
-            AND p2.id_user = {$this->idUser}
+    AND p.id         = {$this->idActivePlayer}
 EOD;
         $this->query($query);
         $max = $this->fetchNext();
@@ -507,42 +606,13 @@ EOD;
 
     public function addStepForRoll()
     {
-        $query = <<<EOD
-UPDATE
-    koth_games g
-    INNER JOIN koth_players p ON
-        p.id_game = g.id
-    AND p.id      = g.id_active_player
-    AND p.id_user = {$this->idUser}
-SET
-    g.id_step = g.id_step + 1
-WHERE
-    g.is_completed = 0
-EOD;
-        $this->query($query);
+        $this->query("UPDATE koth_games SET id_step = id_step + 1 WHERE id = {$this->idGame}");
     }
 
     public function updateDice( $newDice )
     {
         // First select ids
-        $query = <<<EOD
-SELECT
-    pd.id
-FROM
-    koth_players_dice pd
-    INNER JOIN koth_players p ON
-        p.id = pd.id_player
-        INNER JOIN koth_games g ON
-            g.id               = p.id_game
-        AND g.id_active_player = p.id
-        AND g.is_completed     = 0
-            INNER JOIN koth_players p2 ON
-                p2.id_game = g.id
-            AND p2.id_user = {$this->idUser}
-WHERE
-    pd.keep = 0
-EOD;
-        $this->query($query);
+        $this->query("SELECT id FROM koth_players_dice WHERE keep = 0 AND id_player = {$this->idActivePlayer}");
 
         $queries = array();
         foreach ( $newDice as $die )
@@ -554,15 +624,6 @@ EOD;
             $query = <<<EOD
 UPDATE
     koth_players_dice pd
-    INNER JOIN koth_players p ON
-        p.id = pd.id_player
-        INNER JOIN koth_games g ON
-            g.id               = p.id_game
-        AND g.id_active_player = p.id
-        AND g.is_completed     = 0
-            INNER JOIN koth_players p2 ON
-                p2.id_game = g.id
-            AND p2.id_user = {$this->idUser}
     INNER JOIN koth_die_types dt ON
         dt.name = $type
 SET
@@ -579,5 +640,10 @@ EOD;
         {
             $this->query($query);
         }
+    }
+    
+    public function setGameFinished()
+    {
+        $this->query("UPDATE koth_games g INNER JOIN koth_steps s ON s.name = 'game_finished' SET g.id_step = s.id WHERE g.id = {$this->idGame}");
     }
 }

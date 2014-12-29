@@ -16,9 +16,8 @@ class Koth_LIB_Player_View extends Base_LIB_View
         $toDiplay = "User: {$player->userName} - Level: {$player->userLevel}<br>"
                   . "Hero: {$player->heroName} - Level: {$player->heroLevel}<br>"
                   . "Health Points: {$player->currentHP} / {$player->maxHP}<br>"
-                  . "Victory Points: {$player->currentVP} / {$player->maxVP}<br>"
-                  . "Experience Points: {$player->currentXP} / {$player->maxXP}<br>"
-                  . 'Active: ' . ( $player->isActive ? 'yes' : 'no' );
+                  . "Victory Points: {$player->currentVP} / " . KOTH_VICTORY_WIN . "<br>"
+                  . "Experience Points: {$player->currentXP}<br>";
 
         if ( $player->isActive )
         {
@@ -36,9 +35,10 @@ class Koth_LIB_Player_View extends Base_LIB_View
                     break;
                 default:
                     $rollDone = 0;
+                    break;
             }
 
-            $toDiplay .= " - Roll done: {$rollDone} / 3";
+            $toDiplay .= "Roll done: {$rollDone} / 3";
         }
 
         echo $toDiplay;

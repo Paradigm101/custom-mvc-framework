@@ -25,7 +25,7 @@
 <hr/>
 <br/>
 <div class="row">
-    <div class="col-xs-5"></div>
+    <div class="col-xs-9"></div>
     <div class="col-xs-2"><button type="button" class="btn btn-default" id="koth_btn_concede">Concede</button></div>
-    <div class="col-xs-5"></div>
+    <div class="col-xs-1"></div>
 </div>

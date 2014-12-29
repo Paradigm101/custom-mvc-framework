@@ -55,3 +55,6 @@ define('KOTH_STEP_START',        'start_turn');
 define('KOTH_STEP_AFTER_ROLL_1', 'after_roll_1');
 define('KOTH_STEP_AFTER_ROLL_2', 'after_roll_2');
 define('KOTH_STEP_AFTER_ROLL_3', 'after_roll_3');
+define('KOTH_STEP_GAME_FINISHED', 'game_finished');
+define('KOTH_STARTING_DICE',  3);
+define('KOTH_VICTORY_WIN',   60);

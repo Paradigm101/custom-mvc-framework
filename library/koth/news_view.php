@@ -29,13 +29,34 @@ class Koth_LIB_News_View extends Base_LIB_View
             switch ( $data['step'] )
             {
                 case KOTH_STEP_START:
+                    // Message
                     $message = '<strong>Other player\'s results</strong>:' . ALL_EOL
                             . $this->displayResults($data['other_results']);
+
+                    // Button
+                    $button = '<button type="button" class="btn btn-default" id="koth_btn_roll">' . "\n"
+                                . '<i class="glyphicon glyphicon-share-alt"></i>&nbsp;Roll' . "\n"
+                            . '</button>' . "\n";
                     break;
 
                 case KOTH_STEP_AFTER_ROLL_1:
+                    // Message
+                    $message = 'Two rolls left, click on a die to reroll it.';
+
+                    // Button
+                    $button = '<button type="button" class="btn btn-default" id="koth_btn_roll">' . "\n"
+                                . '<i class="glyphicon glyphicon-share-alt"></i>&nbsp;Roll' . "\n"
+                            . '</button>' . "\n";
+                    break;
+
                 case KOTH_STEP_AFTER_ROLL_2:
-                    $message = 'Keep rolling!';
+                    // Message
+                    $message = 'One roll left, click on a die to reroll it.';
+
+                    // Button
+                    $button = '<button type="button" class="btn btn-default" id="koth_btn_roll">' . "\n"
+                                . '<i class="glyphicon glyphicon-share-alt"></i>&nbsp;Roll' . "\n"
+                            . '</button>' . "\n";
                     break;
 
                 case KOTH_STEP_AFTER_ROLL_3:
@@ -45,7 +66,7 @@ class Koth_LIB_News_View extends Base_LIB_View
 
                     // Button
                     $button = '<button type="button" class="btn btn-default" id="koth_btn_news_ack" >' . "\n"
-                                . '<i class="glyphicon glyphicon-ok"></i>' . "\n"
+                                . '<i class="glyphicon glyphicon-ok"></i>&nbsp;End turn' . "\n"
                             . '</button>' . "\n";
                     break;
                 default:

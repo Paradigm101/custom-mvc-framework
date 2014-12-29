@@ -24,11 +24,40 @@ class Koth_LIB_News
             Page_LIB::addJavascript($this->getScriptForAck());
         }
 
+        if ( ( ( $step == KOTH_STEP_AFTER_ROLL_1 ) || ( $step == KOTH_STEP_AFTER_ROLL_2 ) || ( $step == KOTH_STEP_START ) )
+          && $isActive )
+        {
+            Page_LIB::addJavascript($this->getScriptForRoll());
+        }
+
         $this->view->assign('step',           $step );
         $this->view->assign('is_active',      $isActive );
         $this->view->assign('other_results',  Koth_LIB_Results::getUserResults($this->idUser, false) );
         $this->view->assign('player_results', Koth_LIB_Results::getUserResults($this->idUser) );
         $this->view->render();
+    }
+
+    private function getScriptForRoll()
+    {
+        return <<<EOD
+$('#koth_btn_roll').click( function (e)
+{
+    e.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt: REQUEST_TYPE_AJAX,  // request type
+            rn: 'koth_roll'         // request name
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+EOD;
     }
 
     private function getScriptForAck()

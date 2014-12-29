@@ -9,7 +9,6 @@ class Table_LIB_Users extends Table_LIB_Origin {
         return 'users';
     }
     
-    // Init: without ID
     protected function getInitMode() {
 
         return TLM_INIT_CUSTOM;

@@ -36,6 +36,11 @@ class Koth_LIB_Game
         return new Koth_LIB_Player( $this->idUser, true );
     }
 
+    public function getGameScores()
+    {
+        return new Koth_LIB_Scores( $this->idUser );
+    }
+
     public function getUserDashboard()
     {
         return new Koth_LIB_Dashboard( $this->idUser );
@@ -51,14 +56,35 @@ class Koth_LIB_Game
         return new Koth_LIB_News( $this->idUser );
     }
 
+    // AI plays
+    // TBD: Improve algo
+    private function playAI()
+    {
+        $this->roll();
+        $this->model->aiKeepBest();
+        $this->roll();
+        $this->model->aiKeepMedium();
+        $this->roll();
+        $this->preProcessAck();
+    }
+
     public function startGame()
     {
         $this->model->startGame();
+
+        // PvE, have computer play if init
+        if ( $this->model->isPvE() && !$this->model->isUserActive() )
+        {
+            $this->playAI();
+        }
     }
-    
-    public function concedeGame()
+
+    public function userConcedeGame()
     {
-        $this->model->concedeGame();
+        $this->model->userConcedeGame();
+        
+        // display game screen result (manage access/refresh, etc...)
+        $this->model->setGameFinished();
     }
 
     // TBD: everything should be done in the same transaction
@@ -82,56 +108,75 @@ class Koth_LIB_Game
         // TBD: generic add step for every case?
         $this->model->addStepForRoll();
 
-        //Update dice with new values
+        // Update dice with new values
         $this->model->updateDice($newDice);
+        
+        if ( $this->getStep() == KOTH_STEP_AFTER_ROLL_3 )
+        {
+            // Get active player results
+            $results = Koth_LIB_Results::getPlayerResults( $this->idUser );
+
+            // Impact DB with results
+            $this->model->storeResults( $results );
+        }
+    }
+
+    public function isGameFinished()
+    {
+        return ( $this->model->getStep() == KOTH_STEP_GAME_FINISHED );
     }
 
     private function preProcessAck()
     {
-        // 1 Get active player results
-        $results = Koth_LIB_Results::getPlayerResults( $this->idUser );
-
-        // 2 Impact DB with results
-        // TBD: Manage current experience/level for hero
-        $this->model->storeResults( $results );
-
-        // 3 Check victory condition
+        // Check victory condition
         if ( $this->model->isVictory() )
         {
             // Close game
-            $this->model->closeGame();
+            $this->model->activeWinGame();
 
-            // TBD: display game screen result (manage access/refresh, etc...)
+            // display game screen result (manage access/refresh, etc...)
+            $this->model->setGameFinished();
+
+            // Then leave and return isVictory
+            return true;
         }
 
-        // 4 Update turn number
+        // Update turn number
         $this->model->updateTurnNumber();
 
-        // 5 Change active player
+        // Change active player
         $this->model->switchActivePlayer();
 
-        // 6 Reset active player's dice
+        // Reset active player's dice
         $this->model->resetDice();
 
-        // 7 change step to start turn
+        // change step to start turn
         $this->model->stepStart();
+        
+        // Return no victory
+        return false;
     }
-    
+
     // Active player ack at the end of his/her turn
-    public function processAck()
+    public function processEndTurn()
     {
-        $this->preProcessAck();
-
-        // TBD: PvE, have computer play
-        if ( true )
+        $isVictory = $this->preProcessAck();
+        
+        // In case of victory, nothing else to do
+        if ( $isVictory )
         {
-            // TBD: play AI: roll and choose (AI/Algo, lots of work)
-            $this->roll();
-            $this->roll();
-            $this->roll();
-
-            // TBD: 1, 2, 3, 4, 5, 6, 7
-            $this->preProcessAck();
+            return;
         }
+
+        // PvE, have computer play
+        if ( $this->model->isPvE() )
+        {
+            $this->playAI();
+        }
+    }
+
+    public function closeGame()
+    {
+        $this->model->setCompleted();
     }
 }

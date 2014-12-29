@@ -65,9 +65,7 @@ EOD;
         $player->currentHP = $result->current_hp;
         $player->maxHP     = $result->max_hp;
         $player->currentVP = $result->current_vp;
-        $player->maxVP     = 100;
         $player->currentXP = $result->current_xp;
-        $player->maxXP     = 10;
         $player->isActive  = ( $result->id_active_player == $result->id_player ? true : false );
         $player->step      = $result->step;
 

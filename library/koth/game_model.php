@@ -25,14 +25,45 @@ class Koth_LIB_Game_Model extends Base_LIB_Model
         }
     }
 
-    public function aiKeepBest()
+    // Sort dice pool and return best dice
+    private function aiGetBestDice( $num )
     {
-        $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < 3 AND id_player = {$this->idActivePlayer}");
+        // TBD: need dice selection
+        // TBD: need to know current health to remove hp dice if needed
+        // TBD: need to know current Xp to remove xp dice if needed
+
+        $sortedDice = array( array( 'type' => 'attack',     'value' => 3 ),
+                             array( 'type' => 'experience', 'value' => 3 ),
+                             array( 'type' => 'health',     'value' => 3 ),
+                             array( 'type' => 'victory',    'value' => 3 ),
+                             array( 'type' => 'attack',     'value' => 2 ),
+                             array( 'type' => 'experience', 'value' => 2 ),
+                             array( 'type' => 'health',     'value' => 2 ),
+                             array( 'type' => 'victory',    'value' => 2 ),
+                             array( 'type' => 'attack',     'value' => 1 ),
+                             array( 'type' => 'experience', 'value' => 1 ),
+                             array( 'type' => 'health',     'value' => 1 ),
+                             array( 'type' => 'victory',    'value' => 1 ) );
+
+        return array_slice( $sortedDice, 0, $num );
     }
 
-    public function aiKeepMedium()
+    // TBD: use dice selection to unkeep dice
+    public function keepDiceAI( $rollLeft = 2 )
     {
-        $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < 2 AND id_player = {$this->idActivePlayer}");
+        switch ( $rollLeft )
+        {
+            case 2:
+                $diceToKeep = $this->aiGetBestDice( 4 );
+                $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < 3 AND id_player = {$this->idActivePlayer}");
+                break;
+            case 1:
+                $diceToKeep = $this->aiGetBestDice( 6 );
+                $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < 2 AND id_player = {$this->idActivePlayer}");
+                break;
+            default:
+                break;
+        }
     }
 
     private function computeIds()
@@ -115,9 +146,15 @@ EOD;
     }
     
     // add any number of unknown dice for active player
-    private function addUnknownDice( $num )
+    private function addUnknownDice( $num = 0 )
     {
-            $query = <<<EOD
+        // No dice to add
+        if ( $num == 0 )
+        {
+            return;
+        }
+
+        $query = <<<EOD
 INSERT INTO
     koth_players_dice (id_player, id_die_type, keep, value)
 SELECT
@@ -137,7 +174,7 @@ EOD;
             $this->query($query);
         }
     }
-    
+
     // Get number of dice for active player
     private function getDicePoolNumber() {
 
@@ -152,7 +189,7 @@ EOD;
         $this->query($query);
         return $this->fetchNext()->num;
     }
-    
+
     // Reset active player's dice
     // Set dice number to 6 if needed
     public function resetDice()
@@ -170,11 +207,6 @@ WHERE
     pd.id_player = {$this->idActivePlayer}
 EOD;
         $this->query($query);
-
-        if ( $this->getDicePoolNumber() == KOTH_STARTING_DICE )
-        {
-            $this->addUnknownDice( 6 - KOTH_STARTING_DICE );
-        }
     }
 
     // Update turn number if active player at the end of this turn is rank 2
@@ -378,16 +410,8 @@ EOD;
         $this->query("SELECT current_xp FROM koth_players WHERE id = {$this->idActivePlayer}");
         $current_xp = $this->fetchNext()->current_xp;
 
-        // Second threshold, two extra dice
-        if ( ( $current_xp > 34 ) && ( $this->getDicePoolNumber() < 8 ) )
-        {
-            $this->addUnknownDice( 8 - $this->getDicePoolNumber() );
-        }
-        // First threshold, one extra die
-        else if ( ( $current_xp > 14 ) && ( $this->getDicePoolNumber() < 7 ) )
-        {
-            $this->addUnknownDice( 7 - $this->getDicePoolNumber() );
-        }
+        // Every 15 xp, user get a new die
+        $this->addUnknownDice( KOTH_STARTING_DICE + floor( $current_xp / 15 ) - $this->getDicePoolNumber() );
     }
 
     public function isGameActive()
@@ -519,7 +543,7 @@ WHERE
     p.rank    = 1
 AND p.id_game = $idGame
 EOD;
-        for ( $i = 0; $i < KOTH_STARTING_DICE; $i++ )
+        for ( $i = 0; $i < floor( KOTH_STARTING_DICE / 2 ); $i++ )
         {
             $this->query($query);
         }
@@ -546,7 +570,7 @@ WHERE
     p.rank    = 2
 AND p.id_game = $idGame
 EOD;
-        for ( $i = 0; $i < 6; $i++ )
+        for ( $i = 0; $i < KOTH_STARTING_DICE; $i++ )
         {
             $this->query($query);
         }

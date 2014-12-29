@@ -9,11 +9,9 @@ class Koth_LIB_Dashboard_View extends Base_LIB_View
         $toDisplay  = "<h2>Dashboard</h2>\n";
         $toDisplay .= "<h3>{$data['userData']->user_name}</h3>\n";
         $toDisplay .= "Level : {$data['userData']->user_level}<br>\n";
-        $toDisplay .= "Experience : {$data['userData']->user_experience} / {$data['userData']->next_level_xp}<br>\n";
-        $toDisplay .= "<br/>\n";
+        $toDisplay .= "Experience : {$data['userData']->user_experience} / {$data['userData']->next_level_xp}" . ALL_EOL;
         $toDisplay .= "<hr/>\n";
-        $toDisplay .= "<br/>\n";
-        
+
         foreach ($data['heroesData'] as $hero)
         {
             $toDisplay .= "<h4>{$hero->hero_label}</h4>\n";

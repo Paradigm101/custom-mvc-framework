@@ -13,6 +13,33 @@ class Koth_LIB_Player_Model extends Base_LIB_Model
         $this->isOther = $this->getQuotedValue( 0 + $isOther );
     }
 
+    public function getHeroDie()
+    {
+        $otherCdt = ' AND p.id_user ' . ( $this->isOther ? '!' : '' ) . '= ' . $this->idUser . ' ';
+
+        $query = <<<EOD
+SELECT
+    hl.max_attack       max_attack,
+    hl.max_health       max_health,
+    hl.max_experience   max_experience,
+    hl.max_victory      max_victory
+FROM
+    koth_heroes_levels hl
+    INNER JOIN koth_players p ON
+        p.id_hero    = hl.id_hero
+    AND p.hero_level = hl.level
+    $otherCdt
+        INNER JOIN koth_games g ON
+            g.id           = p.id_game
+        AND g.is_completed = 0
+            INNER JOIN koth_players p2 ON
+                p2.id_game = g.id
+            AND p2.id_user = {$this->idUser}
+EOD;
+        $this->query($query);
+        return $this->fetchNext();
+    }
+
     public function getPlayerData()
     {
         $playerCondition = ' AND p2.id_user ' . ( $this->isOther ? '!' : '' ) . '= ' . $this->idUser;
@@ -29,7 +56,8 @@ SELECT
     p2.hero_level                   hero_level,
     hl.start_hp                     max_hp,
     g.id_active_player              id_active_player,
-    s.name                          step
+    s.name                          step,
+    COUNT(pd.id_player)             dice_number
 FROM
     koth_players p
     INNER JOIN koth_games g ON
@@ -49,8 +77,12 @@ FROM
             AND hl.level   = p2.hero_level
         INNER JOIN koth_steps s ON
             s.id = g.id_step
+        INNER JOIN koth_players_dice pd ON
+            pd.id_player = p2.id
 WHERE
-    p.id_user = {$this->idUser};
+    p.id_user = {$this->idUser}
+GROUP BY
+    pd.id_player
 EOD;
 
         $this->query($query);
@@ -58,16 +90,17 @@ EOD;
 
         $player = new stdClass();
         
-        $player->userName  = $result->user_name;
-        $player->userLevel = $result->user_level;
-        $player->heroName  = $result->hero_label;
-        $player->heroLevel = $result->hero_level;
-        $player->currentHP = $result->current_hp;
-        $player->maxHP     = $result->max_hp;
-        $player->currentVP = $result->current_vp;
-        $player->currentXP = $result->current_xp;
-        $player->isActive  = ( $result->id_active_player == $result->id_player ? true : false );
-        $player->step      = $result->step;
+        $player->userName   = $result->user_name;
+        $player->userLevel  = $result->user_level;
+        $player->heroName   = $result->hero_label;
+        $player->heroLevel  = $result->hero_level;
+        $player->currentHP  = $result->current_hp;
+        $player->maxHP      = $result->max_hp;
+        $player->currentVP  = $result->current_vp;
+        $player->currentXP  = $result->current_xp;
+        $player->isActive   = ( $result->id_active_player == $result->id_player ? true : false );
+        $player->step       = $result->step;
+        $player->diceNumber = $result->dice_number;
 
         return $player;
     }

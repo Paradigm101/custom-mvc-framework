@@ -16,7 +16,8 @@ class Koth_LIB_Player
 
     public function render()
     {
-        $this->view->assign('player', $this->model->getPlayerData());
+        $this->view->assign('player',  $this->model->getPlayerData());
+        $this->view->assign('heroDie', $this->model->getHeroDie());
         $this->view->render();
     }
 }

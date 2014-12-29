@@ -61,9 +61,15 @@ class Koth_LIB_Game
     private function playAI()
     {
         $this->roll();
-        $this->model->aiKeepBest();
+        if ( KOTH_AI_LEVEL )
+        {
+            $this->model->keepDiceAI( 2 /* 2 rolls left */ );
+        }
         $this->roll();
-        $this->model->aiKeepMedium();
+        if ( KOTH_AI_LEVEL )
+        {
+            $this->model->keepDiceAI( 1 /* 2 rolls left */ );
+        }
         $this->roll();
         $this->preProcessAck();
     }

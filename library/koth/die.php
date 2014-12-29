@@ -8,6 +8,7 @@ class Koth_LIB_Die
     private $picture;
     private $value;
     private $rollable;
+    private $title;
 
     public function __construct( $die, $rollable )
     {
@@ -19,6 +20,13 @@ class Koth_LIB_Die
         $this->value    = $die->value;
         $this->rollable = $rollable;
         $this->picture  = 'page/koth/image/' . $die->name . '_' . $die->value . '.png';
+        $this->title    = '+' . $die->value . ' ' . ucfirst($die->name);
+        
+        // Manage unknown die title
+        if ( $this->name == 'unknown' )
+        {
+            $this->title = 'Reroll';
+        }
     }
 
     public function display()
@@ -38,7 +46,7 @@ class Koth_LIB_Die
         $toDiplay = '<img id="' . $this->id . '"
                           name="die_image' . ( $this->rollable ? '' : '_non_rollable' ) . '"
                           class="unselectable" 
-                          title="Click to keep or re-roll this die"
+                          title="' . $this->title . '"
                           alt="' . $this->label . '"
                           src="' . $this->picture . '"
                           ' . $onMouseOver . ' />';

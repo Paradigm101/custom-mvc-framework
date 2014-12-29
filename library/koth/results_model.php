@@ -26,7 +26,6 @@ FROM
     INNER JOIN koth_die_types dt ON
         dt.id = pd.id_die_type
 EOD;
-
         $this->query($query);
         return $this->fetchAll();
     }

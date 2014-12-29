@@ -5,10 +5,10 @@ class Koth_LIB_News_View extends Base_LIB_View
     // TBD: manage first turn, only unknown dice
     private function displayResults( $results )
     {
-        return ( array_key_exists('attack', $results)     ? "Damages: +"        . $results['attack'] . ALL_EOL : '' )
-             . ( array_key_exists('health', $results)     ? "Health: +"         . $results['health'] . ALL_EOL : '' )
-             . ( array_key_exists('experience', $results) ? "Experience: +"     . $results['experience'] . ALL_EOL : '' )
-             . ( array_key_exists('victory', $results)    ? "Victory points: +" . $results['victory'] . ALL_EOL : '' );
+        return ( array_key_exists('attack', $results)     ? "<span style=\"color: red;\">Damages: +"        . $results['attack'] . '</span>' . ALL_EOL : '' )
+             . ( array_key_exists('health', $results)     ? "<span style=\"color: blue;\">Health: +"         . $results['health'] . '</span>' . ALL_EOL : '' )
+             . ( array_key_exists('experience', $results) ? "<span style=\"color: purple;\">Experience: +"     . $results['experience'] . '</span>' . ALL_EOL : '' )
+             . ( array_key_exists('victory', $results)    ? "<span style=\"color: limegreen;\">Victory points: +" . $results['victory'] . '</span>' . ALL_EOL : '' );
     }
     
     public function render()
@@ -30,12 +30,19 @@ class Koth_LIB_News_View extends Base_LIB_View
             {
                 case KOTH_STEP_START:
                     // Message
-                    $message = '<strong>Other player\'s results</strong>:' . ALL_EOL
-                            . $this->displayResults($data['other_results']);
+                    if ( $results = $this->displayResults($data['other_results']) )
+                    {
+                        $message = '<strong>Other player\'s results</strong>:' . ALL_EOL
+                                . $results;
+                    }
+                    else
+                    {
+                        $message = 'This is the first turn, you have less dice only for this turn.';
+                    }
 
                     // Button
                     $button = '<button type="button" class="btn btn-default" id="koth_btn_roll">' . "\n"
-                                . '<i class="glyphicon glyphicon-share-alt"></i>&nbsp;Roll' . "\n"
+                                . '<i class="glyphicon glyphicon-share"></i>&nbsp;Roll' . "\n"
                             . '</button>' . "\n";
                     break;
 
@@ -45,7 +52,7 @@ class Koth_LIB_News_View extends Base_LIB_View
 
                     // Button
                     $button = '<button type="button" class="btn btn-default" id="koth_btn_roll">' . "\n"
-                                . '<i class="glyphicon glyphicon-share-alt"></i>&nbsp;Roll' . "\n"
+                                . '<i class="glyphicon glyphicon-share"></i>&nbsp;Roll' . "\n"
                             . '</button>' . "\n";
                     break;
 
@@ -55,7 +62,7 @@ class Koth_LIB_News_View extends Base_LIB_View
 
                     // Button
                     $button = '<button type="button" class="btn btn-default" id="koth_btn_roll">' . "\n"
-                                . '<i class="glyphicon glyphicon-share-alt"></i>&nbsp;Roll' . "\n"
+                                . '<i class="glyphicon glyphicon-share"></i>&nbsp;Roll' . "\n"
                             . '</button>' . "\n";
                     break;
 
@@ -66,7 +73,7 @@ class Koth_LIB_News_View extends Base_LIB_View
 
                     // Button
                     $button = '<button type="button" class="btn btn-default" id="koth_btn_news_ack" >' . "\n"
-                                . '<i class="glyphicon glyphicon-ok"></i>&nbsp;End turn' . "\n"
+                                . '<i class="glyphicon glyphicon-check"></i>&nbsp;End turn' . "\n"
                             . '</button>' . "\n";
                     break;
                 default:
@@ -77,16 +84,16 @@ class Koth_LIB_News_View extends Base_LIB_View
 
         // Start
         $toDisplay  = '<div class="row">' . "\n";
-        $toDisplay .= '<div class="col-xs-3"></div>' . "\n";
+        $toDisplay .= '<div class="col-xs-2"></div>' . "\n";
         
         // Message
-        $toDisplay .= '<div class="col-xs-3">' . $message . '</div>' . "\n";
+        $toDisplay .= '<div class="col-xs-6"><p style="font-size: 20px;height: 90px;">' . $message . '</p></div>' . "\n";
 
         // Action button
         $toDisplay .= '<div class="col-xs-1">' . $button . '</div>' . "\n";
 
         // End
-        $toDisplay .= '<div class="col-xs-5"></div>' . "\n";
+        $toDisplay .= '<div class="col-xs-3"></div>' . "\n";
         $toDisplay .= '</div>' . "\n";
         
         echo $toDisplay;

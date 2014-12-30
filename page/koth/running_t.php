@@ -11,16 +11,11 @@
 </div>
 <br/>
 <br/>
-<br/>
-<br/>
 
 <!-- board -->
 <div class="row">
     <div class="col-xs-12"><? $data['game']->getBoard()->render() ?></div>
 </div>
-<br/>
-<br/>
-<br/>
 <br/>
 
 <!-- new -->

@@ -25,44 +25,90 @@ class Koth_LIB_Game_Model extends Base_LIB_Model
         }
     }
 
-    // Sort dice pool and return best dice
-    private function aiGetBestDice( $num )
+    // Sort dice pool and return worst dice
+    private function aiGetWorstDice( $num )
     {
-        // TBD: need dice selection
-        // TBD: need to know current health to remove hp dice if needed
-        // TBD: need to know current Xp to remove xp dice if needed
+        $sortedDice = array(  0 => array( 'type' => 'attack',     'value' => 1 ),
+                              1 => array( 'type' => 'experience', 'value' => 1 ),
+                              2 => array( 'type' => 'health',     'value' => 1 ),
+                              3 => array( 'type' => 'victory',    'value' => 1 ),
+                              4 => array( 'type' => 'health',     'value' => 2 ),
+                              6 => array( 'type' => 'attack',     'value' => 2 ),
+                              7 => array( 'type' => 'victory',    'value' => 2 ),
+                              5 => array( 'type' => 'experience', 'value' => 2 ),
+                              8 => array( 'type' => 'attack',     'value' => 3 ),
+                              9 => array( 'type' => 'experience', 'value' => 3 ),
+                             10 => array( 'type' => 'health',     'value' => 3 ),
+                             11 => array( 'type' => 'victory',    'value' => 3 ) );
 
-        $sortedDice = array( array( 'type' => 'attack',     'value' => 3 ),
-                             array( 'type' => 'experience', 'value' => 3 ),
-                             array( 'type' => 'health',     'value' => 3 ),
-                             array( 'type' => 'victory',    'value' => 3 ),
-                             array( 'type' => 'attack',     'value' => 2 ),
-                             array( 'type' => 'experience', 'value' => 2 ),
-                             array( 'type' => 'health',     'value' => 2 ),
-                             array( 'type' => 'victory',    'value' => 2 ),
-                             array( 'type' => 'attack',     'value' => 1 ),
-                             array( 'type' => 'experience', 'value' => 1 ),
-                             array( 'type' => 'health',     'value' => 1 ),
-                             array( 'type' => 'victory',    'value' => 1 ) );
+        if ( KOTH_AI_LEVEL >= 2 )
+        {
+            // TBD: Health management : high => worst, low => best
+            // TBD: Xp management: get a die => good, early game => good, late game => bad, more dice => bad
+            // TBD: oriented attack/victory, rush, etc...
+        }
 
         return array_slice( $sortedDice, 0, $num );
     }
 
-    // TBD: use dice selection to unkeep dice
     public function keepDiceAI( $rollLeft = 2 )
     {
+        $valueTruncate = 0;
+        $diceNumber    = 0;
+
         switch ( $rollLeft )
         {
             case 2:
-                $diceToKeep = $this->aiGetBestDice( 4 );
-                $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < 3 AND id_player = {$this->idActivePlayer}");
+                if ( KOTH_AI_LEVEL == 1 )
+                {
+                    $valueTruncate = 3;
+                }
+                else
+                {
+                    $diceNumber = 8;
+                }
                 break;
             case 1:
-                $diceToKeep = $this->aiGetBestDice( 6 );
-                $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < 2 AND id_player = {$this->idActivePlayer}");
+                if ( KOTH_AI_LEVEL == 1 )
+                {
+                    $valueTruncate = 2;
+                }
+                else
+                {
+                    $diceNumber = 6;
+                }
                 break;
             default:
                 break;
+        }
+        
+        if ( $valueTruncate )
+        {
+            $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < $valueTruncate AND id_player = {$this->idActivePlayer}");
+        }
+        else
+        {
+            $diceToReroll = $this->aiGetWorstDice( $diceNumber );
+
+            $dieCdt = array();
+            foreach ( $diceToReroll as $die )
+            {
+                $dieCdt[] = '( pd.value = ' . $this->getQuotedValue( 0 + $die['value'] ) . ' AND dt.name = ' . $this->getQuotedValue( $die['type'] ) . ' )';
+            }
+            $dieCdt = implode(' OR ', $dieCdt);
+
+            $query = <<<EOD
+UPDATE
+    koth_players_dice pd
+    INNER JOIN koth_die_types dt ON
+        dt.id = pd.id_die_type
+SET
+    pd.keep = 0
+WHERE
+    pd.id_player = {$this->idActivePlayer}
+AND (  $dieCdt  )
+EOD;
+            $this->query($query);
         }
     }
 
@@ -254,7 +300,7 @@ FROM
 WHERE
     pa.id = {$this->idActivePlayer}
 AND pi.id = {$this->idInactivePlayer}
-AND (  ( pa.current_vp >= $victoryWin ) 
+AND (  ( pa.current_vp >= $victoryWin + 2 * ( pa.hero_level + pi.hero_level - 2 ) )
      OR( pi.current_hp < 1 )  )
 EOD;
         $this->query($query);
@@ -262,12 +308,14 @@ EOD;
         return ( $this->fetchNext()->is_victory ? true : false );
     }
 
+    // TBD: add a new currency like gold ?
     private function closeGame( $idWinningUser, $idLosingUser )
     {
         // Update winning/losing users in game
         $this->query("UPDATE koth_games SET id_winning_user = {$idWinningUser}, id_losing_user = {$idLosingUser} WHERE id = {$this->idGame}");
 
         // Update game xp for winning/losing from game_xp on players
+        // Twice more experience for winning player
         $query = <<<EOD
 UPDATE
     koth_games g
@@ -278,7 +326,7 @@ UPDATE
         pl.id_game = g.id
     AND pl.id_user = {$idLosingUser}
 SET
-    g.xp_winning_user = g.xp_winning_user + pw.game_xp,
+    g.xp_winning_user = g.xp_winning_user + 2 * pw.game_xp,
     g.xp_losing_user  = g.xp_losing_user  + pl.game_xp
 WHERE
     g.id = {$this->idGame}
@@ -359,9 +407,6 @@ EOD;
     // Active player win the game
     public function activeWinGame()
     {
-        // TBD update game xp for winning/losing with extra X%/Y% for winner/loser
-        //      or maybe gold or other
-
         // Finish closing the game
         $this->closeGame( $this->idActiveUser /* winner */, $this->idInactiveUser );
     }
@@ -392,7 +437,7 @@ UPDATE
     koth_players p
     INNER JOIN koth_heroes_levels hl ON
         hl.id_hero = p.id_hero
-    AND hl.level   = 1
+    AND hl.level   = p.hero_level
 SET
     p.current_xp = p.current_xp + $experience,
     p.current_vp = p.current_vp + $victory,
@@ -506,7 +551,7 @@ WHERE
     h.id = 1
 EOD;
         $this->query($query);
-        
+
         // Update game with active player
         $query = <<<EOD
 UPDATE

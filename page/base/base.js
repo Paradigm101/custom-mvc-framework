@@ -22,3 +22,10 @@ var make_unselectable = function( $target ) {
         .attr( 'draggable', 'false' )
         .attr( 'unselectable', 'on' ); 
 };
+
+// to change label on specific dropdown menu
+$(".dropdown-menu-change-label li a").click(function()
+{
+    $(this).parents(".dropdown").find('.btn').html($(this).text() + '&nbsp;<span class="caret"></span>');
+    $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+});

@@ -19,21 +19,29 @@ class Koth_LIB_Player_View extends Base_LIB_View
         $victoryPercent    = min( array( floor( $player->currentVP * 100 / KOTH_VICTORY_WIN ), 100 ) );
         $experiencePercent = min( array( floor( ( $player->currentXP % 15 ) * 100 / 15 ), 100 ) );
 
-        $toDiplay .= '<div style="background-color: LightBlue ;font-size: 20px;' . $border . ';border-radius: 10px;padding: 10px;">' . PHP_EOL
-                        . "<strong>User</strong>: {$player->userName} - Hero: {$player->heroName} ({$player->heroLevel}) "
-                        . " - Die number : {$player->diceNumber}"
-                        . '<span style="float:right" title="Click to see distribution" onclick="$(\'#heroDie' . $player->isActive . '\').modal(\'show\');" class="glyphicon glyphicon-info-sign"></span>'
+        $toDiplay .= '<div style="background-color:#4D94FF;font-size: 20px;' . $border . ';border-radius: 10px;padding: 10px;">' . PHP_EOL
+                        . "<strong>{$player->userName}</strong> - {$player->heroName} ({$player->heroLevel}) - Dice: {$player->diceNumber}"
+                        . '<span style="float:right"
+                                 title="Click to see distribution"
+                                 onclick="$(\'#heroDie' . $player->isActive . '\').modal(\'show\');"
+                                 class="glyphicon glyphicon-question-sign"></span>'
                         . ALL_EOL
                         . ALL_EOL
-                        . '<div style="background-color: black; border-radius: 12px; padding: 2px;" title="Health: ' . $player->currentHP . '/' . $player->maxHP . '">'
-                                . '<div style="background-color: red;width: ' . $healthPercent . '%;height: 15px;border-radius: 10px;"></div>'
-                        . '</div>' . ALL_EOL
-                        . '<div style="background-color: black; border-radius: 12px; padding: 2px;" title="Victory: ' . $player->currentVP . '/' . KOTH_VICTORY_WIN . '">'
-                                . '<div style="background-color: green;width: ' . $victoryPercent . '%;height: 15px;border-radius: 10px;"></div>'
-                        . '</div>' . ALL_EOL
-                        . '<div style="background-color: black; border-radius: 12px; padding: 2px;" title="Experience: ' . $player->currentXP % 15 . '/' . 15 . '">'
-                                . '<div style="background-color: purple;width: ' . $experiencePercent . '%;height: 15px;border-radius: 10px;"></div>'
-                        . '</div>' . ALL_EOL
+                        . '<div class="progress" title="Health: ' . $player->currentHP . '/' . $player->maxHP . '">'
+                                . '<div class="progress-bar" style="background-image:none;background-color:#E60000;width: ' . $healthPercent . '%;">'
+                                    . $player->currentHP . '/' . $player->maxHP
+                                . '</div>'
+                        . '</div>'
+                        . '<div class="progress" title="Victory: ' . $player->currentVP . '/' . KOTH_VICTORY_WIN . '">'
+                                . '<div class="progress-bar" style="background-image:none;background-color:#66B366;width:' . $victoryPercent . '%;">'
+                                    . $player->currentVP . '/' . KOTH_VICTORY_WIN
+                                . '</div>'
+                        . '</div>'
+                        . '<div class="progress" title="Experience: ' . $player->currentXP % 15 . '/' . 15 . '">'
+                                . '<div class="progress-bar" style="background-image:none;background-color:#8D198D;width: ' . $experiencePercent . '%;">'
+                                    . $player->currentXP % 15 . '/' . 15
+                                . '</div>'
+                        . '</div>'
                     . '</div>';
 
         $images = '';

@@ -21,6 +21,7 @@ abstract class Table_LIB {
                                     'koth_user_xp_level',
                                     'koth_steps',
                                     'koth_heroes',
+                                    'koth_opponents',
                                     'koth_users_heroes',
                                     'koth_heroes_levels',
                                     'koth_user_xp',

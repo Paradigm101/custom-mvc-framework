@@ -13,7 +13,7 @@ abstract class Koth_LIB_Results
         
         return static::$model;
     }
-    
+
     // Transform DB dice results to real impacts
     static private function processResults( $dbResults )
     {

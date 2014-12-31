@@ -10,8 +10,11 @@ $('#koth_btn_start').click( function (e)
         type: "POST",
         url: "",
         data: {
-            rt: REQUEST_TYPE_AJAX,  // request type
-            rn: 'koth_start'        // request name
+            rt:         REQUEST_TYPE_AJAX,  // request type
+            rn:         'koth_start',       // request name
+            hero:       $('#heroDropdownBtn').val(),
+            hero_level: $('#heroLevelDropdownBtn').val(),
+            opponent:   $('#opponentDropdownBtn').val()
         },
         success: function()
         {

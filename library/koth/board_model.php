@@ -3,7 +3,7 @@
 class Koth_LIB_Board_Model extends Base_LIB_Model
 {
     private $idUser;
-    
+
     public function __construct( $idUser )
     {
         parent::__construct();
@@ -11,8 +11,10 @@ class Koth_LIB_Board_Model extends Base_LIB_Model
         $this->idUser = $this->getQuotedValue(0+$idUser);
     }
 
-    public function getDice()
+    public function getDice( $nonActive = false )
     {
+        $activeCdtn = ' g.id_active_player ' . ( $nonActive ? '!' : '' ) . '= p.id';
+        
         $query = <<<EOD
 SELECT
     pd.id       id,
@@ -27,9 +29,9 @@ FROM
     INNER JOIN koth_players p ON
         p.id = pd.id_player
         INNER JOIN koth_games g ON
-            g.id               = p.id_game
-        AND g.is_completed     = 0
-        AND g.id_active_player = p.id
+            g.id           = p.id_game
+        AND g.is_completed = 0
+        AND $activeCdtn
             INNER JOIN koth_players p2 ON
                 p2.id_game = g.id
             AND p2.id_user = {$this->idUser}
@@ -57,6 +59,42 @@ WHERE
 EOD;
         $this->query($query);
         
+        return ( $this->fetchNext()->is_active ? true : false );
+    }
+    
+    public function getStep()
+    {
+        $query = <<<EOD
+SELECT
+    s.name  name
+FROM
+    koth_steps s
+    INNER JOIN koth_games g ON
+        g.id_step      = s.id
+    AND g.is_completed = 0
+        INNER JOIN koth_players p ON
+            p.id_game = g.id
+        AND p.id_user = {$this->idUser};
+EOD;
+        $this->query($query);
+        return $this->fetchNext()->name;
+    }
+    
+    public function isActive()
+    {
+        $query = <<<EOD
+SELECT
+    COUNT(1)    is_active
+FROM
+    koth_players p
+    INNER JOIN koth_games g ON
+        g.id               = p.id_game
+    AND g.is_completed     = 0
+    AND g.id_active_player = p.id
+WHERE
+    p.id_user = {$this->idUser}
+EOD;
+        $this->query($query);
         return ( $this->fetchNext()->is_active ? true : false );
     }
 }

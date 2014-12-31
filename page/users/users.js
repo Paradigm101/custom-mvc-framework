@@ -34,8 +34,6 @@ $('#roleModal').on('shown.bs.modal', function()
 $(".dropdown-menu-change-label li a").click(function()
 {
     $('#roleSubmitButton').attr('class', 'btn btn-primary');
-    $(this).parents(".dropdown").find('.btn').html($(this).text() + '&nbsp;<span class="caret"></span>');
-    $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
 });
 
 // Role Form: Click button to submit

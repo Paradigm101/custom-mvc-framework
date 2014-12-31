@@ -11,6 +11,6 @@ class Table_LIB_Koth_Heroes extends Table_LIB_Origin {
     
     protected function getInitMode()
     {
-        return TLM_INIT_AUTO_WITHOUT_ID;
+        return TLM_INIT_AUTO_WITH_ID;
     }
 }

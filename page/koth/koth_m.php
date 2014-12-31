@@ -1,17 +1,9 @@
 <?php
 
-class Koth_LIB_Dashboard_Model extends Base_LIB_Model
+class Koth_PAG_M extends Base_PAG_M
 {
-    private $idUser;
-    
-    public function __construct( $idUser )
-    {
-        parent::__construct();
-        
-        $this->idUser = $this->getQuotedValue( 0 + $idUser );
-    }
-
-    public function getUserData()
+    // User data (dashboard)
+    public function getUserData( $idUser )
     {
         $query = <<<EOD
 SELECT
@@ -26,17 +18,19 @@ FROM
         LEFT OUTER JOIN koth_user_xp_level uxl ON
             uxl.level = COALESCE( ux.level, 1 )
 WHERE
-    u.id = {$this->idUser}
+    u.id = $idUser
 EOD;
         $this->query($query);
         return $this->fetchNext();
     }
 
-    public function getHeroesData()
+    // Hero data for user (dashboard)
+    public function getHeroesData( $idUser )
     {
         $query = <<<EOD
 SELECT
     h.label                         hero_label,
+    h.name                          hero_name,
     COALESCE( uh.level, 1 )         hero_level,
     COALESCE( uh.experience, 0 )    hero_experience,
     hxl.threshold                   next_level_xp
@@ -44,9 +38,25 @@ FROM
     koth_heroes h
     LEFT OUTER JOIN koth_users_heroes uh ON
         uh.id_hero = h.id
-    AND uh.id_user = {$this->idUser}
+    AND uh.id_user = $idUser
         LEFT OUTER JOIN koth_hero_xp_level hxl ON
             hxl.level = COALESCE( uh.level, 1 )
+EOD;
+        $this->query($query);
+        return $this->fetchAll();
+    }
+
+    public function getOpponentsData( $idUser )
+    {
+        $query = <<<EOD
+SELECT
+    name,
+    label
+FROM
+     koth_opponents
+ORDER BY
+    level
+LIMIT 10
 EOD;
         $this->query($query);
         return $this->fetchAll();

@@ -41,11 +41,6 @@ class Koth_LIB_Game
         return new Koth_LIB_Scores( $this->idUser );
     }
 
-    public function getUserDashboard()
-    {
-        return new Koth_LIB_Dashboard( $this->idUser );
-    }
-
     public function getBoard()
     {
         return new Koth_LIB_Board( $this->idUser );
@@ -116,7 +111,7 @@ class Koth_LIB_Game
 
         // Update dice with new values
         $this->model->updateDice($newDice);
-        
+
         if ( $this->getStep() == KOTH_STEP_AFTER_ROLL_3 )
         {
             // Get active player results

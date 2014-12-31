@@ -26,7 +26,9 @@ spl_autoload_register( $myAutoload = function ( $className ) {
     // File doesn't exist
     if ( !file_exists( $file ) ) {
 
-        file_put_contents(LOG_FILE, "[AUTOLOAD] File doesn't exists [$file] for [$className]\n", FILE_APPEND);
+        $comps = explode(' ', microtime());
+        $micro = sprintf('%06d', $comps[0] * 1000000);
+        file_put_contents(LOG_FILE, '[' . date('H:i:s') . ":$micro] [AUTOLOAD] File doesn't exists [$file] for [$className]\n", FILE_APPEND);
         return 'No service';
     }
 
@@ -36,7 +38,9 @@ spl_autoload_register( $myAutoload = function ( $className ) {
     // File loaded but class still doesn't exists ...
     if ( !class_exists ( $className ) ) {
 
-        file_put_contents(LOG_FILE, "[AUTOLOAD] Class does not exist [$className] in [$file]\n", FILE_APPEND);
+        $comps = explode(' ', microtime());
+        $micro = sprintf('%06d', $comps[0] * 1000000);
+        file_put_contents(LOG_FILE, '[' . date('H:i:s') . ":$micro] [AUTOLOAD] Class does not exist [$className] in [$file]\n", FILE_APPEND);
         return 'Internal error';
     }
 
@@ -83,8 +87,9 @@ set_error_handler( function ( $severity, $message, $filename, $lineno, $context 
             $error_type = substr( $error_type, 0, -1);
         }
 
-        // Store error
-        file_put_contents(LOG_FILE, "[ERROR_HANDLER] Error type [$error_type] error message [$message] in file [$filename] (L.$lineno)\n", FILE_APPEND);
+        $comps = explode(' ', microtime());
+        $micro = sprintf('%06d', $comps[0] * 1000000);
+        file_put_contents(LOG_FILE, '[' . date('H:i:s') . ":$micro] [ERROR_HANDLER] Error type [$error_type] error message [$message] in file [$filename] (L.$lineno)\n", FILE_APPEND);
     }
 
     // Don't execute PHP internal error manager: show must go on!
@@ -103,7 +108,9 @@ $requestTypeCode = strtolower(Url_LIB::getRequestParam('rt'));
 if ( !(in_array($requestTypeCode, array(null, REQUEST_TYPE_AJAX, REQUEST_TYPE_API))) ) {
 
     // Log error
-    Log_LIB::trace("[INDEX] Wrong request type [$requestTypeCode] from [" . Session_LIB::getUserIP() . "]");
+    $comps = explode(' ', microtime());
+    $micro = sprintf('%06d', $comps[0] * 1000000);
+    Log_LIB::trace('[' . date('H:i:s') . ":$micro] [INDEX] Wrong request type [$requestTypeCode] from [" . Session_LIB::getUserIP() . "]");
 }
 
 // Wrong or no request type means page

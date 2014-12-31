@@ -15,33 +15,62 @@ class Table_LIB_Koth_Opponents extends Table_LIB_Origin
 
     protected function getInitScript()
     {
-        $query = 'INSERT INTO koth_opponents ( name, label, picture, level, start_hp, max_attack, max_health, max_experience, max_victory ) VALUES ';
+        $types = array( array( 'attack'     => 'primary', 'health'     => 'secondary', 'experience' => 'ternary', 'victory' => 'fournary' ),
+                        array( 'attack'     => 'primary', 'experience' => 'secondary', 'health'     => 'ternary', 'victory' => 'fournary' ),
+                        array( 'victory'    => 'primary', 'health'     => 'secondary', 'experience' => 'ternary', 'attack'  => 'fournary' ), 
+                        array( 'victory'    => 'primary', 'experience' => 'secondary', 'health'     => 'ternary', 'attack'  => 'fournary' ),
+                        array( 'experience' => 'primary', 'attack'     => 'secondary', 'health'     => 'ternary', 'victory' => 'fournary' ),
+                        array( 'experience' => 'primary', 'victory'    => 'secondary', 'attack'     => 'ternary', 'health'  => 'fournary' ) );
 
-        $values = array();
-        $range  = range(3, 7);
-        foreach( $range as $attack )
+        $bonuses = array();
+        foreach ( range(0, 7) as $primary )
         {
-            foreach( $range as $health )
+            foreach ( range(0, max( $primary - 1, 0 ) ) as $secondary )
             {
-                foreach( $range as $experience )
+                foreach ( range(0, max( $secondary - 1, 0 ) ) as $ternary )
                 {
-                    foreach( $range as $victory )
+                    foreach ( range(0, max( $ternary - 1, 0 ) ) as $fournary )
                     {
-                        $name     = $this->getQuotedValue( $attack . '_' . $health . '_' . $experience . '_' . $victory );
-                        $level    = $this->getQuotedValue( $attack + $health + $experience + $victory - 11 );
-                        $start_hp = $this->getQuotedValue( 28 + 2 * $level );
-                        $max_a    = $this->getQuotedValue( 0 + $attack );
-                        $max_h    = $this->getQuotedValue( 0 + $health );
-                        $max_e    = $this->getQuotedValue( 0 + $experience );
-                        $max_v    = $this->getQuotedValue( 0 + $victory );
+                        $amounts = array( 'primary'   => $primary,
+                                          'secondary' => $secondary,
+                                          'ternary'   => $ternary,
+                                          'fournary'  => $fournary );
 
-                        $values[] = "( $name, $name, 'no_picture', $level, $start_hp, $max_a, $max_h, $max_e, $max_v )";
+                        foreach ( $types as $type )
+                        {
+                            $bonuses[] = array( 'attack'     => $amounts[$type['attack']],
+                                                'health'     => $amounts[$type['health']],
+                                                'experience' => $amounts[$type['experience']],
+                                                'victory'    => $amounts[$type['victory']] );
+                        }
                     }
                 }
             }
         }
 
-        $values = implode(',', $values);
-        return $query . $values;
+        $query = 'INSERT INTO koth_opponents ( name, label, picture, level, ai_level, start_hp, max_attack, max_health, max_experience, max_victory ) VALUES ';
+
+        $values = array();
+        foreach( $bonuses as $bonus )
+        {
+            foreach ( range(0, 2) as $ai_level )
+            {
+                $name           = $this->getQuotedValue( $bonus['attack'] . '_' . $bonus['health'] . '_' . $bonus['experience'] . '_' . $bonus['victory'] . '_' . $ai_level );
+                $label          = $this->getQuotedValue( $bonus['attack'] . '_' . $bonus['health'] . '_' . $bonus['experience'] . '_' . $bonus['victory'] . '_' . $ai_level );
+                $picture        = $this->getQuotedValue( 'opponent_no_pic' );
+                $level          = $this->getQuotedValue( 1 + array_sum( $bonus ) );
+                $ai_level       = $this->getQuotedValue( 0 + $ai_level );
+                $start_hp       = $this->getQuotedValue( 25 + 2 * array_sum( $bonus ) );
+                $max_attack     = $this->getQuotedValue( 3 + $bonus['attack'] );
+                $max_health     = $this->getQuotedValue( 3 + $bonus['health'] );
+                $max_experience = $this->getQuotedValue( 3 + $bonus['experience'] );
+                $max_victory    = $this->getQuotedValue( 3 + $bonus['victory'] );
+
+                $values[] = "( $name, $label, $picture, $level, $ai_level, $start_hp, $max_attack, $max_health, $max_experience, $max_victory )";
+            }
+        }
+
+        $query .= implode(',', $values);
+        return $query;
     }
 }

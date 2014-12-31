@@ -3,6 +3,7 @@ name,        varchar, 128,  , 0, 0, 0, 1
 label,       varchar, 128,  , 0, 0, 0, 1
 picture,     varchar, 128,  , 0, 0, 0, 0
 level,            int,   ,  , 0, 0, 0, 0
+ai_level,         int,   ,  , 0, 0, 0, 0
 start_hp,         int,   ,  , 0, 0, 0, 0
 start_xp,         int,   , 0, 0, 0, 0, 0
 start_vp,         int,   , 0, 0, 0, 0, 0

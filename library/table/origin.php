@@ -139,13 +139,28 @@ abstract class Table_LIB_Origin extends Base_LIB_Model {
 
             return '';
         }
-        
-        // Custom init: run script and return error (if any)
-        if ( $this->getInitMode() == TLM_INIT_CUSTOM ) {
 
-            return $this->executeTableQuery( $this->getInitScript() );
+        // Custom init: run script and return error (if any)
+        if ( $this->getInitMode() == TLM_INIT_CUSTOM )
+        {
+            $initScript = $this->getInitScript();
+
+            if ( count($initScript) == 1 )
+            {
+                $resultIni = $this->executeTableQuery( $initScript );
+            }
+            else if ( count( $initScript ) > 1 )
+            {
+                $resultIni = '';
+                foreach ( $initScript as $singleScript )
+                {
+                    $resultIni .= $this->executeTableQuery( $singleScript );
+                }
+            }
+
+            return $resultIni;
         }
-        
+
         // Auto init with data file
         //-------------------------
 

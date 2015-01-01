@@ -2,8 +2,10 @@
 
 class Koth_LIB_Board_View extends Base_LIB_View
 {
+    // With space: extra space at the bottom for presentation
     private function displayDice( $inputDice, $rollable = false, $withSpace = true )
     {
+        Log_LIB::trace($inputDice);
         $toDisplay = '';
 
         // Get dice objects
@@ -71,15 +73,15 @@ class Koth_LIB_Board_View extends Base_LIB_View
             {
                 case KOTH_STEP_START:
                     // Message
-                    if ( $data['nonActiveDice'] )
+                    if ( $data['isFirstPlayerFirstTurn'] )
+                    {
+                        $message = '<div class="text-center" style="font-size: 20px;height: 110px;">This is the first turn, you have less dice only for this turn.</div>';
+                    }
+                    else
                     {
                         $message = $this->displayDice($data['nonActiveDice'], false, false ) . ALL_EOL
                              . '<div class="text-center" style="font-size: 20px;">(Opponent\'s results)</div>'
                             . '';
-                    }
-                    else
-                    {
-                        $message = '<div class="text-center" style="font-size: 20px;height: 110px;">This is the first turn, you have less dice only for this turn.</div>';
                     }
 
                     // Button

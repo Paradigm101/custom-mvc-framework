@@ -62,6 +62,29 @@ EOD;
         return ( $this->fetchNext()->is_active ? true : false );
     }
     
+    public function isFirstPlayerFirstTurn()
+    {
+        $query = <<<EOD
+SELECT
+    COUNT(1)    is_first_player_first_turn
+FROM
+    koth_players p
+    INNER JOIN koth_games g ON
+        g.id               = p.id_game
+    AND g.is_completed     = 0
+    AND g.id_active_player = p.id
+    AND g.turn_number      = 1
+        INNER JOIN koth_players p2 ON
+            p2.id_game = g.id
+        AND p2.id_user = {$this->idUser}
+WHERE
+    p.id_user = {$this->idUser}
+AND p.rank    = 1
+EOD;
+        $this->query($query);
+        return ( $this->fetchNext()->is_first_player_first_turn ? true : false );
+    }
+
     public function getStep()
     {
         $query = <<<EOD

@@ -45,20 +45,4 @@ EOD;
         $this->query($query);
         return $this->fetchAll();
     }
-
-    public function getOpponentsData( $idUser )
-    {
-        $query = <<<EOD
-SELECT
-    name,
-    label
-FROM
-     koth_opponents
-ORDER BY
-    level
-LIMIT 10
-EOD;
-        $this->query($query);
-        return $this->fetchAll();
-    }
 }

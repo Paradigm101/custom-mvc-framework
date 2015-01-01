@@ -14,12 +14,12 @@ class Koth_LIB_Player_View extends Base_LIB_View
             return;
         }
 
-        $border            = $player->isActive ? 'border: solid darkblue 2px;' : '';
+        $border            = $player->isActive ? 'border: solid darkblue 2px;' : 'border: solid bisque 2px;';
         $healthPercent     = max( array( floor( $player->currentHP * 100 / $player->maxHP ), 0 ) );
-        $victoryPercent    = min( array( floor( $player->currentVP * 100 / KOTH_VICTORY_WIN ), 100 ) );
-        $experiencePercent = min( array( floor( ( $player->currentXP % 15 ) * 100 / 15 ), 100 ) );
+        $victoryPercent    = min( array( floor( $player->currentVP * 100 / $data['victoryThreshold'] ), 100 ) );
+        $experiencePercent = min( array( floor( ( $player->currentXP % $data['xpDicePrice'] ) * 100 / $data['xpDicePrice'] ), 100 ) );
 
-        $toDiplay .= '<div style="background-color:#4D94FF;font-size: 20px;' . $border . ';border-radius: 10px;padding: 10px;">' . PHP_EOL
+        $toDiplay .= '<div style="background-color:beige;font-size: 20px;' . $border . ';border-radius: 10px;padding: 10px;">' . PHP_EOL
                         . "<strong>{$player->userName}</strong> - {$player->heroName} ({$player->heroLevel}) - Dice: {$player->diceNumber}"
                         . '<span style="float:right"
                                  title="Click to see distribution"
@@ -27,19 +27,19 @@ class Koth_LIB_Player_View extends Base_LIB_View
                                  class="glyphicon glyphicon-question-sign"></span>'
                         . ALL_EOL
                         . ALL_EOL
-                        . '<div class="progress" title="Health: ' . $player->currentHP . '/' . $player->maxHP . '">'
+                        . '<div class="progress" title="Health ' . max( $player->currentHP, 0 ) . '/' . $player->maxHP . '">'
                                 . '<div class="progress-bar" style="background-image:none;background-color:#E60000;width: ' . $healthPercent . '%;">'
-                                    . $player->currentHP . '/' . $player->maxHP
+                                    . max( $player->currentHP, 0 ) . '/' . $player->maxHP
                                 . '</div>'
                         . '</div>'
-                        . '<div class="progress" title="Victory: ' . $player->currentVP . '/' . KOTH_VICTORY_WIN . '">'
+                        . '<div class="progress" title="Victory ' . min( $player->currentVP, $data['victoryThreshold'] ) . '/' . $data['victoryThreshold'] . '">'
                                 . '<div class="progress-bar" style="background-image:none;background-color:#66B366;width:' . $victoryPercent . '%;">'
-                                    . $player->currentVP . '/' . KOTH_VICTORY_WIN
+                                    . min( $player->currentVP, $data['victoryThreshold'] ) . '/' . $data['victoryThreshold']
                                 . '</div>'
                         . '</div>'
-                        . '<div class="progress" title="Experience: ' . $player->currentXP % 15 . '/' . 15 . '">'
+                        . '<div class="progress" title="Experience ' . $player->currentXP % $data['xpDicePrice'] . '/' . $data['xpDicePrice'] . '">'
                                 . '<div class="progress-bar" style="background-image:none;background-color:#8D198D;width: ' . $experiencePercent . '%;">'
-                                    . $player->currentXP % 15 . '/' . 15
+                                    . $player->currentXP % $data['xpDicePrice'] . '/' . $data['xpDicePrice']
                                 . '</div>'
                         . '</div>'
                     . '</div>';
@@ -80,7 +80,6 @@ class Koth_LIB_Player_View extends Base_LIB_View
     </div><!-- end dialog -->
 </div><!-- end modal hero die {$player->isActive} -->
 EOD;
-
         echo $toDiplay;
     }
 }

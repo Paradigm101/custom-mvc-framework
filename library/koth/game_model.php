@@ -25,6 +25,12 @@ class Koth_LIB_Game_Model extends Base_LIB_Model
         }
     }
 
+    public function getLevels()
+    {
+        $this->query("SELECT pa.hero_level + pi.hero_level levels FROM koth_players pa, koth_players pi WHERE pa.id = {$this->idActivePlayer} AND pi.id = {$this->idInactivePlayer}");
+        return $this->fetchNext()->levels;
+    }
+
     // Sort dice pool and return worst dice
     private function aiGetWorstDice( $num )
     {
@@ -289,7 +295,7 @@ EOD;
     // OR non-active player's health is 0 or less
     public function isVictory()
     {
-        $victoryWin = KOTH_VICTORY_WIN;
+        $victoryWin = 60 + $this->getLevels();
 
         $query = <<<EOD
 SELECT
@@ -300,7 +306,7 @@ FROM
 WHERE
     pa.id = {$this->idActivePlayer}
 AND pi.id = {$this->idInactivePlayer}
-AND (  ( pa.current_vp >= $victoryWin + 2 * ( pa.hero_level + pi.hero_level - 2 ) )
+AND (  ( pa.current_vp >= $victoryWin )
      OR( pi.current_hp < 1 )  )
 EOD;
         $this->query($query);
@@ -432,7 +438,10 @@ EOD;
         $gameXp     = $this->getQuotedValue( 0 + $experience + $victory + $health + $attack );
 
         // Update active player's health/victory/xp
-        $query = <<<EOD
+        // Human user
+        If ( $this->idActiveUser )
+        {
+            $query = <<<EOD
 UPDATE
     koth_players p
     INNER JOIN koth_heroes_levels hl ON
@@ -444,19 +453,40 @@ SET
     p.current_hp = LEAST( p.current_hp + $health, hl.start_hp ),
     p.game_xp    = p.game_xp + $gameXp
 WHERE
-    p.id = {$this->idActivePlayer}
+    p.id       = {$this->idActivePlayer}
+AND p.id_user != 0
 EOD;
-        $this->query($query);
+            $this->query($query);
+        }
+        // AI user
+        else
+        {
+            $query = <<<EOD
+UPDATE
+    koth_players p
+    INNER JOIN koth_opponents o ON
+        o.id = p.id_hero
+SET
+    p.current_xp = p.current_xp + $experience,
+    p.current_vp = p.current_vp + $victory,
+    p.current_hp = LEAST( p.current_hp + $health, o.start_hp ),
+    p.game_xp    = p.game_xp + $gameXp
+WHERE
+    p.id      = {$this->idActivePlayer}
+AND p.id_user = 0
+EOD;
+            $this->query($query);
+        }
 
         // Update inactive player's health
         $this->query("UPDATE koth_players SET current_hp = current_hp - $attack WHERE id = {$this->idInactivePlayer}");
         
-        // Convert xp into something
+        // Convert xp into dice
         $this->query("SELECT current_xp FROM koth_players WHERE id = {$this->idActivePlayer}");
         $current_xp = $this->fetchNext()->current_xp;
 
         // Every 15 xp, user get a new die
-        $this->addUnknownDice( KOTH_STARTING_DICE + floor( $current_xp / 15 ) - $this->getDicePoolNumber() );
+        $this->addUnknownDice( KOTH_STARTING_DICE + floor( $current_xp / ( 15 + $this->getLevels() ) ) - $this->getDicePoolNumber() );
     }
 
     public function isGameActive()
@@ -465,8 +495,12 @@ EOD;
     }
 
     // TBD: manage different hero/level
-    public function startGame()
+    public function startGame( $heroName = 'attack_health', $heroLevel = 1, $opponentName = '3_3_3_3_1' )
     {
+        $heroName     = $this->getQuotedValue($heroName);
+        $heroLevel    = $this->getQuotedValue( 0 + $heroLevel );
+        $opponentName = $this->getQuotedValue($opponentName);
+
         // If a game is already active, do nothing
         // Front will refresh page and user will see current game
         // User can concede to start a new game
@@ -504,7 +538,6 @@ EOD;
         }
 
         // Create user player
-        // TBD: Manage hero + hero level
         $query = <<<EOD
 INSERT INTO
     koth_players (id_user, id_game, id_hero, hero_level, current_vp, current_hp, current_xp, rank )
@@ -521,14 +554,13 @@ FROM
     koth_heroes h
     INNER JOIN koth_heroes_levels hl ON
         hl.id_hero = h.id
-    AND hl.level   = 1
+    AND hl.level   = $heroLevel
 WHERE
-    h.id = 1
+    h.name = $heroName
 EOD;
         $this->query($query);
         
         // Create other player
-        // TBD: Manage hero + hero level
         // TBD: Manage PvP
         $query = <<<EOD
 INSERT INTO
@@ -536,19 +568,16 @@ INSERT INTO
 SELECT
     0,
     $idGame,
-    h.id,
-    hl.level,
-    hl.start_vp,
-    hl.start_hp,
-    hl.start_xp,
+    id,
+    level,
+    start_vp,
+    start_hp,
+    start_xp,
     $otherPlayerRank
 FROM
-    koth_heroes h
-    INNER JOIN koth_heroes_levels hl ON
-        hl.id_hero = h.id
-    AND hl.level   = 1
+    koth_opponents
 WHERE
-    h.id = 1
+    name = $opponentName
 EOD;
         $this->query($query);
 
@@ -649,9 +678,27 @@ EOD;
     }
 
     // Get Max Hero values for active player
-    public function getHeroMaxValues()
+    public function getHeroMaxValues( $isAI = false )
     {
-        $query = <<<EOD
+        if ( $isAI )
+        {
+            $query = <<<EOD
+SELECT
+    o.max_attack       max_attack,
+    o.max_health       max_health,
+    o.max_experience   max_experience,
+    o.max_victory      max_victory
+FROM
+    koth_opponents o
+    INNER JOIN koth_players p ON
+        p.id_hero    = o.id
+    AND p.id         = {$this->idActivePlayer}
+EOD;
+            $this->query($query);
+        }
+        else
+        {
+            $query = <<<EOD
 SELECT
     hl.max_attack       max_attack,
     hl.max_health       max_health,
@@ -664,7 +711,9 @@ FROM
     AND p.hero_level = hl.level
     AND p.id         = {$this->idActivePlayer}
 EOD;
-        $this->query($query);
+            $this->query($query);
+        }
+
         $max = $this->fetchNext();
 
         return array( 'attack'     => $max->max_attack,

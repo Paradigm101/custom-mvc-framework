@@ -11,6 +11,20 @@ class Koth_LIB_Game
         $this->model = new Koth_LIB_Game_Model( $idUser );
     }
 
+    public function getVictoryThreshold()
+    {
+        $levels = $this->model->getLevels();
+
+        return 60 + 2 * $levels;
+    }
+
+    public function getXpDicePrice()
+    {
+        $levels = $this->model->getLevels();
+        
+        return 15 + $levels;
+    }
+
     public function getStep()
     {
         return $this->model->getStep();
@@ -33,7 +47,7 @@ class Koth_LIB_Game
 
     public function getOtherPlayer()
     {
-        return new Koth_LIB_Player( $this->idUser, true );
+        return new Koth_LIB_Player( $this->idUser, true, $this->model->isPvE() );
     }
 
     public function getGameScores()
@@ -55,25 +69,26 @@ class Koth_LIB_Game
     // TBD: Improve algo
     private function playAI()
     {
-        $this->roll();
+        $this->roll( true /* $isAI */ );
         if ( KOTH_AI_LEVEL )
         {
             $this->model->keepDiceAI( 2 /* 2 rolls left */ );
         }
-        $this->roll();
+        $this->roll( true /* $isAI */ );
         if ( KOTH_AI_LEVEL )
         {
             $this->model->keepDiceAI( 1 /* 2 rolls left */ );
         }
-        $this->roll();
+        $this->roll( true /* $isAI */ );
         $this->preProcessAck();
     }
 
-    public function startGame()
+    // TBD: PvP
+    public function startGame( $heroName = 'attack_health', $heroLevel = 1, $opponentName = '3_3_3_3_1' )
     {
-        $this->model->startGame();
+        $this->model->startGame( $heroName, $heroLevel, $opponentName );
 
-        // PvE, have computer play if init
+        // PvE, first turn AI plays
         if ( $this->model->isPvE() && !$this->model->isUserActive() )
         {
             $this->playAI();
@@ -90,10 +105,10 @@ class Koth_LIB_Game
 
     // TBD: everything should be done in the same transaction
     // Roll for active player
-    public function roll()
+    public function roll( $isAI = false )
     {
         // Get max values for the different types
-        $maxes = $this->model->getHeroMaxValues();
+        $maxes = $this->model->getHeroMaxValues( $isAI );
 
         // Compute the new dice values
         $newDice = array();

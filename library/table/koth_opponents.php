@@ -48,6 +48,9 @@ class Table_LIB_Koth_Opponents extends Table_LIB_Origin
             }
         }
 
+        // Remove duplicate key (option to manage arrays)
+        $bonuses = array_unique($bonuses, SORT_REGULAR);
+
         $query = 'INSERT INTO koth_opponents ( name, label, picture, level, ai_level, start_hp, max_attack, max_health, max_experience, max_victory ) VALUES ';
 
         $values = array();
@@ -55,8 +58,8 @@ class Table_LIB_Koth_Opponents extends Table_LIB_Origin
         {
             foreach ( range(0, 2) as $ai_level )
             {
-                $name           = $this->getQuotedValue( $bonus['attack'] . '_' . $bonus['health'] . '_' . $bonus['experience'] . '_' . $bonus['victory'] . '_' . $ai_level );
-                $label          = $this->getQuotedValue( $bonus['attack'] . '_' . $bonus['health'] . '_' . $bonus['experience'] . '_' . $bonus['victory'] . '_' . $ai_level );
+                $name           = $this->getQuotedValue( ( 3 + $bonus['attack'] ) . '_' . ( 3 + $bonus['health'] ) . '_' . ( 3 + $bonus['experience'] ) . '_' . ( 3 + $bonus['victory'] ) . '_' . $ai_level );
+                $label          = $this->getQuotedValue( ( 3 + $bonus['attack'] ) . '_' . ( 3 + $bonus['health'] ) . '_' . ( 3 + $bonus['experience'] ) . '_' . ( 3 + $bonus['victory'] ) . '_' . $ai_level );
                 $picture        = $this->getQuotedValue( 'opponent_no_pic' );
                 $level          = $this->getQuotedValue( 1 + array_sum( $bonus ) );
                 $ai_level       = $this->getQuotedValue( 0 + $ai_level );
@@ -66,7 +69,7 @@ class Table_LIB_Koth_Opponents extends Table_LIB_Origin
                 $max_experience = $this->getQuotedValue( 3 + $bonus['experience'] );
                 $max_victory    = $this->getQuotedValue( 3 + $bonus['victory'] );
 
-                $values[] = "( $name, $label, $picture, $level, $ai_level, $start_hp, $max_attack, $max_health, $max_experience, $max_victory )";
+                $values[] = "( $name, $label, $picture, $level, $ai_level, $start_hp, $max_attack, $max_health, $max_experience, $max_victory )\n";
             }
         }
 

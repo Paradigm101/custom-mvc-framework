@@ -36,11 +36,6 @@ abstract class Koth_LIB_Results
         return $results2;
     }
 
-    static public function getUserResults( $idUser, $isUser = true )
-    {
-        return static::processResults( static::getModel()->getUserResults( $idUser, $isUser ) );
-    }
-
     static public function getPlayerResults( $idUser, $isActive = true )
     {
         return static::processResults( static::getModel()->getPlayerResults( $idUser, $isActive ) );

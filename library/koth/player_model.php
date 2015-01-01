@@ -4,20 +4,24 @@ class Koth_LIB_Player_Model extends Base_LIB_Model
 {
     private $idUser;
     private $isOther;
+    private $isAI;
 
-    public function __construct( $idUser, $isOther = false )
+    public function __construct( $idUser, $isOther = false, $isAI = false )
     {
         parent::__construct();
 
         $this->idUser  = $this->getQuotedValue( 0 + $idUser );
         $this->isOther = $this->getQuotedValue( 0 + $isOther );
+        $this->isAI    = $this->getQuotedValue( 0 + $isAI );
     }
 
     public function getHeroDie()
     {
-        $otherCdt = ' AND p.id_user ' . ( $this->isOther ? '!' : '' ) . '= ' . $this->idUser . ' ';
+        if ( !$this->isAI )
+        {
+            $otherCdt = ' AND p.id_user ' . ( $this->isOther ? '!' : '' ) . '= ' . $this->idUser . ' ';
 
-        $query = <<<EOD
+            $query = <<<EOD
 SELECT
     hl.max_attack       max_attack,
     hl.max_health       max_health,
@@ -36,15 +40,42 @@ FROM
                 p2.id_game = g.id
             AND p2.id_user = {$this->idUser}
 EOD;
-        $this->query($query);
+            $this->query($query);
+        }
+        else
+        {
+            $query = <<<EOD
+SELECT
+    o.max_attack       max_attack,
+    o.max_health       max_health,
+    o.max_experience   max_experience,
+    o.max_victory      max_victory
+FROM
+    koth_opponents o
+    INNER JOIN koth_players p ON
+        p.id_hero  = o.id
+    AND p.id_user != {$this->idUser}
+        INNER JOIN koth_games g ON
+            g.id           = p.id_game
+        AND g.is_completed = 0
+            INNER JOIN koth_players p2 ON
+                p2.id_game = g.id
+            AND p2.id_user = {$this->idUser}
+EOD;
+            $this->query($query);
+        }
+        
         return $this->fetchNext();
     }
 
     public function getPlayerData()
     {
-        $playerCondition = ' AND p2.id_user ' . ( $this->isOther ? '!' : '' ) . '= ' . $this->idUser;
-        
-        $query = <<<EOD
+        // In case human/hero
+        if ( !$this->isAI )
+        {
+            $playerCondition = ' AND p2.id_user ' . ( $this->isOther ? '!' : '' ) . '= ' . $this->idUser;
+
+            $query = <<<EOD
 SELECT
     p2.id                           id_player,
     p2.current_hp                   current_hp,
@@ -84,8 +115,47 @@ WHERE
 GROUP BY
     pd.id_player
 EOD;
+            $this->query($query);
+        }
+        // In case opponent
+        else
+        {
+            $query = <<<EOD
+SELECT
+    p.id                id_player,
+    p.current_hp        current_hp,
+    p.current_vp        current_vp,
+    p.current_xp        current_xp,
+    'AI'                user_name,
+    0                   user_level,
+    o.label             hero_label,
+    p.hero_level        hero_level,
+    o.start_hp          max_hp,
+    g.id_active_player  id_active_player,
+    s.name              step,
+    COUNT(pd.id_player) dice_number
+FROM
+    koth_players p
+    INNER JOIN koth_opponents o ON
+        o.id = p.id_hero
+    INNER JOIN koth_players_dice pd ON
+        pd.id_player = p.id
+    INNER JOIN koth_games g ON
+        g.id           = p.id_game
+    AND g.is_completed = 0
+        INNER JOIN koth_players p2 ON
+            p2.id_game = g.id
+        AND p2.id_user = {$this->idUser}
+        INNER JOIN koth_steps s ON
+            s.id = g.id_step
+WHERE
+    p.id_user != {$this->idUser}
+GROUP BY
+    pd.id_player
+EOD;
+            $this->query($query);
+        }
 
-        $this->query($query);
         $result = $this->fetchNext();
 
         $player = new stdClass();

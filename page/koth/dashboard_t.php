@@ -1,4 +1,6 @@
 <br/>
+
+<!-- User -->
 <strong><?= $data['userData']->user_name ?></strong> - Level <?= $data['userData']->user_level ?>
 <div class="progress" title="<?= $data['userData']->user_experience . '/' . $data['userData']->next_level_xp ?> Xp">
     <div class="progress-bar" style="width: <?= floor( $data['userData']->user_experience / $data['userData']->next_level_xp * 100 ) ?>%;">
@@ -6,6 +8,8 @@
     </div>
 </div>
 <hr/>
+
+<!-- User's heroes -->
 <?
     foreach ($data['heroesData'] as $hero)
     {
@@ -20,11 +24,13 @@
     }
 ?>
 <hr/>
+
+<!-- Hero selector -->
 <div class="dropdown" style="float: left">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="heroDropdownBtn">
         Hero&nbsp;<span class="caret"></span>
     </button>
-    <ul class="dropdown-menu dropdown-menu-change-label" id="heroModalSelector">
+    <ul class="dropdown-menu dropdown-menu-change-label" id="heroSelector">
 <?php
     foreach ( $data['heroesData'] as $hero )
     {
@@ -33,31 +39,63 @@
 ?>
     </ul>
 </div>
+
+<!-- Hero level selector -->
 <div class="dropdown" style="float: left">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="heroLevelDropdownBtn">
         Hero Level&nbsp;<span class="caret"></span>
     </button>
-    <ul class="dropdown-menu dropdown-menu-change-label" id="heroLevelModalSelector">
-        <li><a href="#" data-value="1">Level 1</a></li>
-        <li><a href="#" data-value="2">Level 2</a></li>
-        <li><a href="#" data-value="3">Level 3</a></li>
-        <li><a href="#" data-value="4">Level 4</a></li>
-        <li><a href="#" data-value="5">Level 5</a></li>
-    </ul>
-</div>
-<div class="dropdown" style="float: left">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="opponentDropdownBtn">
-        Opponents&nbsp;<span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-change-label" id="opponentModalSelector">
+    <ul class="dropdown-menu dropdown-menu-change-label" id="heroLevelSelector">
 <?php
-    foreach ( $data['opponentsData'] as $opponent )
+    foreach ( range(1, 7) as $level )
     {
-        echo '<li><a href="#" data-value="' . $opponent->name . '">' . $opponent->label . '</a></li>' . "\n";
+        echo '<li><a href="#" data-value="' . $level . '">Hero Level ' . $level . '</a></li>' . "\n";
     }
 ?>
     </ul>
 </div>
+
+<!-- Opponent level selector -->
+<div class="dropdown" style="float: left">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="opponentLevelDropdownBtn">
+        Opponent Level&nbsp;<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-change-label" id="opponentLevelSelector">
+<?php
+    foreach ( range(1, 10) as $level )
+    {
+        echo '<li><a name="opponentLevelLIA" href="#" data-value="' . $level . '">Opponent Level ' . $level . '</a></li>' . "\n";
+    }
+?>
+    </ul>
+</div>
+
+<!-- Opponent AI level selector -->
+<div class="dropdown" style="float: left">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="opponentAiLevelDropdownBtn">
+        Opponent AI Level&nbsp;<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-change-label" id="opponentAiLevelSelector">
+<?php
+    foreach ( range(0, 2) as $level )
+    {
+        echo '<li><a name="opponentAILevelLIA" href="#" data-value="' . $level . '">Level ' . $level . '</a></li>' . "\n";
+    }
+?>
+    </ul>
+</div>
+
+<!-- Opponent selector -->
+<div class="dropdown" style="float: left">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="opponentDropdownBtn">
+        Opponents&nbsp;<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-change-label" id="opponentSelector">
+        <li><a href="#" data-value="dummy">dummy</a></li>
+    </ul>
+</div>
+
+<!-- Start button -->
 <div class="text-center">
     <button type="button" class="btn btn-default" id="koth_btn_start">Start new game</button>
 </div>

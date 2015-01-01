@@ -36,6 +36,7 @@ class Koth_LIB_Board
         $this->view->assign('activeDice',    $this->model->getDice());
         $this->view->assign('nonActiveDice', $this->model->getDice( true ));
         $this->view->assign('rollable',      $this->model->canUserRoll());
+        $this->view->assign('isFirstPlayerFirstTurn', $this->model->isFirstPlayerFirstTurn() );
         $this->view->render();
     }
 

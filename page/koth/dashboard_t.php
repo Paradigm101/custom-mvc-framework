@@ -1,17 +1,22 @@
+<?php
+$userData = Koth_LIB_Game::getUserData();
+$heroData = Koth_LIB_Game::getHeroData();
+?>
+
 <br/>
 
 <!-- User -->
-<strong><?= $data['userData']->user_name ?></strong> - Level <?= $data['userData']->user_level ?>
-<div class="progress" title="<?= $data['userData']->user_experience . '/' . $data['userData']->next_level_xp ?> Xp">
-    <div class="progress-bar" style="width: <?= floor( $data['userData']->user_experience / $data['userData']->next_level_xp * 100 ) ?>%;">
-        <?= $data['userData']->user_experience . '/' . $data['userData']->next_level_xp ?>
+<strong><?= $userData->user_name ?></strong> - Level <?= $userData->user_level ?>
+<div class="progress" title="<?= $userData->user_experience . '/' . $userData->next_level_xp ?> Xp">
+    <div class="progress-bar" style="width: <?= floor( $userData->user_experience / $userData->next_level_xp * 100 ) ?>%;">
+        <?= $userData->user_experience . '/' . $userData->next_level_xp ?>
     </div>
 </div>
 <hr/>
 
 <!-- User's heroes -->
 <?
-    foreach ($data['heroesData'] as $hero)
+    foreach ( $heroData as $hero )
     {
 ?>
 <strong><?= $hero->hero_label ?></strong> - Level <?= $hero->hero_level ?>
@@ -32,7 +37,7 @@
     </button>
     <ul class="dropdown-menu dropdown-menu-change-label" id="heroSelector">
 <?php
-    foreach ( $data['heroesData'] as $hero )
+    foreach ( $heroData as $hero )
     {
         echo '<li><a href="#" data-value="' . $hero->hero_name . '">' . $hero->hero_label . '</a></li>' . "\n";
     }

@@ -1,30 +1,36 @@
 <?php
 
-// Not really a controller cuz non-abstract
-class Koth_LIB_Player
+// TBD: extend this service for every user id (e.g. for spectator mode)
+abstract class Koth_LIB_Player
 {
     // View/Model
-    private $view;
-    private $model;
-    private $idUser;
+    static private $view;
+    static private $model;
 
-    // IsOther: other player in this user's game
-    public function __construct( $idUser, $isOther = false, $isAI = false )
+    static private function getModel()
     {
-        $this->model = new Koth_LIB_Player_Model( $idUser, $isOther, $isAI );
-        $this->view  = new Koth_LIB_Player_View();
-
-        $this->idUser = $idUser;
+        if ( !static::$model )
+        {
+            static::$model = new Koth_LIB_Player_Model();
+        }
+        
+        return static::$model;
     }
 
-    public function render()
+    static private function getView()
     {
-        $game = new Koth_LIB_Game( $this->idUser );
+        if ( !static::$view )
+        {
+            static::$view = new Koth_LIB_Player_View();
+        }
+        
+        return static::$view;
+    }
 
-        $this->view->assign('victoryThreshold',  $game->getVictoryThreshold() );
-        $this->view->assign('xpDicePrice',       $game->getXpDicePrice() );
-        $this->view->assign('player',            $this->model->getPlayerData() );
-        $this->view->assign('heroDie',           $this->model->getHeroDie() );
-        $this->view->render();
+    static public function render( $isOtherUser = false )
+    {
+        static::getView()->assign('player',  static::getModel()->getPlayerData( $isOtherUser ) );
+        static::getView()->assign('heroDie', static::getModel()->getHeroDie( $isOtherUser ) );
+        static::getView()->render();
     }
 }

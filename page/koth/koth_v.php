@@ -4,36 +4,25 @@ class Koth_PAG_V extends Base_PAG_V
 {
     protected function getExtraTemplates()
     {
-        $data = $this->getData();
-
-        if ( Session_LIB::isUserLoggedIn() )
+        // Add template according to game status
+        switch ( Koth_LIB_Game::getStatus() )
         {
-            if ( $data['game']->isGameActive() )
-            {
-                // Game is finished, display scores
-                if ( $data['game']->isGameFinished() )
-                {
-                    $template = 'scores';
-                }
-                // Game is running
-                else
-                {
-                    $template = 'running';
-                }
-            }
-            // No game running, dashboard
-            else
-            {
-                $template = 'dashboard';
-            }
+            // No started game: Dashboard
+            case KOTH_STATUS_NOT_STARTED:
+                return array('dashboard');
+            
+            // Game running
+            case KOTH_STATUS_RUNNING:
+                return array('running');
+            
+            // Game just ended: Scores
+            case KOTH_STATUS_FINISHED:
+                return array('scores');
+            
+            // No user, nothing to do
+            case KOTH_STATUS_NO_USER:
+            default:
+                return array('presentation');
         }
-        // User is not logged in: can't play
-        // TBD: play as a guest?
-        else
-        {
-            $template = 'presentation';
-        }
-
-        return array( $template );
     }
 }

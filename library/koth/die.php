@@ -1,54 +1,89 @@
 <?php
 
-class Koth_LIB_Die
+abstract class Koth_LIB_Die
 {
-    private $id;
-    private $name;
-    private $label;
-    private $picture;
-    private $value;
-    private $rollable;
-    private $title;
+    // Model
+    static private $model;
+    
+    static private function getModel()
+    {
+        if ( !static::$model )
+        {
+            static::$model = new Koth_LIB_Die_Model();
+        }
+        
+        return static::$model;
+    }
 
-    public function __construct( $die, $rollable )
+    // TBD: manage more than 12 dice display
+    static public function displayDice( $inputDice, $rollable = false )
+    {
+        $toDisplay = '';
+
+        // TBD: manage more than 12 dice
+        $marginLeft = floor( ( 12 - count( $inputDice ) ) / 2 );
+        $marginRight = ceil( ( 12 - count( $inputDice ) ) / 2 );
+
+        // Start row (height is set for images on hover)
+        $toDisplay .= '<div class="row" style="height:80px;">';
+
+        // Margin
+        if ( $marginLeft )
+        {
+            $toDisplay .= '<div class="col-xs-' . $marginLeft . '"></div>';
+        }
+
+        // Display dice
+        foreach ( $inputDice as $dataDie )
+        {
+            $toDisplay .= '<div class="col-xs-1">';
+            $toDisplay .= static::display( $dataDie, $rollable );
+            $toDisplay .= '</div>';
+        }
+
+        // Margin
+        if ( $marginRight )
+        {
+            $toDisplay .= '<div class="col-xs-' . $marginRight . '"></div>';
+        }
+        
+        // End row
+        $toDisplay .= '</div>';
+        
+        return $toDisplay;
+    }
+
+    static private function display( $die, $rollable )
     {
         Page_LIB::subscribeClassForJavascript( 'Koth_LIB_Die' );
 
-        $this->id       = $die->id;
-        $this->name     = $die->name;
-        $this->label    = $die->label;
-        $this->value    = $die->value;
-        $this->rollable = $rollable;
-        $this->picture  = 'page/koth/image/' . $die->name . '_' . $die->value . '.png';
-        $this->title    = '+' . $die->value . ' ' . ucfirst($die->name);
-        
-        // Manage unknown die title
-        if ( $this->name == 'unknown' )
-        {
-            $this->title = 'Reroll';
-        }
-    }
+        $picture  = 'page/koth/image/' . $die->name . '_' . $die->value . '.png';
+        $title    = '+' . $die->value . ' ' . ucfirst($die->name);
 
-    public function display()
-    {
+        // Manage unknown die title
+        if ( $die->name == 'unknown' )
+        {
+            $title = 'Reroll';
+        }
+
         // Make image bigger on mouse over (not for unknown or non-rollable)
         $onMouseOver = '';
-        if ( $this->name != 'unknown' && $this->rollable )
+        if ( $die->name != 'unknown' && $rollable )
         {
-            $bigPicture = explode( '.', $this->picture );
+            $bigPicture = explode( '.', $picture );
             $bigPicture[0] .= '_big';
             $bigPicture = implode('.', $bigPicture);
 
             $onMouseOver .= 'onmouseover="this.src=\'' . $bigPicture . '\'" 
-                             onmouseout="this.src=\'' . $this->picture . '\'"';
+                             onmouseout="this.src=\'' . $picture . '\'"';
         }
 
-        $toDiplay = '<img id="' . $this->id . '"
-                          name="die_image' . ( $this->rollable ? '' : '_non_rollable' ) . '"
+        $toDiplay = '<img id="' . $die->id . '"
+                          name="die_image' . ( $rollable ? '' : '_non_rollable' ) . '"
                           class="unselectable" 
-                          title="' . $this->title . '"
-                          alt="' . $this->label . '"
-                          src="' . $this->picture . '"
+                          title="' . $title . '"
+                          alt="' . $die->label . ' ' . $die->value . '"
+                          src="' . $picture . '"
                           ' . $onMouseOver . ' />';
 
         return $toDiplay;
@@ -123,5 +158,10 @@ $('img[name=die_image]').mousedown( function(event)
     }
 });
 EOD;
+    }
+    
+    static public function getDice( $isActivePlayer = true )
+    {
+        return static::getModel()->getDice( $isActivePlayer );
     }
 }

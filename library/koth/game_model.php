@@ -1,5 +1,7 @@
 <?php
 
+define('KOTH_STARTING_DICE', 4);
+
 class Koth_LIB_Game_Model extends Base_LIB_Model
 {
     private $idUser = 0;
@@ -25,97 +27,181 @@ class Koth_LIB_Game_Model extends Base_LIB_Model
         }
     }
 
+    public function getUserData()
+    {
+        $query = <<<EOD
+SELECT
+    u.username      user_name,
+    ux.level        user_level,
+    ux.experience   user_experience,
+    uxl.threshold   next_level_xp
+FROM
+    users u
+    INNER JOIN koth_user_xp ux ON
+        ux.id_user = u.id
+        INNER JOIN koth_user_xp_level uxl ON
+            uxl.level = ux.level
+WHERE
+    u.id = {$this->idUser}
+EOD;
+        $this->query($query);
+        return $this->fetchNext();
+    }
+
+    public function getHeroData()
+    {
+        $query = <<<EOD
+SELECT
+    h.label                         hero_label,
+    h.name                          hero_name,
+    COALESCE( uh.level, 1 )         hero_level,
+    COALESCE( uh.experience, 0 )    hero_experience,
+    hxl.threshold                   next_level_xp
+FROM
+    koth_heroes h
+    LEFT OUTER JOIN koth_users_heroes uh ON
+        uh.id_hero = h.id
+    AND uh.id_user = {$this->idUser}
+        LEFT OUTER JOIN koth_hero_xp_level hxl ON
+            hxl.level = COALESCE( uh.level, 1 )
+EOD;
+        $this->query($query);
+        return $this->fetchAll();
+    }
+    
+    public function getResults()
+    {
+        $query = <<<EOD
+SELECT
+    g.id_winning_user   id_winner,
+    g.xp_winning_user   xp_winner,
+    g.xp_losing_user    xp_loser,
+    pw.current_hp       hp_winner,
+    pl.current_hp       hp_loser,
+    pw.current_vp       vp_winner,
+    pl.current_vp       vp_loser
+FROM
+    koth_games g
+    INNER JOIN koth_players p ON
+        p.id_game = g.id
+    AND p.id_user = {$this->idUser}
+    INNER JOIN koth_players pw ON
+        pw.id_game = g.id
+    AND pw.id_user = g.id_winning_user
+    INNER JOIN koth_players pl ON
+        pl.id_game = g.id
+    AND pl.id_user = g.id_losing_user
+WHERE
+    g.is_completed = 0
+EOD;
+        $this->query($query);
+        $result = $this->fetchNext();
+
+        // Add data
+        $result->isWinner = ( $result->id_winner == $this->idUser );
+
+        return $result;
+    }
+
     public function getLevels()
     {
         $this->query("SELECT pa.hero_level + pi.hero_level levels FROM koth_players pa, koth_players pi WHERE pa.id = {$this->idActivePlayer} AND pi.id = {$this->idInactivePlayer}");
         return $this->fetchNext()->levels;
     }
 
+    private function getAILevel()
+    {
+        $query = <<<EOD
+SELECT
+    o.ai_level  ai_level
+FROM
+    koth_opponents o
+    INNER JOIN koth_players p ON
+        p.id_hero = o.id
+    AND p.id      = {$this->idActivePlayer}
+EOD;
+        $this->query($query);
+        return $this->fetchNext()->ai_level;
+    }
+
     // Sort dice pool and return worst dice
     private function aiGetWorstDice( $num )
     {
-        $sortedDice = array(  0 => array( 'type' => 'attack',     'value' => 1 ),
-                              1 => array( 'type' => 'experience', 'value' => 1 ),
-                              2 => array( 'type' => 'health',     'value' => 1 ),
-                              3 => array( 'type' => 'victory',    'value' => 1 ),
-                              4 => array( 'type' => 'health',     'value' => 2 ),
-                              6 => array( 'type' => 'attack',     'value' => 2 ),
-                              7 => array( 'type' => 'victory',    'value' => 2 ),
-                              5 => array( 'type' => 'experience', 'value' => 2 ),
-                              8 => array( 'type' => 'attack',     'value' => 3 ),
-                              9 => array( 'type' => 'experience', 'value' => 3 ),
-                             10 => array( 'type' => 'health',     'value' => 3 ),
-                             11 => array( 'type' => 'victory',    'value' => 3 ) );
+        // Get distribution
+        $query = <<<EOD
+SELECT
+    o.max_attack       attack,
+    o.max_health       health,
+    o.max_experience   experience,
+    o.max_victory      victory
+FROM
+    koth_opponents o
+    INNER JOIN koth_players p ON
+        p.id_hero = o.id
+    AND p.id      = {$this->idActivePlayer}
+EOD;
+        $this->query($query);
+        $maxes = $this->fetchNext();
 
-        if ( KOTH_AI_LEVEL >= 2 )
+        // First create non-sorted distribution
+        $distribution = array();
+        foreach ( $maxes as $type => $max )
+        {
+            $distribution[] = array( 'type' => $type, 'value' => $max );
+            $distribution[] = array( 'type' => $type, 'value' => $max - 1 );
+            $distribution[] = array( 'type' => $type, 'value' => $max - 2 );
+        }
+        // AI level 1 : Sort distrib from worst to best by value
+        usort($distribution, function( $a, $b ) { return $a['value'] > $b['value']; } );
+
+        if ( $this->getAILevel() >= 2 )
         {
             // TBD: Health management : high => worst, low => best
             // TBD: Xp management: get a die => good, early game => good, late game => bad, more dice => bad
             // TBD: oriented attack/victory, rush, etc...
         }
 
-        return array_slice( $sortedDice, 0, $num );
+        return array_slice( $distribution, 0, $num );
     }
 
     public function keepDiceAI( $rollLeft = 2 )
     {
-        $valueTruncate = 0;
-        $diceNumber    = 0;
-
-        switch ( $rollLeft )
+        // AI level 0 : nothing to do (duh!)
+        if ( ( $aiLevel = $this->getAILevel() ) == 0 )
         {
-            case 2:
-                if ( KOTH_AI_LEVEL == 1 )
-                {
-                    $valueTruncate = 3;
-                }
-                else
-                {
-                    $diceNumber = 8;
-                }
-                break;
-            case 1:
-                if ( KOTH_AI_LEVEL == 1 )
-                {
-                    $valueTruncate = 2;
-                }
-                else
-                {
-                    $diceNumber = 6;
-                }
-                break;
-            default:
-                break;
+            return;
         }
-        
-        if ( $valueTruncate )
+
+        if ( $rollLeft == 2 )
         {
-            $this->query("UPDATE koth_players_dice SET keep = 0 WHERE value < $valueTruncate AND id_player = {$this->idActivePlayer}");
+            $diceNumberToReroll = 8;
         }
-        else
+        else if ( $rollLeft == 1 )
         {
-            $diceToReroll = $this->aiGetWorstDice( $diceNumber );
+            $diceNumberToReroll = 6;
+        }
 
-            $dieCdt = array();
-            foreach ( $diceToReroll as $die )
-            {
-                $dieCdt[] = '( pd.value = ' . $this->getQuotedValue( 0 + $die['value'] ) . ' AND dt.name = ' . $this->getQuotedValue( $die['type'] ) . ' )';
-            }
-            $dieCdt = implode(' OR ', $dieCdt);
+        $diceToReroll = $this->aiGetWorstDice( $diceNumberToReroll );
 
-            $query = <<<EOD
+        $dieCdt = array();
+        foreach ( $diceToReroll as $die )
+        {
+            $dieCdt[] = '( pd.value = ' . $this->getQuotedValue( 0 + $die['value'] ) . ' AND dt.name = ' . $this->getQuotedValue( $die['type'] ) . ' )';
+        }
+        $dieCdt = implode(' OR ', $dieCdt);
+
+        $query = <<<EOD
 UPDATE
-    koth_players_dice pd
-    INNER JOIN koth_die_types dt ON
-        dt.id = pd.id_die_type
+koth_players_dice pd
+INNER JOIN koth_die_types dt ON
+    dt.id = pd.id_die_type
 SET
-    pd.keep = 0
+pd.keep = 0
 WHERE
-    pd.id_player = {$this->idActivePlayer}
+pd.id_player = {$this->idActivePlayer}
 AND (  $dieCdt  )
 EOD;
-            $this->query($query);
-        }
+        $this->query($query);
     }
 
     private function computeIds()
@@ -170,7 +256,7 @@ EOD;
 
         }
     }
-    
+
     public function isPvE()
     {
         return !$this->idOtherUser;
@@ -187,6 +273,11 @@ EOD;
         return $this->fetchNext()->step;
     }
 
+    public function isActiveAI()
+    {
+        return ( $this->idActiveUser == 0 );
+    }
+
     public function isUserActive()
     {
         return ( $this->idUserPlayer && ( $this->idUserPlayer == $this->idActivePlayer ) );
@@ -197,6 +288,24 @@ EOD;
         $this->query("UPDATE koth_games g INNER JOIN koth_steps s ON s.name = 'start_turn' SET g.id_step = s.id WHERE g.id = {$this->idGame} ");
     }
     
+    // Get active player's results
+    public function getPlayerResults()
+    {
+        $query = <<<EOD
+SELECT
+    pd.value,
+    dt.name
+FROM
+    koth_players_dice pd
+    INNER JOIN koth_die_types dt ON
+        dt.id = pd.id_die_type
+WHERE
+    pd.id_player = {$this->idActivePlayer}
+EOD;
+        $this->query($query);
+        return $this->fetchAll();
+    }
+
     // add any number of unknown dice for active player
     private function addUnknownDice( $num = 0 )
     {
@@ -432,14 +541,14 @@ EOD;
     public function storeResults( $results )
     {
         $experience = $this->getQuotedValue( 0 + ( array_key_exists('experience', $results) ? $results['experience'] : 0 ) );
-        $victory    = $this->getQuotedValue( 0 + ( array_key_exists('victory', $results) ? $results['victory'] : 0 ) );
-        $health     = $this->getQuotedValue( 0 + ( array_key_exists('health', $results) ? $results['health'] : 0 ) );
-        $attack     = $this->getQuotedValue( 0 + ( array_key_exists('attack', $results) ? $results['attack'] : 0 ) );
+        $victory    = $this->getQuotedValue( 0 + ( array_key_exists('victory', $results) ?    $results['victory']    : 0 ) );
+        $health     = $this->getQuotedValue( 0 + ( array_key_exists('health', $results) ?     $results['health']     : 0 ) );
+        $attack     = $this->getQuotedValue( 0 + ( array_key_exists('attack', $results) ?     $results['attack']     : 0 ) );
         $gameXp     = $this->getQuotedValue( 0 + $experience + $victory + $health + $attack );
 
         // Update active player's health/victory/xp
         // Human user
-        If ( $this->idActiveUser )
+        if ( !$this->isActiveAI() )
         {
             $query = <<<EOD
 UPDATE
@@ -453,10 +562,8 @@ SET
     p.current_hp = LEAST( p.current_hp + $health, hl.start_hp ),
     p.game_xp    = p.game_xp + $gameXp
 WHERE
-    p.id       = {$this->idActivePlayer}
-AND p.id_user != 0
+    p.id = {$this->idActivePlayer}
 EOD;
-            $this->query($query);
         }
         // AI user
         else
@@ -472,21 +579,21 @@ SET
     p.current_hp = LEAST( p.current_hp + $health, o.start_hp ),
     p.game_xp    = p.game_xp + $gameXp
 WHERE
-    p.id      = {$this->idActivePlayer}
-AND p.id_user = 0
+    p.id = {$this->idActivePlayer}
 EOD;
-            $this->query($query);
         }
 
+        $this->query($query);
+
         // Update inactive player's health
-        $this->query("UPDATE koth_players SET current_hp = current_hp - $attack WHERE id = {$this->idInactivePlayer}");
-        
-        // Convert xp into dice
+        $this->query("UPDATE koth_players SET current_hp = ( current_hp - $attack ) WHERE id = {$this->idInactivePlayer}");
+
+        // Get extra dice from Xp
         $this->query("SELECT current_xp FROM koth_players WHERE id = {$this->idActivePlayer}");
         $current_xp = $this->fetchNext()->current_xp;
 
         // Every 15 xp, user get a new die
-        $this->addUnknownDice( KOTH_STARTING_DICE + floor( $current_xp / ( 15 + $this->getLevels() ) ) - $this->getDicePoolNumber() );
+        $this->addUnknownDice( KOTH_STARTING_DICE + floor( $current_xp / Koth_LIB_Game::getXpDicePrice() ) - $this->getDicePoolNumber() );
     }
 
     public function isGameActive()

@@ -1,5 +1,6 @@
 <?php
 
+// TBD: display AI level (and player?)
 class Koth_LIB_Player_View extends Base_LIB_View
 {
     public function render()
@@ -14,12 +15,12 @@ class Koth_LIB_Player_View extends Base_LIB_View
             return;
         }
 
-        $border            = $player->isActive ? 'border: solid darkblue 2px;' : 'border: solid bisque 2px;';
+        $border            = $player->isActive ? 'border: solid darkblue 2px;' : 'border: solid #D8DFE6 2px;';
         $healthPercent     = max( array( floor( $player->currentHP * 100 / $player->maxHP ), 0 ) );
-        $victoryPercent    = min( array( floor( $player->currentVP * 100 / $data['victoryThreshold'] ), 100 ) );
-        $experiencePercent = min( array( floor( ( $player->currentXP % $data['xpDicePrice'] ) * 100 / $data['xpDicePrice'] ), 100 ) );
+        $victoryPercent    = min( array( floor( $player->currentVP * 100 / Koth_LIB_Game::getVictoryThreshold() ), 100 ) );
+        $experiencePercent = min( array( floor( ( $player->currentXP % Koth_LIB_Game::getXpDicePrice() ) * 100 / Koth_LIB_Game::getXpDicePrice() ), 100 ) );
 
-        $toDiplay .= '<div style="background-color:beige;font-size: 20px;' . $border . ';border-radius: 10px;padding: 10px;">' . PHP_EOL
+        $toDiplay .= '<div style="background-color:AliceBlue ;font-size: 20px;' . $border . ';border-radius: 10px;padding: 10px;">' . PHP_EOL
                         . "<strong>{$player->userName}</strong> - {$player->heroName} ({$player->heroLevel}) - Dice: {$player->diceNumber}"
                         . '<span style="float:right"
                                  title="Click to see distribution"
@@ -32,18 +33,20 @@ class Koth_LIB_Player_View extends Base_LIB_View
                                     . max( $player->currentHP, 0 ) . '/' . $player->maxHP
                                 . '</div>'
                         . '</div>'
-                        . '<div class="progress" title="Victory ' . min( $player->currentVP, $data['victoryThreshold'] ) . '/' . $data['victoryThreshold'] . '">'
+                        . '<div class="progress" title="Victory ' . min( $player->currentVP, Koth_LIB_Game::getVictoryThreshold() ) . '/' . Koth_LIB_Game::getVictoryThreshold() . '">'
                                 . '<div class="progress-bar" style="background-image:none;background-color:#66B366;width:' . $victoryPercent . '%;">'
-                                    . min( $player->currentVP, $data['victoryThreshold'] ) . '/' . $data['victoryThreshold']
+                                    . min( $player->currentVP, Koth_LIB_Game::getVictoryThreshold() ) . '/' . Koth_LIB_Game::getVictoryThreshold()
                                 . '</div>'
                         . '</div>'
-                        . '<div class="progress" title="Experience ' . $player->currentXP % $data['xpDicePrice'] . '/' . $data['xpDicePrice'] . '">'
+                        . '<div class="progress" title="Experience ' . $player->currentXP % Koth_LIB_Game::getXpDicePrice() . '/' . Koth_LIB_Game::getXpDicePrice() . '">'
                                 . '<div class="progress-bar" style="background-image:none;background-color:#8D198D;width: ' . $experiencePercent . '%;">'
-                                    . $player->currentXP % $data['xpDicePrice'] . '/' . $data['xpDicePrice']
+                                    . $player->currentXP % Koth_LIB_Game::getXpDicePrice() . '/' . Koth_LIB_Game::getXpDicePrice()
                                 . '</div>'
                         . '</div>'
                     . '</div>';
 
+        /****************************************** DISPLAY DIE DISTRIBUTION ***********************************************************/
+        // TBD: use koth_lib_die instead of hard-coding images
         $images = '';
         for( $i = 0; $i < 3; $i++ )
         {

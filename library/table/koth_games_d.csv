@@ -3,8 +3,8 @@ id_active_player,        int, ,  , 0, 0, 0, 0
 id_step,                 int, ,  , 0, 0, 0, 0
 starting_date,      datetime, ,  , 0, 0, 0, 0
 is_completed,        boolean, , 0, 0, 0, 0, 0
-id_winning_user,         int, ,  , 1, 0, 0, 0
-id_losing_user,          int, ,  , 1, 0, 0, 0
-xp_winning_user,         int, , 0, 0, 0, 0, 0
-xp_losing_user,          int, , 0, 0, 0, 0, 0
+id_winning_player,       int, ,  , 1, 0, 0, 0
+id_losing_player,        int, ,  , 1, 0, 0, 0
+xp_winning_player,       int, , 0, 0, 0, 0, 0
+xp_losing_player,        int, , 0, 0, 0, 0, 0
 turn_number,             int, , 1, 0, 0, 0, 0

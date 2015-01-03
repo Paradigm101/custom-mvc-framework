@@ -1,20 +1,20 @@
 <?php
 
+// Starting dice
+define('KOTH_STARTING_DICE', 4);
+
 // Game statuses
 define('KOTH_STATUS_NO_USER',     1);
 define('KOTH_STATUS_NOT_STARTED', 2);
 define('KOTH_STATUS_RUNNING',     3);
-define('KOTH_STATUS_FINISHED',    4);
 
 // Game steps
-// TBD: remove AFTER_ROLL_3 for END_OF_TURN
 define('KOTH_STEP_START',         'start_turn');
 define('KOTH_STEP_AFTER_ROLL_1',  'after_roll_1');
 define('KOTH_STEP_AFTER_ROLL_2',  'after_roll_2');
-define('KOTH_STEP_AFTER_ROLL_3',  'after_roll_3');
+define('KOTH_STEP_END_OF_TURN',   'end_of_turn');
 define('KOTH_STEP_GAME_FINISHED', 'game_finished');
 
-// TBD: EvE
 abstract class Koth_LIB_Game
 {
     static private $model;
@@ -32,22 +32,15 @@ abstract class Koth_LIB_Game
     static public function getStatus()
     {
         // User is not logged in: can't play
-        // TBD: play as a guest?
         if ( !Session_LIB::isUserLoggedIn() )
         {
             return KOTH_STATUS_NO_USER;
         }
 
         // No game running
-        if ( !static::isGameActive() )
+        if ( !static::getModel()->isGameActiveForUser() )
         {
             return KOTH_STATUS_NOT_STARTED;
-        }
-
-        // Game is finished
-        if ( static::getStep() == KOTH_STEP_GAME_FINISHED )
-        {
-            return KOTH_STATUS_FINISHED;
         }
 
         // Game is running
@@ -59,18 +52,20 @@ abstract class Koth_LIB_Game
         return static::getModel()->getStep();
     }
 
-    static public function getVictoryThreshold()
+    // TBD: playtest, magic threshold seems too far compared to attack 60->50
+    static public function getMagicThreshold()
     {
         $levels = static::getModel()->getLevels();
 
-        return 60 + 2 * $levels;
+        return 40 + 10 * $levels;
     }
 
+    // TBD: playtest, Xp dice seems to be too pricy 15->10
     static public function getXpDicePrice()
     {
         $levels = static::getModel()->getLevels();
-        
-        return 15 + $levels;
+
+        return 12 + $levels;
     }
 
     static public function canUserRoll()
@@ -86,143 +81,37 @@ abstract class Koth_LIB_Game
         return static::getModel()->isUserActive();
     }
 
-    static public function isGameActive()
-    {
-        return static::getModel()->isGameActive();
-    }
-
-    static public function isActiveAI()
-    {
-        return static::getModel()->isActiveAI();
-    }
-
     static public function getResults()
     {
         return static::$model->getResults();
     }
-    
-    static public function getUserData()
+
+    // Start EvE
+    static public function startGameEvE( $heroName = 'cleric', $heroLevel = 3, $opponentName = '5_3_3_3_1' )
     {
-        return static::$model->getUserData();
-    }
-    
-    static public function getHeroData()
-    {
-        return static::$model->getHeroData();
+        static::getModel()->startGameEvE( $heroName, $heroLevel, $opponentName );
+
+        static::playAI();
     }
 
-    // TBD: PvP
-    static public function startGame( $heroName = 'attack_health', $heroLevel = 1, $opponentName = '3_3_3_3_1' )
+    // Start PvE
+    static public function startGamePvE( $heroName = 'cleric', $heroLevel = 3, $opponentName = '5_3_3_3_1' )
     {
-        static::getModel()->startGame( $heroName, $heroLevel, $opponentName );
+        static::getModel()->startGamePvE( $heroName, $heroLevel, $opponentName );
 
         // PvE, first turn AI plays
         if ( static::getModel()->isPvE()
-         &&  static::isActiveAI() )
-        {
-            static::playAI();
-        }
-    }
-
-    // Roll for active player
-    // TBD: everything should be done in the same transaction
-    static public function roll( $isAI = false )
-    {
-        // Get max values for the different types
-        $maxes = static::getModel()->getHeroMaxValues( $isAI );
-
-        // Compute the new dice values
-        $newDice = array();
-        for ( $i = 0; $i < static::getModel()->getDiceNumberToRoll(); $i++ )
-        {
-            $type  = array_rand( $maxes );
-            $value = $maxes[ $type ] - rand(0, 2);
-
-            $newDice[] = array( 'type' => $type, 'value' => $value );
-        }
-
-        // Force next step (no check/management)
-        // TBD: generic add step for every case?
-        static::getModel()->addStepForRoll();
-
-        // Update dice with new values
-        static::getModel()->updateDice($newDice);
-
-        // Last roll, store results
-        if ( static::getStep() == KOTH_STEP_AFTER_ROLL_3 )
-        {
-            $dbResults = static::getModel()->getPlayerResults();
-
-            $results = array();
-            foreach ( $dbResults as $dbResult )
-            {
-                $results[ $dbResult->name ][] = $dbResult->value;
-            }
-            
-            $results2 = array();
-            foreach ( $results as $type => $values )
-            {
-                $results2[$type] = array_sum( $values );
-            }
-
-            // TBD: manage combo sets
-
-            // TBD: manage combo runs?
-
-            // Impact DB with results
-            static::getModel()->storeResults( $results2 );
-        }
-    }
-
-    // TBD: merge with activeWinGame
-    static public function userConcedeGame()
-    {
-        static::getModel()->userConcedeGame();
-
-        // display game screen result (manage access/refresh, etc...)
-        static::getModel()->setGameFinished();
-    }
-
-    // End of turn is being processed
-    static public function processEndTurn()
-    {
-        // Victory!
-        if ( static::getModel()->isVictory() )
-        {
-            // Active player won the game, Close game
-            static::getModel()->activeWinGame();
-
-            // display game screen result (manage access/refresh, etc...)
-            static::getModel()->setGameFinished();
-
-            // Nothing else to do
-            return;
-        }
-
-        // Update turn number
-        static::getModel()->updateTurnNumber();
-
-        // Change active player
-        static::getModel()->switchActivePlayer();
-
-        // Reset active player's dice
-        static::getModel()->resetDice();
-
-        // change step to start turn
-        static::getModel()->stepStart();
-
-        // Case PvE AND active is AI, play AI
-        if ( static::getModel()->isPvE()
-          && static::isActiveAI() )
+         &&  static::getModel()->isActiveAI() )
         {
             static::playAI();
         }
     }
 
     // AI plays
-    // TBD: Manage AI doesn't keep dice according to AI level INSIDE keepDiceAI
     static private function playAI()
     {
+        Log_LIB::trace("playAI");
+        
         // First roll
         static::roll( true /* $isAI */ );
 
@@ -242,10 +131,74 @@ abstract class Koth_LIB_Game
         static::processEndTurn();
     }
 
+    // Roll for active player
+    static public function roll( $isAI = false )
+    {
+        Log_LIB::trace("In roll isAI [$isAI]");
+
+        // Roll and update dice
+        static::getModel()->roll( $isAI );
+
+        // Last roll, store results
+        if ( static::getStep() == KOTH_STEP_END_OF_TURN )
+        {
+            $dbResults = Koth_LIB_Player::getResults( static::getModel()->getIdActivePlayer() );
+
+            $results = array();
+            foreach ( $dbResults as $dbResult )
+            {
+                $results[ $dbResult->name ][] = $dbResult->value;
+            }
+            
+            $results2 = array();
+            foreach ( $results as $type => $values )
+            {
+                $results2[$type] = array_sum( $values );
+            }
+
+            // TBD: manage combo sets/runs?
+
+            // Impact DB with results
+            Koth_LIB_Player::storeResults( $results2, static::getModel()->getIdActivePlayer() );
+        }
+    }
+
+    // User concede game
+    static public function userConcedeGame()
+    {
+        static::getModel()->userConcedeGame();
+    }
+
+    // Process end of turn
+    static public function processEndTurn()
+    {
+        Log_LIB::trace("ProcessEndTurn");
+        
+        // Victory!
+        if ( static::getModel()->isVictory() )
+        {
+            // Active player won the game, Close game
+            static::getModel()->activeWinGame();
+
+            // Nothing else to do
+            return;
+        }
+
+        static::getModel()->processEndTurn();
+        
+        // Case PvE AND active is AI, play AI
+        if ( static::getModel()->isPvE()
+          && static::getModel()->isActiveAI() )
+        {
+            static::playAI();
+        }
+    }
+
     // Player acknowledges end game scores
     // TBD: manage PvP
     static public function closeGame()
     {
-        static::getModel()->setCompleted();
+        Log_LIB::trace("closeGame");
+        static::getModel()->closeGame();
     }
 }

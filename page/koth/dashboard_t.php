@@ -1,6 +1,6 @@
 <?php
-$userData = Koth_LIB_Game::getUserData();
-$heroData = Koth_LIB_Game::getHeroData();
+$userData = Koth_LIB_User::getData();
+$heroData = Koth_LIB_User::getHeroes();
 ?>
 
 <br/>
@@ -19,7 +19,7 @@ $heroData = Koth_LIB_Game::getHeroData();
     foreach ( $heroData as $hero )
     {
 ?>
-<strong><?= $hero->hero_label ?></strong> - Level <?= $hero->hero_level ?>
+<strong><?= $hero->hero_label ?></strong> - Level <?= $hero->level ?>
 <div class="progress" title="<?= $hero->hero_experience . '/' . $hero->next_level_xp ?> Xp">
     <div class="progress-bar" style="width: <?= floor( $hero->hero_experience / $hero->next_level_xp * 100 ) ?>%;">
         <?= $hero->hero_experience . '/' . $hero->next_level_xp ?>
@@ -82,7 +82,7 @@ $heroData = Koth_LIB_Game::getHeroData();
     </button>
     <ul class="dropdown-menu dropdown-menu-change-label" id="opponentAiLevelSelector">
 <?php
-    foreach ( range(0, 2) as $level )
+    foreach ( range(0, 1) as $level )
     {
         echo '<li><a name="opponentAILevelLIA" href="#" data-value="' . $level . '">Level ' . $level . '</a></li>' . "\n";
     }
@@ -100,7 +100,12 @@ $heroData = Koth_LIB_Game::getHeroData();
     </ul>
 </div>
 
-<!-- Start button -->
-<div class="text-center">
-    <button type="button" class="btn btn-default" id="koth_btn_start">Start new game</button>
+<!-- Start PvE button -->
+<div style="float: right">
+    <button type="button" class="btn btn-default" id="koth_btn_start">Start PvE</button>
+</div>
+
+<!-- Start EvE button -->
+<div style="float: right">
+    <button type="button" class="btn btn-default hidden" id="koth_btn_start_ai">Start EvE</button>
 </div>

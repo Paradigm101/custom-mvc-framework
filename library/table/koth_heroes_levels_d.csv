@@ -2,8 +2,8 @@ id_hero,        int, , , 0, 0, 0, 0
 level,          int, , , 0, 0, 0, 0
 start_hp,       int, , , 0, 0, 0, 0
 start_xp,       int, , , 0, 0, 0, 0
-start_vp,       int, , , 0, 0, 0, 0
+start_mp,       int, , , 0, 0, 0, 0
 max_attack,     int, , , 0, 0, 0, 0
 max_health,     int, , , 0, 0, 0, 0
 max_experience, int, , , 0, 0, 0, 0
-max_victory,    int, , , 0, 0, 0, 0
+max_magic,      int, , , 0, 0, 0, 0

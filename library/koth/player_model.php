@@ -12,12 +12,12 @@ SELECT
     hl.max_attack       max_attack,
     hl.max_health       max_health,
     hl.max_experience   max_experience,
-    hl.max_victory      max_victory
+    hl.max_magic      max_magic
 FROM
     koth_players p
     INNER JOIN koth_heroes_levels hl ON
         hl.id_hero = p.id_hero
-    AND hl.level   = p.hero_level
+    AND hl.level   = p.level
     INNER JOIN koth_games g ON
         g.id           = p.id_game
     AND g.is_completed = 0
@@ -32,11 +32,11 @@ SELECT
     o.max_attack       max_attack,
     o.max_health       max_health,
     o.max_experience   max_experience,
-    o.max_victory      max_victory
+    o.max_magic      max_magic
 FROM
     koth_players p
     INNER JOIN koth_opponents o ON
-        o.id = p.id_hero
+        o.id = p.id_opponent
     INNER JOIN koth_games g ON
         g.id           = p.id_game
     AND g.is_completed = 0
@@ -60,15 +60,14 @@ EOD;
 SELECT
     p.id                id_player,
     p.current_hp        current_hp,
-    p.current_vp        current_vp,
+    p.current_mp        current_mp,
     p.current_xp        current_xp,
     u.username          user_name,
     ux.level            user_level,
     h.label             hero_label,
-    p.hero_level        hero_level,
+    p.level        level,
     hl.start_hp         max_hp,
-    g.id_active_player  id_active_player,
-    COUNT(pd.id_player) dice_number
+    g.id_active_player  id_active_player
 FROM
     koth_players p
     INNER JOIN koth_games g ON
@@ -85,27 +84,22 @@ FROM
         h.id = p.id_hero
     INNER JOIN koth_heroes_levels hl ON
         hl.id_hero = p.id_hero
-    AND hl.level   = p.hero_level
-    INNER JOIN koth_players_dice pd ON
-        pd.id_player = p.id
+    AND hl.level   = p.level
 WHERE
     $otherCdt
 AND p.id_user != 0
-GROUP BY
-    pd.id_player
 UNION
 SELECT
     p.id                id_player,
     p.current_hp        current_hp,
-    p.current_vp        current_vp,
+    p.current_mp        current_mp,
     p.current_xp        current_xp,
     'AI'                user_name,
     o.ai_level          user_level,
     o.label             hero_label,
-    o.level             hero_level,
+    o.level             level,
     o.start_hp          max_hp,
-    g.id_active_player  id_active_player,
-    COUNT(pd.id_player) dice_number
+    g.id_active_player  id_active_player
 FROM
     koth_players p
     INNER JOIN koth_games g ON
@@ -115,14 +109,10 @@ FROM
             p2.id_game = g.id
         AND p2.id_user = $idUser
     INNER JOIN koth_opponents o ON
-        o.id = p.id_hero
-    INNER JOIN koth_players_dice pd ON
-        pd.id_player = p.id
+        o.id = p.id_opponent
 WHERE
     $otherCdt
 AND p.id_user = 0
-GROUP BY
-    pd.id_player
 EOD;
         $this->query($query);
             
@@ -133,14 +123,132 @@ EOD;
         $player->userName   = $result->user_name;
         $player->userLevel  = $result->user_level;
         $player->heroName   = $result->hero_label;
-        $player->heroLevel  = $result->hero_level;
+        $player->heroLevel  = $result->level;
         $player->currentHP  = $result->current_hp;
         $player->maxHP      = $result->max_hp;
-        $player->currentVP  = $result->current_vp;
+        $player->currentMP  = $result->current_mp;
         $player->currentXP  = $result->current_xp;
         $player->isActive   = ( $result->id_active_player == $result->id_player ? true : false );
-        $player->diceNumber = $result->dice_number;
+        $player->diceNumber = Koth_LIB_Die::getDiceNumber( $isOtherUser );
 
         return $player;
+    }
+
+    // Get player's results
+    public function getResults( $idPlayer )
+    {
+        $idPlayer = $this->getQuotedValue( 0 + $idPlayer );
+        
+        $query = <<<EOD
+SELECT
+    pd.value,
+    dt.name
+FROM
+    koth_players_dice pd
+    INNER JOIN koth_die_types dt ON
+        dt.id = pd.id_die_type
+WHERE
+    pd.id_player = $idPlayer
+EOD;
+        $this->query($query);
+        return $this->fetchAll();
+    }
+
+    // health add to active player
+    // experience add to active player
+    // magic points add to active player
+    // attack remove health from non-active player
+    // update game_xp for active player
+    public function storeResults( $results, $idActivePlayer )
+    {
+        $experience = $this->getQuotedValue( 0 + ( array_key_exists('experience', $results) ? $results['experience'] : 0 ) );
+        $magic      = $this->getQuotedValue( 0 + ( array_key_exists('magic',      $results) ? $results['magic']      : 0 ) );
+        $health     = $this->getQuotedValue( 0 + ( array_key_exists('health',     $results) ? $results['health']     : 0 ) );
+        $attack     = $this->getQuotedValue( 0 + ( array_key_exists('attack',     $results) ? $results['attack']     : 0 ) );
+        $gameXp     = $this->getQuotedValue( 0 + $experience + $magic + $health + $attack );
+        
+        $idActivePlayer   = $this->getQuotedValue( 0 + $idActivePlayer );
+
+        // Update active player's health/magic/xp
+        // Human user
+        $query = <<<EOD
+UPDATE
+    koth_players p
+    INNER JOIN koth_heroes_levels hl ON
+        hl.id_hero = p.id_hero
+    AND hl.level   = p.level
+SET
+    p.current_xp = p.current_xp + $experience,
+    p.current_mp = p.current_mp + $magic,
+    p.current_hp = LEAST( p.current_hp + $health, hl.start_hp ),
+    p.game_xp    = p.game_xp + $gameXp
+WHERE
+    p.id = $idActivePlayer
+EOD;
+        $this->query($query);
+
+        $query = <<<EOD
+UPDATE
+    koth_players p
+    INNER JOIN koth_opponents o ON
+        o.id = p.id_opponent
+SET
+    p.current_xp = p.current_xp + $experience,
+    p.current_mp = p.current_mp + $magic,
+    p.current_hp = LEAST( p.current_hp + $health, o.start_hp ),
+    p.game_xp    = p.game_xp + $gameXp
+WHERE
+    p.id = $idActivePlayer
+EOD;
+        $this->query($query);
+
+        // Update inactive player's health
+        $this->query("  UPDATE
+                            koth_players p
+                            INNER JOIN koth_players p2 ON
+                                p2.id_game = p.id_game
+                            AND p2.id      = $idActivePlayer
+                            AND p2.id     != p.id
+                        SET 
+                            p.current_hp = ( p.current_hp - $attack )");
+
+        // Get extra dice from Xp
+        $this->query("SELECT current_xp FROM koth_players WHERE id = $idActivePlayer");
+        $current_xp = $this->fetchNext()->current_xp;
+
+        // Get dice pool number
+        $query = <<<EOD
+SELECT
+    COUNT(1)    num
+FROM
+    koth_players_dice pd
+WHERE
+    pd.id_player = $idActivePlayer
+EOD;
+        $this->query($query);
+        $dicePoolNumber = $this->fetchNext()->num;
+
+        if ( $num = ( KOTH_STARTING_DICE + floor( $current_xp / Koth_LIB_Game::getXpDicePrice() ) - $dicePoolNumber ) )
+        {
+            $query = <<<EOD
+INSERT INTO
+    koth_players_dice (id_player, id_die_type, keep, value)
+SELECT
+    p.id,
+    dt.id,
+    0,
+    0
+FROM
+    koth_players p
+    INNER JOIN koth_die_types dt ON
+        dt.name = 'unknown'
+WHERE
+    p.id = $idActivePlayer
+EOD;
+            for( $i = 0; $i < $num; $i++ )
+            {
+                $this->query($query);
+            }
+        }
     }
 }

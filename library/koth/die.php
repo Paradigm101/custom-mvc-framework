@@ -53,6 +53,7 @@ abstract class Koth_LIB_Die
         return $toDisplay;
     }
 
+    // TBD: manage die unselected (keep = 0)
     static private function display( $die, $rollable )
     {
         Page_LIB::subscribeClassForJavascript( 'Koth_LIB_Die' );
@@ -163,5 +164,10 @@ EOD;
     static public function getDice( $isActivePlayer = true )
     {
         return static::getModel()->getDice( $isActivePlayer );
+    }
+
+    static public function getDiceNumber( $isOther = false )
+    {
+        return static::getModel()->getDiceNumber( $isOther );
     }
 }

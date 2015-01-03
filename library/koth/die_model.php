@@ -31,4 +31,29 @@ EOD;
         $this->query($query);
         return $this->fetchAll();
     }
+
+    public function getDiceNumber( $isOther = false )
+    {
+        $idUser = $this->getQuotedValue(0 + Session_LIB::getUserId());
+        
+        $userCdt = ' p.id_user ' . ( $isOther ? '!' : '' ) . "= $idUser";
+
+        $query = <<<EOD
+SELECT
+    COUNT(1)    dice_number
+FROM
+    koth_players_dice pd
+    INNER JOIN koth_players p ON
+        p.id = pd.id_player
+    AND $userCdt
+        INNER JOIN koth_games g ON
+            g.id           = p.id_game
+        AND g.is_completed = 0
+            INNER JOIN koth_players p2 ON
+                p2.id_game = g.id
+            AND p2.id_user = $idUser
+EOD;
+        $this->query($query);
+        return $this->fetchNext()->dice_number;
+    }
 }

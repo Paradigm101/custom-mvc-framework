@@ -52,7 +52,7 @@ $('a[name=opponentAILevelLIA]').click(function(event)
     refresh_opponents();
 });
 
-// Button start new game
+// Button start new game vs AI
 $('#koth_btn_start').click( function (event)
 {
     // No mess-up!
@@ -66,7 +66,31 @@ $('#koth_btn_start').click( function (event)
             rt:         REQUEST_TYPE_AJAX,  // request type
             rn:         'koth_start',       // request name
             hero:       $('#heroDropdownBtn').val(),
-            hero_level: $('#heroLevelDropdownBtn').val(),
+            level: $('#heroLevelDropdownBtn').val(),
+            opponent:   $('#opponentDropdownBtn').val()
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Button start new game AI vs AI (EvE)
+$('#koth_btn_start_ai').click( function (event)
+{
+    // No mess-up!
+    event.preventDefault();
+
+    // Launch ajax that start new game
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:         REQUEST_TYPE_AJAX,  // request type
+            rn:         'koth_start_ai',       // request name
+            hero:       $('#heroDropdownBtn').val(),
+            level: $('#heroLevelDropdownBtn').val(),
             opponent:   $('#opponentDropdownBtn').val()
         },
         success: function()

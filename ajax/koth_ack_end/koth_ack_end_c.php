@@ -7,7 +7,7 @@ abstract class koth_Ack_End_AJA_C extends Base_AJA_C
     {
         // Security check
         if (  ( Koth_LIB_Game::isUserActive() )
-            &&( Koth_LIB_Game::getStep() == KOTH_STEP_AFTER_ROLL_3 ) )
+            &&( Koth_LIB_Game::getStep() == KOTH_STEP_END_OF_TURN ) )
         {
             Koth_LIB_Game::processEndTurn();
         }

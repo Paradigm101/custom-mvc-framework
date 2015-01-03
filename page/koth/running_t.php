@@ -7,39 +7,72 @@ $button  = '';
 $rollBtn = '<button type="button" class="btn btn-default" id="koth_btn_roll">' . "\n"
             . '<i class="glyphicon glyphicon-share"></i>&nbsp;Roll' . "\n"
          . '</button>' . "\n";
-$ackBtn = '<button type="button" class="btn btn-default" id="koth_btn_news_ack" >' . "\n"
+$ackBtn = '<button type="button" class="btn btn-default" id="koth_btn_ack_eot" >' . "\n"
             . '<i class="glyphicon glyphicon-check"></i>&nbsp;End turn' . "\n"
         . '</button>' . "\n";
+$closeBtn = '<button type="button" class="btn btn-default" id="koth_btn_close_game" >' . "\n"
+            . '<i class="glyphicon glyphicon-check"></i>&nbsp;Go back to dashboard' . "\n"
+        . '</button>' . "\n";
 
+$hideConcede = false;
 switch ( Koth_LIB_Game::getStep() )
 {
     case KOTH_STEP_START:
         $message = Koth_LIB_Die::displayDice( Koth_LIB_Die::getDice( false /* non-Active */ ), false /* non-Rollable */ ) . ALL_EOL
              . '<div class="text-center" style="font-size: 20px;">Previous player\'s results</div>';
-        $button  = $rollBtn;
+        $button  = Koth_LIB_Game::isUserActive() ? $rollBtn : '';
         break;
 
     case KOTH_STEP_AFTER_ROLL_1:
         $message = 'Two rolls left';
-        $button  = $rollBtn;
+        $button  = Koth_LIB_Game::isUserActive() ? $rollBtn : '';
         break;
 
     case KOTH_STEP_AFTER_ROLL_2:
         $message = 'One roll left';
-        $button  = $rollBtn;
+        $button  = Koth_LIB_Game::isUserActive() ? $rollBtn : '';
         break;
 
-    case KOTH_STEP_AFTER_ROLL_3:
+    case KOTH_STEP_END_OF_TURN:
         $message = 'End of turn';
-        $button  = $ackBtn;
+        $button  = Koth_LIB_Game::isUserActive() ? $ackBtn : '';
+        break;
+    
+    case KOTH_STEP_GAME_FINISHED:
+        $data = Koth_LIB_Game::getResults();
+
+        if ( $data->id_winner_user == Session_LIB::getUserId() )
+        {
+            $message    = 'You won.';
+            $experience = $data->xp_winner;
+        }
+        else
+        {
+            $message    = 'You lose.';
+            $experience = $data->xp_loser;
+        }
+
+        if ( $data->hp_loser <= 0 )
+        {
+            $message .= ' By Physical.';
+        }
+
+        if ( $data->mp_winner >= Koth_LIB_Game::getMagicThreshold() )
+        {
+            $message .= ' By Magical.';
+        }
+
+        if (  ( $data->hp_loser > 0 )
+            &&( $data->mp_winner < Koth_LIB_Game::getMagicThreshold() ) )
+        {
+            $message .= ' By surrender.';
+        }
+        $message .= ALL_EOL . 'Experience points won : ' . $experience . ' XP';
+        $button   = $closeBtn;
+        $hideConcede = true;
         break;
 }
 
-// Remove button for non-active user
-if ( !Koth_LIB_Game::isUserActive() )
-{
-    $button  = '';
-}
 ?>
 
 <br/>
@@ -77,5 +110,5 @@ if ( !Koth_LIB_Game::isUserActive() )
 
 <!-- Concede button -->
 <div style="float:right;">
-    <button type="button" class="btn btn-default" id="koth_btn_concede"><i class="glyphicon glyphicon-new-window"></i>&nbsp;Concede</button>
+    <button type="button" class="btn btn-default <?= $hideConcede ? 'hidden' : '' ?>" id="koth_btn_concede"><i class="glyphicon glyphicon-new-window"></i>&nbsp;Concede</button>
 </div>

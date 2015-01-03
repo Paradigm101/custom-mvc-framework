@@ -1,6 +1,6 @@
-1, attack_health, Healthy Attacker, hero_no_pic
-2,     attack_xp,  Brainy Attacker, hero_no_pic
-3,  shine_health,   Healthy Shiner, hero_no_pic
-4,      shine_xp,    Brainy Shiner, hero_no_pic
-5,     xp_attack, Aggressive Brain, hero_no_pic
-6,      xp_shine,      Shiny Brain, hero_no_pic
+1, monk,     Monk,     hero_no_pic
+2, duelist,  Duelist,  hero_no_pic
+3, cleric,   Cleric,   hero_no_pic
+4, wizard,   Wizard,   hero_no_pic
+5, assassin, Assassin, hero_no_pic
+6, warlock,  Warlock,  hero_no_pic

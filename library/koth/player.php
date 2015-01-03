@@ -27,6 +27,16 @@ abstract class Koth_LIB_Player
         return static::$view;
     }
 
+    static public function getResults( $idPlayer )
+    {
+        return static::getModel()->getResults( $idPlayer );
+    }
+
+    static public function storeResults( $results, $idActivePlayer )
+    {
+        static::getModel()->storeResults( $results, $idActivePlayer );
+    }
+    
     static public function render( $isOtherUser = false )
     {
         static::getView()->assign('player',  static::getModel()->getPlayerData( $isOtherUser ) );

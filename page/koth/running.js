@@ -1,5 +1,5 @@
 
-// Button roll
+// Roll button
 $('#koth_btn_roll').click( function (e)
 {
     e.preventDefault();
@@ -18,8 +18,8 @@ $('#koth_btn_roll').click( function (e)
     });
 });
 
-// Button acknowledge end of turn
-$('#koth_btn_news_ack').click( function (e)
+// End of turn button
+$('#koth_btn_ack_eot').click( function (e)
 {
     e.preventDefault();
     
@@ -37,7 +37,7 @@ $('#koth_btn_news_ack').click( function (e)
     });
 });
 
-// Button concede game
+// Concede game button
 $('#koth_btn_concede').click( function (e)
 {
     e.preventDefault();
@@ -48,6 +48,26 @@ $('#koth_btn_concede').click( function (e)
         data: {
             rt: REQUEST_TYPE_AJAX,  // request type
             rn: 'koth_concede'      // request name
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Close game button
+$('#koth_btn_close_game').click( function (e)
+{
+    // No mess-up!
+    e.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt: REQUEST_TYPE_AJAX,  // request type
+            rn: 'koth_close_game'   // request name
         },
         success: function()
         {

@@ -105,6 +105,28 @@ $('a[name=aiLvLLia2]').click(function(event)
     refresh_monsters2();
 });
 
+$('[name=koth_btn_hero_pvp]').click(function()
+{
+    console.log('test : ' + $(this).attr('id'));
+
+//    // Launch ajax that start new game
+//    $.ajax({
+//        type: "POST",
+//        url: "",
+//        data: {
+//            rt:         REQUEST_TYPE_AJAX,  // request type
+//            rn:         'koth_start',       // request name
+//            hero:       $(this).attr('name'),
+//            level:      $(this).attr('level'),
+//            monster:    $('#opBtn1').val()
+//        },
+//        success: function()
+//        {
+//            location.reload();
+//        }
+//    });
+});
+
 // Button start new game vs AI
 $('#koth_btn_start').click( function (event)
 {
@@ -118,8 +140,8 @@ $('#koth_btn_start').click( function (event)
         data: {
             rt:         REQUEST_TYPE_AJAX,  // request type
             rn:         'koth_start',       // request name
-            hero:       $('#heroDropdownBtn').val(),
-            level:      $('#heroLevelDropdownBtn').val(),
+            name:       $('#heroBtn1').val(),
+            level:      $('#heroLvLBtn1').val(),
             monster:    $('#opBtn1').val()
         },
         success: function()
@@ -145,6 +167,32 @@ $('#koth_btn_start_eve').click( function (event)
             monster1:   $('#opBtn1').val(),
             monster2:   $('#opBtn2').val(),
             occurence:  $('#eveOcBtn').val()
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Button start new game PvP
+$('#koth_btn_start_pvp').click( function (event)
+{
+    // No mess-up!
+    event.preventDefault();
+
+    // Launch ajax that start new game
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:         REQUEST_TYPE_AJAX,      // request type
+            rn:         'koth_start_pvp',       // request name
+            name1:      $('#heroBtn1').val(),
+            level1:     $('#heroLvLBtn1').val(),
+            name2:      $('#heroBtn2').val(),
+            level2:     $('#heroLvLBtn2').val(),
+            iduser2:    2   // DEBUG
         },
         success: function()
         {

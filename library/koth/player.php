@@ -39,7 +39,7 @@ abstract class Koth_LIB_Player
     
     static public function render( $idPlayer )
     {
-        static::getView()->assign('player',  static::getModel()->getPlayerData( $idPlayer ) );
+        static::getView()->assign('player',  static::getModel()->getData( $idPlayer ) );
         static::getView()->assign('heroDie', static::getModel()->getHeroDie( $idPlayer ) );
         static::getView()->render();
     }

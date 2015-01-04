@@ -21,7 +21,7 @@ class Koth_LIB_Player_View extends Base_LIB_View
         $experiencePercent = min( array( floor( ( $player->currentXP % Koth_LIB_Game::getXpDicePrice() ) * 100 / Koth_LIB_Game::getXpDicePrice() ), 100 ) );
 
         $toDiplay .= '<div style="background-color:AliceBlue ;font-size: 20px;' . $border . ';border-radius: 10px;padding: 10px;">' . PHP_EOL
-                        . "<strong>{$player->userName}</strong> ({$player->userLevel}) - {$player->heroName} ({$player->heroLevel}) " . ( $player->diceNumber ? "- Dice {$player->diceNumber}" : '' )
+                        . "<strong>{$player->userName}</strong> ({$player->userLevel}) - {$player->heroName} ({$player->heroLevel}) " . "- {$player->diceNumber} dice"
                         . '<span style="float:right"
                                  title="Click to see distribution"
                                  onclick="$(\'#heroDie' . $player->isActive . '\').modal(\'show\');"

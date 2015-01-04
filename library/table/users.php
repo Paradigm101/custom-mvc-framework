@@ -80,7 +80,7 @@ class Table_LIB_Users extends Table_LIB_Origin {
                     . "password, "
                     . "id_role"
                 . ") "
-                . "VALUES ( 't', 't', 't', 1 ),";
+                . "VALUES ( 't', 't', 't', 1 ),( 'r', 'r', 'r', 1 ),";
 
         // Adding a user per surname
         for( $i = 0; $i < count( $surnames ) ; $i++ )

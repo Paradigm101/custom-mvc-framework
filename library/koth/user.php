@@ -14,12 +14,12 @@ abstract class Koth_LIB_User
         return static::$model;
     }
 
-    static public function getData( $idUser = null )
+    static public function getData( $idUser )
     {
         return static::getModel()->getData( $idUser );
     }
 
-    static public function getHeroes( $idUser = null )
+    static public function getHeroes( $idUser )
     {
         return static::getModel()->getHeroes( $idUser );
     }

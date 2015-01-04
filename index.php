@@ -3,8 +3,9 @@
 /**
  * Unique entry point for the whole website
  */
-// TBD: .htaccess
 // TBD: manage security: SQL injection, script injection, crossplateform forgery, etc...
+
+date_default_timezone_set('America/Toronto');
 
 // Globals
 //-------------

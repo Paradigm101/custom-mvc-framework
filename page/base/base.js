@@ -30,4 +30,6 @@ $(".dropdown-menu-change-label li a").click(function()
 {
     $(this).parents(".dropdown").find('.btn').html($(this).text() + '&nbsp;<span class="caret"></span>');
     $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+    $(this).parents(".dropup").find('.btn').html($(this).text() + '&nbsp;<span class="caret"></span>');
+    $(this).parents(".dropup").find('.btn').val($(this).data('value'));
 });

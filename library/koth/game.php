@@ -7,13 +7,13 @@ define('KOTH_STARTING_DICE', 4);
 define('KOTH_STATUS_NO_USER',     1);
 define('KOTH_STATUS_NOT_STARTED', 2);
 define('KOTH_STATUS_RUNNING',     3);
+define('KOTH_STATUS_SCORE',       4);
 
 // Game steps
 define('KOTH_STEP_START',         'start_turn');
 define('KOTH_STEP_AFTER_ROLL_1',  'after_roll_1');
 define('KOTH_STEP_AFTER_ROLL_2',  'after_roll_2');
 define('KOTH_STEP_END_OF_TURN',   'end_of_turn');
-define('KOTH_STEP_GAME_FINISHED', 'game_finished');
 
 abstract class Koth_LIB_Game
 {
@@ -37,14 +37,20 @@ abstract class Koth_LIB_Game
             return KOTH_STATUS_NO_USER;
         }
 
-        // No game running
-        if ( !static::getModel()->isGameActiveForUser() )
+        // Game is running
+        if ( static::getModel()->isGameActiveForUser() )
         {
-            return KOTH_STATUS_NOT_STARTED;
+            return KOTH_STATUS_RUNNING;
         }
 
-        // Game is running
-        return KOTH_STATUS_RUNNING;
+        // Game with scores to ack
+        if ( static::getModel()->isGameScoreForUser() )
+        {
+            return KOTH_STATUS_SCORE;
+        }
+
+        // No game running
+        return KOTH_STATUS_NOT_STARTED;
     }
 
     static public function getStep()
@@ -121,6 +127,11 @@ abstract class Koth_LIB_Game
         return static::getModel()->getIdInactivePlayer();
     }
 
+    static public function setGameForScore()
+    {
+        static::getModel()->setGameForScore();
+    }
+
     static public function startGame( $firstHero, $secondHero )
     {
         static::getModel()->startGame( $firstHero, $secondHero );
@@ -133,7 +144,7 @@ abstract class Koth_LIB_Game
         
         if ( static::getModel()->isEve() )
         {
-            while( static::getModel()->getStep() != KOTH_STEP_GAME_FINISHED )
+            while( !static::getModel()->isGameCompleted() )
             {
                 static::playAI();
                 static::processEndTurn();
@@ -236,8 +247,8 @@ abstract class Koth_LIB_Game
 
     // Player acknowledges end game scores
     // TBD: manage PvP
-    static public function closeGame()
+    static public function closeGame( $idGame )
     {
-        static::getModel()->closeGame();
+        static::getModel()->closeGame( $idGame );
     }
 }

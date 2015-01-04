@@ -16,7 +16,7 @@ abstract class Koth_LIB_Die
     }
 
     // TBD: manage more than 12 dice display
-    static public function displayDice( $idPlayer, $rollable = false )
+    static public function displayDice( $idPlayer, $rollable = false, $noUnknown = false )
     {
         $inputDice = static::getModel()->getDice( $idPlayer );
         $toDisplay = '';
@@ -38,7 +38,7 @@ abstract class Koth_LIB_Die
         foreach ( $inputDice as $dataDie )
         {
             $toDisplay .= '<div class="col-xs-1">';
-            $toDisplay .= static::display( $dataDie, $rollable );
+            $toDisplay .= static::display( $dataDie, $rollable, $noUnknown );
             $toDisplay .= '</div>';
         }
 
@@ -55,10 +55,15 @@ abstract class Koth_LIB_Die
     }
 
     // TBD: manage die unselected (keep = 0)
-    static private function display( $die, $rollable )
+    static private function display( $die, $rollable = false, $noUnknown = false )
     {
         Page_LIB::subscribeClassForJavascript( 'Koth_LIB_Die' );
 
+        if ( $noUnknown && $die->name == 'unknown' )
+        {
+            return '';
+        }
+        
         $picture  = 'page/koth/image/' . $die->name . '_' . $die->value . '.png';
         $title    = '+' . $die->value . ' ' . ucfirst($die->name);
 

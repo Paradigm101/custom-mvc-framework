@@ -36,7 +36,7 @@ EOD;
         return $this->fetchNext();
     }
 
-    public function getPlayerData( $idPlayer )
+    public function getData( $idPlayer )
     {
         $idPlayer = $this->getQuotedValue( 0 + $idPlayer );
 
@@ -45,6 +45,7 @@ SELECT
     p.current_hp        currentHP,
     p.current_mp        currentMP,
     p.current_xp        currentXP,
+    p.dice_number       diceNumber,
     u.username          userName,
     ux.level            userLevel,
     h.label             heroName,
@@ -72,6 +73,7 @@ SELECT
     p.current_hp        currentHP,
     p.current_mp        currentMP,
     p.current_xp        currentXP,
+    p.dice_number       diceNumber,
     'AI'                userName,
     o.ai_level          userLevel,
     o.label             heroName,
@@ -90,10 +92,6 @@ WHERE
 EOD;
         $this->query($query);
         $result = $this->fetchNext();
-
-        // Dice number
-        $this->query("SELECT COUNT(1) dice_number FROM koth_players_dice WHERE id_player = $idPlayer" );
-        $result->diceNumber = $this->fetchNext()->dice_number;
 
         return $result;
     }
@@ -118,11 +116,7 @@ EOD;
         return $this->fetchAll();
     }
 
-    // health add to active player
-    // experience add to active player
-    // magic points add to active player
-    // attack remove health from non-active player
-    // update game_xp for active player
+    // Update player's data in DB
     public function storeResults( $results, $idActivePlayer )
     {
         $experience = $this->getQuotedValue( 0 + ( array_key_exists('experience', $results) ? $results['experience'] : 0 ) );
@@ -151,15 +145,17 @@ WHERE
 EOD;
         $this->query($query);
 
+        // Update active player's health/magic/xp
+        // AI user
         $query = <<<EOD
 UPDATE
     koth_players p
-    INNER JOIN koth_monsters o ON
-        o.id = p.id_monster
+    INNER JOIN koth_monsters m ON
+        m.id = p.id_monster
 SET
     p.current_xp = p.current_xp + $experience,
     p.current_mp = p.current_mp + $magic,
-    p.current_hp = LEAST( p.current_hp + $health, o.start_hp ),
+    p.current_hp = LEAST( p.current_hp + $health, m.start_hp ),
     p.game_xp    = p.game_xp + $gameXp
 WHERE
     p.id = $idActivePlayer
@@ -177,22 +173,14 @@ EOD;
                             p.current_hp = ( p.current_hp - $attack )");
 
         // Get extra dice from Xp
-        $this->query("SELECT current_xp FROM koth_players WHERE id = $idActivePlayer");
-        $current_xp = $this->fetchNext()->current_xp;
+        $this->query("SELECT current_xp, dice_number FROM koth_players WHERE id = $idActivePlayer");
+        $result = $this->fetchNext();
 
-        // Get dice pool number
-        $query = <<<EOD
-SELECT
-    COUNT(1)    num
-FROM
-    koth_players_dice pd
-WHERE
-    pd.id_player = $idActivePlayer
-EOD;
-        $this->query($query);
-        $dicePoolNumber = $this->fetchNext()->num;
+        $newDiceNumber = KOTH_STARTING_DICE + floor( $result->current_xp / Koth_LIB_Game::getXpDicePrice() );
+        $diceToAdd     = $newDiceNumber - $result->dice_number ;
 
-        if ( $num = ( KOTH_STARTING_DICE + floor( $current_xp / Koth_LIB_Game::getXpDicePrice() ) - $dicePoolNumber ) )
+        // If there are dice to add
+        if ( $diceToAdd > 0 )
         {
             $query = <<<EOD
 INSERT INTO
@@ -209,10 +197,14 @@ FROM
 WHERE
     p.id = $idActivePlayer
 EOD;
-            for( $i = 0; $i < $num; $i++ )
+            // Add dice
+            for( $i = 0; $i < $diceToAdd; $i++ )
             {
                 $this->query($query);
             }
+
+            // Update dice number
+            $this->query("UPDATE koth_players SET dice_number = $newDiceNumber WHERE id = $idActivePlayer");
         }
     }
 }

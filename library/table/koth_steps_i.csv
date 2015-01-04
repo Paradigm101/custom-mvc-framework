@@ -1,5 +1,4 @@
 start_turn,   start turn
 after_roll_1, after first roll
 after_roll_2, after second roll
-end_of_turn, after third roll
-game_finished, game is finished
+end_of_turn,  end of turn

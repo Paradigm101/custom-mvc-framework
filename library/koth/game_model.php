@@ -115,6 +115,7 @@ EOD;
     {
         $query = <<<EOD
 SELECT
+    g.id                    idGame,
     pw.id_user              id_winner_user,
     g.xp_winning_player     xp_winner,
     g.xp_losing_player      xp_loser,
@@ -221,6 +222,12 @@ EOD;
         return $this->idInactivePlayer;
     }
 
+    public function isGameCompleted()
+    {
+        $this->query("SELECT is_completed FROM koth_games WHERE id = {$this->idGame}");
+        return ( $this->fetchNext()->is_completed ? true : false );
+    }
+    
     // Active player's magic is over the threshold
     // OR non-active player's health is 0 or less
     public function isVictory()
@@ -244,9 +251,36 @@ EOD;
         return ( $this->fetchNext()->is_victory ? true : false );
     }
 
+    // Game is finished and user has to acknowledge the score
+    public function isGameScoreForUser()
+    {
+        $idUser = $this->getQuotedValue( 0 + Session_LIB::getUserId() );
+
+        $this->query("SELECT g.id FROM koth_games g INNER JOIN koth_players p ON p.id_user = $idUser AND p.id_game = g.id AND p.ack_score = 0 WHERE g.is_completed = 1");
+        $result = $this->fetchNext();
+        
+        return ( $result ? true : false );
+    }
+
     public function isGameActiveForUser()
     {
         return $this->idGame;
+    }
+
+    public function setGameForScore()
+    {
+        $idUser = $this->getQuotedValue( 0 + Session_LIB::getUserId() );
+
+        $this->query("SELECT g.id FROM koth_games g INNER JOIN koth_players p ON p.id_user = $idUser AND p.id_game = g.id AND p.ack_score = 0 WHERE g.is_completed = 1");
+        $result = $this->fetchNext();
+
+        if ( $result )
+        {
+            $this->idGame = $result->id;
+
+            // Update this object fields
+            $this->computeIds();
+        }
     }
 
     public function startGame( $firstPlayer, $secondPlayer )
@@ -282,6 +316,7 @@ EOD;
         foreach ( array( $firstPlayer, $secondPlayer ) as $player )
         {
             $rank        = $this->getQuotedValue( $player['rank'] + 0 );
+            $diceNumber  = $this->getQuotedValue( floor( $player['rank'] * KOTH_STARTING_DICE / 2 ) + 0 );
             $playerName  = $this->getQuotedValue( $player['name'] );
 
             // Human user
@@ -301,7 +336,8 @@ INSERT INTO
         current_mp,
         current_hp,
         current_xp,
-        rank
+        rank,
+        dice_number
     )
 SELECT
     $idUser,
@@ -311,7 +347,8 @@ SELECT
     hl.start_mp,
     hl.start_hp,
     hl.start_xp,
-    $rank
+    $rank,
+    $diceNumber
 FROM
     koth_heroes h
     INNER JOIN koth_heroes_levels hl ON
@@ -334,7 +371,8 @@ INSERT INTO
         current_mp, 
         current_hp, 
         current_xp, 
-        rank
+        rank,
+        dice_number
     )
 SELECT
     0,
@@ -344,7 +382,8 @@ SELECT
     start_mp,
     start_hp,
     start_xp,
-    $rank
+    $rank,
+    $diceNumber
 FROM
     koth_monsters
 WHERE
@@ -703,8 +742,19 @@ EOD;
         // Update winning/losing users in game
         $this->query("UPDATE koth_games SET id_winning_player = {$idWinningPlayer}, id_losing_player = {$idLosingPlayer} WHERE id = {$this->idGame}");
 
-        $divide = ( $isConcede ? ' / 2 ' : '' );
-        
+        $nowPHP = new DateTime();
+        $this->query("SELECT starting_date FROM koth_games WHERE id = {$this->idGame}");
+        $startingDate = new DateTime($this->fetchNext()->starting_date);
+        $totalHourDiff = floor( ( strtotime($nowPHP->format('Y-m-d H:i:s')) - strtotime($startingDate->format('Y-m-d H:i:s')) ) / 3600 );
+
+        // Winner gets double Xp
+        // Player concede => Xp is divided by 2
+        // More than 12 hours and loser concede
+        //      No extra Xp for winner
+        //      No Xp cut for loser
+        $winningMultiplier = ( $totalHourDiff >= 12 && $isConcede ) ? '' : ' * 2';
+        $losingMultiplier  = ( $totalHourDiff < 12 && $isConcede ? ' / 2 ' : '' );
+
         // Update game xp for winning/losing from game_xp on players
         // Twice more experience for winning player
         $query = <<<EOD
@@ -715,8 +765,8 @@ UPDATE
     INNER JOIN koth_players pl ON
         pl.id = {$idLosingPlayer}
 SET
-    g.xp_winning_player = g.xp_winning_player + 2 * pw.game_xp,
-    g.xp_losing_player  = g.xp_losing_player  + pl.game_xp $divide
+    g.xp_winning_player = g.xp_winning_player + pw.game_xp $winningMultiplier,
+    g.xp_losing_player  = g.xp_losing_player  + pl.game_xp $losingMultiplier
 WHERE
     g.id = {$this->idGame}
 EOD;
@@ -820,8 +870,8 @@ EOD;
         // Remove active and inactive players dice
         $this->query("DELETE FROM koth_players_dice WHERE id_player = {$this->idActivePlayer} OR id_player = {$this->idInactivePlayer}");
 
-        // Update game step
-        $this->query("UPDATE koth_games g INNER JOIN koth_steps s ON s.name = 'game_finished' SET g.id_step = s.id WHERE g.id = {$this->idGame}");
+        // Close game
+        $this->query("UPDATE koth_games SET is_completed = 1 WHERE id = {$this->idGame}");
     }
 
     // Active player win the game
@@ -838,9 +888,12 @@ EOD;
         $this->completeGame( $this->idOtherPlayer /* winner */, $this->idUserPlayer, true /* concede */ );
     }
 
-    // Update game is_completed
-    public function closeGame()
+    // Player acknowledge game score
+    public function closeGame( $idGame )
     {
-        $this->query("UPDATE koth_games SET is_completed = 1 WHERE id = {$this->idGame} ");
+        $idGame = $this->getQuotedValue( $idGame + 0 );
+        $idUser = $this->getQuotedValue( Session_LIB::getUserId() + 0 );
+        
+        $this->query("UPDATE koth_players  SET ack_score = 1 WHERE id_user = $idUser AND id_game = $idGame");
     }
 }

@@ -2,8 +2,8 @@ id,            int, ,  , 0, 1, 1, 1
 id_user,       int, ,  , 0, 0, 0, 0
 id_game,       int, ,  , 0, 0, 0, 0
 id_hero,       int, , 0, 1, 0, 0, 0
-id_opponent,   int, , 0, 1, 0, 0, 0
-level,    int, ,  , 0, 0, 0, 0
+id_monster,    int, , 0, 1, 0, 0, 0
+level,         int, ,  , 0, 0, 0, 0
 current_mp,    int, ,  , 0, 0, 0, 0
 current_hp,    int, ,  , 0, 0, 0, 0
 current_xp,    int, ,  , 0, 0, 0, 0

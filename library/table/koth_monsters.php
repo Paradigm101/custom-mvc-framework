@@ -1,11 +1,10 @@
 <?php
 
-// Opponents for King of the Hill
-class Table_LIB_Koth_Opponents extends Table_LIB_Origin
+class Table_LIB_Koth_Monsters extends Table_LIB_Origin
 {
     protected function getTableName()
     {
-        return 'koth_opponents';
+        return 'koth_monsters';
     }
 
     protected function getInitMode()
@@ -41,7 +40,7 @@ class Table_LIB_Koth_Opponents extends Table_LIB_Origin
                             $bonuses[] = array( 'attack'     => $amounts[$type['attack']],
                                                 'health'     => $amounts[$type['health']],
                                                 'experience' => $amounts[$type['experience']],
-                                                'magic'    => $amounts[$type['magic']] );
+                                                'magic'      => $amounts[$type['magic']] );
                         }
                     }
                 }
@@ -51,19 +50,19 @@ class Table_LIB_Koth_Opponents extends Table_LIB_Origin
         // Remove duplicate key (option to manage arrays)
         $bonuses = array_unique($bonuses, SORT_REGULAR);
 
-        $query = 'INSERT INTO koth_opponents ( name, label, picture, level, ai_level, start_hp, max_attack, max_health, max_experience, max_magic ) VALUES ';
+        $query = 'INSERT INTO koth_monsters ( name, label, picture, level, ai_level, start_hp, max_attack, max_health, max_experience, max_magic ) VALUES ';
 
         $values = array();
         foreach( $bonuses as $bonus )
         {
-            foreach ( range(0, 2) as $ai_level )
+            foreach ( range(0, 3) as $ai_level )
             {
                 $name           = $this->getQuotedValue( ( 3 + $bonus['attack'] ) . '_' . ( 3 + $bonus['health'] ) . '_' . ( 3 + $bonus['experience'] ) . '_' . ( 3 + $bonus['magic'] ) . '_' . $ai_level );
                 $label          = $this->getQuotedValue( ( 3 + $bonus['attack'] ) . '_' . ( 3 + $bonus['health'] ) . '_' . ( 3 + $bonus['experience'] ) . '_' . ( 3 + $bonus['magic'] ) . '_' . $ai_level );
-                $picture        = $this->getQuotedValue( 'opponent_no_pic' );
+                $picture        = $this->getQuotedValue( 'monster_no_pic' );
                 $level          = $this->getQuotedValue( 1 + array_sum( $bonus ) );
                 $ai_level       = $this->getQuotedValue( 0 + $ai_level );
-                $start_hp       = $this->getQuotedValue( 30 + 15 * array_sum( $bonus ) );
+                $start_hp       = $this->getQuotedValue( 70 + 35 * array_sum( $bonus ) );
                 $max_attack     = $this->getQuotedValue( 3 + $bonus['attack'] );
                 $max_health     = $this->getQuotedValue( 3 + $bonus['health'] );
                 $max_experience = $this->getQuotedValue( 3 + $bonus['experience'] );

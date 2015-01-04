@@ -85,3 +85,9 @@ ul.unstyled {
     user-drag: none;
 }
 /* NB: Need to use the javascript function make_unselectable */
+
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+}

@@ -2,10 +2,9 @@
 
 class Koth_LIB_Die_Model extends Base_LIB_Model
 {
-    public function getDice( $isActivePlayer = true )
+    public function getDice( $idPlayer )
     {
-        $idUser = $this->getQuotedValue( 0 + Session_LIB::getUserId() );
-        $activeCdtn = ' g.id_active_player ' . ( $isActivePlayer ? '' : '!' ) . '= p.id ';
+        $idPlayer = $this->getQuotedValue( 0 + $idPlayer );
 
         $query = <<<EOD
 SELECT
@@ -18,42 +17,12 @@ FROM
     koth_players_dice pd
     INNER JOIN koth_die_types dt ON
         dt.id = pd.id_die_type
-    INNER JOIN koth_players p ON
-        p.id = pd.id_player
-        INNER JOIN koth_games g ON
-            g.id           = p.id_game
-        AND g.is_completed = 0
-        AND $activeCdtn
-            INNER JOIN koth_players p2 ON
-                p2.id_game = g.id
-            AND p2.id_user = $idUser
+WHERE
+    pd.id_player = $idPlayer
+ORDER BY
+    pd.id
 EOD;
         $this->query($query);
         return $this->fetchAll();
-    }
-
-    public function getDiceNumber( $isOther = false )
-    {
-        $idUser = $this->getQuotedValue(0 + Session_LIB::getUserId());
-        
-        $userCdt = ' p.id_user ' . ( $isOther ? '!' : '' ) . "= $idUser";
-
-        $query = <<<EOD
-SELECT
-    COUNT(1)    dice_number
-FROM
-    koth_players_dice pd
-    INNER JOIN koth_players p ON
-        p.id = pd.id_player
-    AND $userCdt
-        INNER JOIN koth_games g ON
-            g.id           = p.id_game
-        AND g.is_completed = 0
-            INNER JOIN koth_players p2 ON
-                p2.id_game = g.id
-            AND p2.id_user = $idUser
-EOD;
-        $this->query($query);
-        return $this->fetchNext()->dice_number;
     }
 }

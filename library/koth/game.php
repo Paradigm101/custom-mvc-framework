@@ -57,7 +57,7 @@ abstract class Koth_LIB_Game
     {
         $levels = static::getModel()->getLevels();
 
-        return 40 + 10 * $levels;
+        return 80 + 20 * $levels;
     }
 
     // TBD: playtest, Xp dice seems to be too pricy 15->10
@@ -65,14 +65,14 @@ abstract class Koth_LIB_Game
     {
         $levels = static::getModel()->getLevels();
 
-        return 12 + $levels;
+        return 20 + $levels;
     }
 
     static public function canUserRoll()
     {
-        return ( ( ( static::getStep() == KOTH_STEP_AFTER_ROLL_1 )
-                || ( static::getStep() == KOTH_STEP_AFTER_ROLL_2 )
-                || ( static::getStep() == KOTH_STEP_START ) )
+        return ( ( ( static::getStep() == KOTH_STEP_START )
+                || ( static::getStep() == KOTH_STEP_AFTER_ROLL_1 )
+                || ( static::getStep() == KOTH_STEP_AFTER_ROLL_2 ) )
               && ( static::isUserActive() ) );
     }
 
@@ -81,37 +81,69 @@ abstract class Koth_LIB_Game
         return static::getModel()->isUserActive();
     }
 
+    static public function isUserInactive()
+    {
+        return static::getModel()->isUserInactive();
+    }
+
+    static public function isUserPlaying()
+    {
+        return static::getModel()->isUserPlaying();
+    }
+
     static public function getResults()
     {
         return static::$model->getResults();
     }
 
-    // Start EvE
-    static public function startGameEvE( $heroName = 'cleric', $heroLevel = 3, $opponentName = '5_3_3_3_1' )
+    static public function getIdUserPlayer()
     {
-        static::getModel()->startGameEvE( $heroName, $heroLevel, $opponentName );
-
-        static::playAI();
+        return static::getModel()->getIdUserPlayer();
     }
 
-    // Start PvE
-    static public function startGamePvE( $heroName = 'cleric', $heroLevel = 3, $opponentName = '5_3_3_3_1' )
+    static public function getIdOtherPlayer()
     {
-        static::getModel()->startGamePvE( $heroName, $heroLevel, $opponentName );
+        return static::getModel()->getIdOtherPlayer();
+    }
 
-        // PvE, first turn AI plays
-        if ( static::getModel()->isPvE()
-         &&  static::getModel()->isActiveAI() )
+    static public function getIdPlayersByRank()
+    {
+        return static::getModel()->getIdPlayersByRank();
+    }
+
+    static public function getIdActivePlayer()
+    {
+        return static::getModel()->getIdActivePlayer();
+    }
+
+    static public function getIdInactivePlayer()
+    {
+        return static::getModel()->getIdInactivePlayer();
+    }
+
+    static public function startGame( $firstHero, $secondHero )
+    {
+        static::getModel()->startGame( $firstHero, $secondHero );
+
+        if ( static::getModel()->isActiveAI()
+         && !static::getModel()->isEve() )
         {
             static::playAI();
+        }
+        
+        if ( static::getModel()->isEve() )
+        {
+            while( static::getModel()->getStep() != KOTH_STEP_GAME_FINISHED )
+            {
+                static::playAI();
+                static::processEndTurn();
+            }
         }
     }
 
     // AI plays
     static private function playAI()
     {
-        Log_LIB::trace("playAI");
-        
         // First roll
         static::roll( true /* $isAI */ );
 
@@ -128,14 +160,15 @@ abstract class Koth_LIB_Game
         static::roll( true /* $isAI */ );
 
         // After AI plays, process end of turn
-        static::processEndTurn();
+        if ( !static::getModel()->isEve() )
+        {
+            static::processEndTurn();
+        }
     }
 
     // Roll for active player
     static public function roll( $isAI = false )
     {
-        Log_LIB::trace("In roll isAI [$isAI]");
-
         // Roll and update dice
         static::getModel()->roll( $isAI );
 
@@ -172,23 +205,30 @@ abstract class Koth_LIB_Game
     // Process end of turn
     static public function processEndTurn()
     {
-        Log_LIB::trace("ProcessEndTurn");
-        
         // Victory!
         if ( static::getModel()->isVictory() )
         {
             // Active player won the game, Close game
             static::getModel()->activeWinGame();
 
+            // Close game for EvE as there will be no human action
+            if ( static::getModel()->isEvE() )
+            {
+                static::closeGame();
+            }
+
             // Nothing else to do
             return;
         }
 
+        // Update game turn number
+        // Change active player and update IDs
+        // Reset active player's dice to unknown / don't keep
+        // Change game step to start turn
         static::getModel()->processEndTurn();
-        
-        // Case PvE AND active is AI, play AI
-        if ( static::getModel()->isPvE()
-          && static::getModel()->isActiveAI() )
+
+        if ( static::getModel()->isActiveAI()
+         && !static::getModel()->isEvE() )
         {
             static::playAI();
         }
@@ -198,7 +238,6 @@ abstract class Koth_LIB_Game
     // TBD: manage PvP
     static public function closeGame()
     {
-        Log_LIB::trace("closeGame");
         static::getModel()->closeGame();
     }
 }

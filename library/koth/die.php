@@ -16,8 +16,9 @@ abstract class Koth_LIB_Die
     }
 
     // TBD: manage more than 12 dice display
-    static public function displayDice( $inputDice, $rollable = false )
+    static public function displayDice( $idPlayer, $rollable = false )
     {
+        $inputDice = static::getModel()->getDice( $idPlayer );
         $toDisplay = '';
 
         // TBD: manage more than 12 dice
@@ -159,15 +160,5 @@ $('img[name=die_image]').mousedown( function(event)
     }
 });
 EOD;
-    }
-    
-    static public function getDice( $isActivePlayer = true )
-    {
-        return static::getModel()->getDice( $isActivePlayer );
-    }
-
-    static public function getDiceNumber( $isOther = false )
-    {
-        return static::getModel()->getDiceNumber( $isOther );
     }
 }

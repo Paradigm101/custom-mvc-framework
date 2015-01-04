@@ -37,10 +37,10 @@ abstract class Koth_LIB_Player
         static::getModel()->storeResults( $results, $idActivePlayer );
     }
     
-    static public function render( $isOtherUser = false )
+    static public function render( $idPlayer )
     {
-        static::getView()->assign('player',  static::getModel()->getPlayerData( $isOtherUser ) );
-        static::getView()->assign('heroDie', static::getModel()->getHeroDie( $isOtherUser ) );
+        static::getView()->assign('player',  static::getModel()->getPlayerData( $idPlayer ) );
+        static::getView()->assign('heroDie', static::getModel()->getHeroDie( $idPlayer ) );
         static::getView()->render();
     }
 }

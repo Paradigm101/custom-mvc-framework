@@ -38,7 +38,7 @@ class Table_LIB_Koth_Heroes_Levels extends Table_LIB_Origin {
             {
                 $id_hero        = $this->getQuotedValue( 0 + $hero['id'] );
                 $level          = $this->getQuotedValue( 1 + array_sum( $bonus ) );
-                $start_hp       = $this->getQuotedValue( 30 + 15 * array_sum( $bonus ) );
+                $start_hp       = $this->getQuotedValue( 70 + 35 * array_sum( $bonus ) );
                 $max_attack     = $this->getQuotedValue( 3 + $bonus[$hero['attack']] );
                 $max_health     = $this->getQuotedValue( 3 + $bonus[$hero['health']] );
                 $max_experience = $this->getQuotedValue( 3 + $bonus[$hero['experience']] );

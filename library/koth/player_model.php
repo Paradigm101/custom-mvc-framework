@@ -2,80 +2,60 @@
 
 class Koth_LIB_Player_Model extends Base_LIB_Model
 {
-    public function getHeroDie( $isOtherUser = false )
+    public function getHeroDie( $idPlayer )
     {
-        $idUser   = $this->getQuotedValue( 0 + Session_LIB::getUserId() );
-        $otherCdt = ' p.id_user ' . ( $isOtherUser ? '!' : '' ) . "= $idUser ";
+        $idPlayer = $this->getQuotedValue( 0 + $idPlayer );
 
         $query = <<<EOD
 SELECT
     hl.max_attack       max_attack,
     hl.max_health       max_health,
     hl.max_experience   max_experience,
-    hl.max_magic      max_magic
+    hl.max_magic        max_magic
 FROM
     koth_players p
     INNER JOIN koth_heroes_levels hl ON
         hl.id_hero = p.id_hero
     AND hl.level   = p.level
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = $idUser
 WHERE
-    p.id_user != 0
-AND $otherCdt
+    p.id = $idPlayer
 UNION
 SELECT
     o.max_attack       max_attack,
     o.max_health       max_health,
     o.max_experience   max_experience,
-    o.max_magic      max_magic
+    o.max_magic        max_magic
 FROM
     koth_players p
-    INNER JOIN koth_opponents o ON
-        o.id = p.id_opponent
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = $idUser
+    INNER JOIN koth_monsters o ON
+        o.id = p.id_monster
 WHERE
-    p.id_user = 0
-AND $otherCdt
+    p.id = $idPlayer
 EOD;
         $this->query($query);
         return $this->fetchNext();
     }
 
-    public function getPlayerData( $isOtherUser = false )
+    public function getPlayerData( $idPlayer )
     {
-        $idUser = $this->getQuotedValue( 0 + Session_LIB::getUserId() );
-        $otherCdt = ' p.id_user ' . ( $isOtherUser ? '!' : '' ) . "= $idUser ";
+        $idPlayer = $this->getQuotedValue( 0 + $idPlayer );
 
         $query = <<<EOD
 SELECT
-    p.id                id_player,
-    p.current_hp        current_hp,
-    p.current_mp        current_mp,
-    p.current_xp        current_xp,
-    u.username          user_name,
-    ux.level            user_level,
-    h.label             hero_label,
-    p.level        level,
-    hl.start_hp         max_hp,
-    g.id_active_player  id_active_player
+    p.current_hp        currentHP,
+    p.current_mp        currentMP,
+    p.current_xp        currentXP,
+    u.username          userName,
+    ux.level            userLevel,
+    h.label             heroName,
+    p.level             heroLevel,
+    hl.start_hp         maxHP,
+    COALESCE( g.id, 0 ) isActive
 FROM
     koth_players p
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = $idUser
+    LEFT OUTER JOIN koth_games g ON
+        g.id               = p.id_game
+    AND g.id_active_player = p.id
     INNER JOIN users u ON
         u.id = p.id_user
     INNER JOIN koth_user_xp ux ON
@@ -86,52 +66,36 @@ FROM
         hl.id_hero = p.id_hero
     AND hl.level   = p.level
 WHERE
-    $otherCdt
-AND p.id_user != 0
+    p.id = $idPlayer
 UNION
 SELECT
-    p.id                id_player,
-    p.current_hp        current_hp,
-    p.current_mp        current_mp,
-    p.current_xp        current_xp,
-    'AI'                user_name,
-    o.ai_level          user_level,
-    o.label             hero_label,
-    o.level             level,
-    o.start_hp          max_hp,
-    g.id_active_player  id_active_player
+    p.current_hp        currentHP,
+    p.current_mp        currentMP,
+    p.current_xp        currentXP,
+    'AI'                userName,
+    o.ai_level          userLevel,
+    o.label             heroName,
+    o.level             heroLevel,
+    o.start_hp          maxHP,
+    COALESCE( g.id, 0 ) isActive
 FROM
     koth_players p
-    INNER JOIN koth_games g ON
-        g.id           = p.id_game
-    AND g.is_completed = 0
-        INNER JOIN koth_players p2 ON
-            p2.id_game = g.id
-        AND p2.id_user = $idUser
-    INNER JOIN koth_opponents o ON
-        o.id = p.id_opponent
+    INNER JOIN koth_monsters o ON
+        o.id = p.id_monster
+    LEFT OUTER JOIN koth_games g ON
+        g.id = p.id_game
+    AND g.id_active_player = p.id
 WHERE
-    $otherCdt
-AND p.id_user = 0
+    p.id = $idPlayer
 EOD;
         $this->query($query);
-            
         $result = $this->fetchNext();
 
-        $player = new stdClass();
-        
-        $player->userName   = $result->user_name;
-        $player->userLevel  = $result->user_level;
-        $player->heroName   = $result->hero_label;
-        $player->heroLevel  = $result->level;
-        $player->currentHP  = $result->current_hp;
-        $player->maxHP      = $result->max_hp;
-        $player->currentMP  = $result->current_mp;
-        $player->currentXP  = $result->current_xp;
-        $player->isActive   = ( $result->id_active_player == $result->id_player ? true : false );
-        $player->diceNumber = Koth_LIB_Die::getDiceNumber( $isOtherUser );
+        // Dice number
+        $this->query("SELECT COUNT(1) dice_number FROM koth_players_dice WHERE id_player = $idPlayer" );
+        $result->diceNumber = $this->fetchNext()->dice_number;
 
-        return $player;
+        return $result;
     }
 
     // Get player's results
@@ -190,8 +154,8 @@ EOD;
         $query = <<<EOD
 UPDATE
     koth_players p
-    INNER JOIN koth_opponents o ON
-        o.id = p.id_opponent
+    INNER JOIN koth_monsters o ON
+        o.id = p.id_monster
 SET
     p.current_xp = p.current_xp + $experience,
     p.current_mp = p.current_mp + $magic,

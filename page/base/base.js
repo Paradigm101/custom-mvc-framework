@@ -1,10 +1,12 @@
 
 // At each ajax start
+// TBD: disable any action from user
 $(document).ajaxStart(function () {
     $('#ajaxModal').modal('show');
 });
 
 // At each ajax finished
+// TBD: enable user's action'
 $(document).ajaxStop(function () {
     $('#ajaxModal').modal('hide');
 });

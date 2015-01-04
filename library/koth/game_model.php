@@ -13,10 +13,13 @@ class Koth_LIB_Game_Model extends Base_LIB_Model
     private $idActivePlayer   = 0;
     private $idInactivePlayer = 0;
 
-    // Only usefull for PvE/PvP
-    private function computeIds( $idGame = null )
+    private function computeIds()
     {
-        if ( !$idGame )
+        // Current user
+        $this->idUser = $this->getQuotedValue( 0 + Session_LIB::getUserId() );
+
+        // No clue about the game, check if there is one for the current user
+        if ( !$this->idGame )
         {
             // Get game id
             $query = <<<EOD
@@ -33,67 +36,73 @@ EOD;
             $this->query($query);
             $result = $this->fetchNext();
 
-            // No active game for user
+            // No active game for user, nothing IDs to recompute
             if ( !$result )
             {
                 return;
             }
-            
+
             // Game id
             $this->idGame = $this->getQuotedValue( 0 + $result->id_game );
         }
 
-        // Other user
-        $this->query("SELECT id_user FROM koth_players WHERE id_game = {$this->idGame} AND id_user != {$this->idUser}");
-        if ( $result = $this->fetchNext() )
+        // Get ids for active/inactive
+        $query = <<<EOD
+SELECT
+    pa.id       id_active_player,
+    pa.id_user  id_active_user,
+    pi.id       id_inactive_player,
+    pi.id_user  id_inactive_user
+FROM
+    koth_games g
+    INNER JOIN koth_players pa ON
+        pa.id_game = g.id
+    AND pa.id      = g.id_active_player
+    INNER JOIN koth_players pi ON
+        pi.id_game  = g.id
+    AND pi.id      != g.id_active_player
+WHERE
+    g.id = {$this->idGame}
+EOD;
+        $this->query($query);
+        $result = $this->fetchNext();
+        
+        $this->idActivePlayer   = $result->id_active_player;
+        $this->idInactivePlayer = $result->id_inactive_player;
+        $this->idActiveUser     = $result->id_active_user;
+        $this->idInactiveUser   = $result->id_inactive_user;
+
+        // Get ids for user/other
+        $query = <<<EOD
+SELECT
+    pu.id       id_user_player,
+    po.id       id_other_player,
+    po.id_user  id_other_user
+FROM
+    koth_players pu,
+    koth_players po
+WHERE
+    pu.id_user  = {$this->idUser}
+AND pu.id_game  = {$this->idGame}
+AND po.id_user != {$this->idUser}
+AND po.id_game  = {$this->idGame}
+EOD;
+        $this->query($query);
+        $result = $this->fetchNext();
+
+        if ( $result )
         {
-            $this->idOtherUser = $this->getQuotedValue( 0 + $result->id_user );
+            $this->idUserPlayer  = $result->id_user_player;
+            $this->idOtherPlayer = $result->id_other_player;
+            $this->idOtherUser   = $result->id_other_user;
         }
-
-        // Active user
-        $this->query("  SELECT
-                            p.id_user id_user 
-                        FROM
-                            koth_players p 
-                            INNER JOIN koth_games g ON
-                                g.id = p.id_game
-                            AND g.id_active_player = p.id 
-                        WHERE
-                            p.id_game = {$this->idGame} ");
-        $this->idActiveUser = $this->getQuotedValue( 0 + $this->fetchNext()->id_user );
-
-        // Inactive user
-        $this->query("SELECT p.id_user id_user FROM koth_players p INNER JOIN koth_games g ON g.id = p.id_game AND g.id_active_player != p.id WHERE p.id_game = {$this->idGame} ");
-        $this->idInactiveUser = $this->getQuotedValue( 0 + $this->fetchNext()->id_user );
-
-        // User player
-        $this->query("SELECT id FROM koth_players WHERE id_game = {$this->idGame} AND id_user = {$this->idUser}");
-        $this->idUserPlayer = $this->getQuotedValue( 0 + $this->fetchNext()->id );
-
-        // Other player
-        $this->query("SELECT id FROM koth_players WHERE id_game = {$this->idGame} AND id_user != {$this->idUser}");
-        $this->idOtherPlayer = $this->getQuotedValue( 0 + $this->fetchNext()->id );
-
-        // Active player
-        $this->query("SELECT id_active_player FROM koth_games WHERE id = {$this->idGame} ");
-        $this->idActivePlayer = $this->getQuotedValue( 0 + $this->fetchNext()->id_active_player );
-
-        // Inactive player
-        $this->query("SELECT id FROM koth_players WHERE id_game = {$this->idGame} AND id != {$this->idActivePlayer}");
-        $this->idInactivePlayer = $this->getQuotedValue( 0 + $this->fetchNext()->id );
     }
 
     public function __construct( $idUser )
     {
         parent::__construct();
-        
-        $this->idUser = $this->getQuotedValue( 0 + $idUser );
 
-        // Get ids
-        if ( $this->idUser )
-        {
-            $this->computeIds();
-        }
+        $this->computeIds();
     }
 
     public function getStep()
@@ -138,9 +147,9 @@ EOD;
 SELECT
     o.ai_level  ai_level
 FROM
-    koth_opponents o
+    koth_monsters o
     INNER JOIN koth_players p ON
-        p.id_opponent = o.id
+        p.id_monster = o.id
     AND p.id          = {$this->idActivePlayer}
 EOD;
         $this->query($query);
@@ -175,9 +184,41 @@ EOD;
         return ( $this->idUser == $this->idActiveUser );
     }
 
+    public function isUserInactive()
+    {
+        return ( $this->idUser == $this->idInactiveUser );
+    }
+
+    public function isUserPlaying()
+    {
+        return $this->isUserActive() || $this->isUserInactive();
+    }
+
+    public function getIdUserPlayer()
+    {
+        return $this->idUserPlayer;
+    }
+
+    public function getIdOtherPlayer()
+    {
+        return $this->idOtherPlayer;
+    }
+
+    public function getIdPlayersByRank()
+    {
+        $this->query("SELECT id FROM koth_players WHERE id_game = {$this->idGame} ORDER BY rank");
+        $results = $this->fetchAll();
+        return array( $results[0]->id, $results[1]->id );
+    }
+
     public function getIdActivePlayer()
     {
         return $this->idActivePlayer;
+    }
+
+    public function getIdInactivePlayer()
+    {
+        return $this->idInactivePlayer;
     }
 
     // Active player's magic is over the threshold
@@ -208,17 +249,17 @@ EOD;
         return $this->idGame;
     }
 
-    // TBD: id_opponent
-    public function startGameEvE( $heroName = 'cleric', $heroLevel = 3, $opponentName = '5_3_3_3_1' )
+    public function startGame( $firstPlayer, $secondPlayer )
     {
-        $heroName     = $this->getQuotedValue($heroName);
-        $heroLevel    = $this->getQuotedValue( 0 + $heroLevel );
-        $opponentName = $this->getQuotedValue($opponentName);
-
-        // First, create game
+        // Create game
         $query = <<<EOD
 INSERT INTO
-    koth_games (id_active_player, id_step, is_completed, starting_date )
+    koth_games (
+        id_active_player,
+        id_step, 
+        is_completed, 
+        starting_date
+    )
 SELECT
     0,
     s.id,
@@ -230,57 +271,89 @@ WHERE
     s.name = 'start_turn'
 EOD;
         $this->query($query);
-        $idGame = $this->getQuotedValue( 0 + $this->getInsertId() );
+
+        // Get game id
+        $this->idGame = $this->getQuotedValue( 0 + $this->getInsertId() );
 
         // Decide randomly who is starting
-        $heroRank     = rand(1, 2);
-        $opponentRank = 3 - $heroRank;
+        $firstPlayer['rank']  = rand(1, 2);
+        $secondPlayer['rank'] = 3 - $firstPlayer['rank'];
 
-        $heroRank     = $this->getQuotedValue($heroRank);
-        $opponentRank = $this->getQuotedValue($opponentRank);
+        foreach ( array( $firstPlayer, $secondPlayer ) as $player )
+        {
+            $rank        = $this->getQuotedValue( $player['rank'] + 0 );
+            $playerName  = $this->getQuotedValue( $player['name'] );
 
-        // Create Hero AI
-        $query = <<<EOD
+            // Human user
+            // TBD: remove hero level (only debug)
+            if ( $player['idUser'] )
+            {
+                $idUser    = $this->getQuotedValue( $player['idUser'] + 0 );
+                $heroLevel = $this->getQuotedValue( $player['level'] + 0 );
+
+                $query = <<<EOD
 INSERT INTO
-    koth_players (id_user, id_game, id_hero, level, current_mp, current_hp, current_xp, rank )
+    koth_players (
+        id_user,
+        id_game,
+        id_hero,
+        level,
+        current_mp,
+        current_hp,
+        current_xp,
+        rank
+    )
 SELECT
-    0,
-    $idGame,
+    $idUser,
+    {$this->idGame},
     h.id,
     hl.level,
     hl.start_mp,
     hl.start_hp,
     hl.start_xp,
-    $heroRank
+    $rank
 FROM
     koth_heroes h
     INNER JOIN koth_heroes_levels hl ON
         hl.id_hero = h.id
     AND hl.level   = $heroLevel
 WHERE
-    h.name = $heroName
+    h.name = $playerName
 EOD;
-        $this->query($query);
-        
-        // Create Opponent AI
-        $query = <<<EOD
+            }
+            // AI
+            else
+            {
+                $query = <<<EOD
 INSERT INTO
-    koth_players (id_user, id_game, id_opponent, level, current_mp, current_hp, current_xp, rank )
+    koth_players (
+        id_user, 
+        id_game, 
+        id_monster, 
+        level, 
+        current_mp, 
+        current_hp, 
+        current_xp, 
+        rank
+    )
 SELECT
     0,
-    $idGame,
+    {$this->idGame},
     id,
     level,
     start_mp,
     start_hp,
     start_xp,
-    $opponentRank
+    $rank
 FROM
-    koth_opponents
+    koth_monsters
 WHERE
-    name = $opponentName
+    name = $playerName
 EOD;
-        $this->query($query);
+            }
+            
+            $this->query($query);
+        }
 
         // Update game with active player
         $query = <<<EOD
@@ -292,7 +365,7 @@ UPDATE
 SET
     g.id_active_player = p.id
 WHERE
-    g.id = $idGame;
+    g.id = {$this->idGame};
 EOD;
         $this->query($query);
 
@@ -316,7 +389,7 @@ FROM
         dt.name = 'unknown'
 WHERE
     p.rank    = 1
-AND p.id_game = $idGame
+AND p.id_game = {$this->idGame}
 EOD;
         for ( $i = 0; $i < floor( KOTH_STARTING_DICE / 2 ); $i++ )
         {
@@ -343,160 +416,7 @@ FROM
         dt.name = 'unknown'
 WHERE
     p.rank    = 2
-AND p.id_game = $idGame
-EOD;
-        for ( $i = 0; $i < KOTH_STARTING_DICE; $i++ )
-        {
-            $this->query($query);
-        }
-
-        // TBD: compute ids for EvE
-        // Very important!
-    }
-
-    public function startGamePvE( $heroName = 'cleric', $heroLevel = 3, $opponentName = '5_3_3_3_1' )
-    {
-        $heroName     = $this->getQuotedValue($heroName);
-        $heroLevel    = $this->getQuotedValue( 0 + $heroLevel );
-        $opponentName = $this->getQuotedValue($opponentName);
-
-        // If a game is already active, do nothing
-        // Front will refresh page and user will see current game
-        // User can concede to start a new game
-        if ( $this->idGame )
-        {
-            return;
-        }
-
-        // First, create game
-        $query = <<<EOD
-INSERT INTO
-    koth_games (id_active_player, id_step, is_completed, starting_date )
-SELECT
-    0,
-    s.id,
-    0,
-    CURRENT_TIMESTAMP
-FROM
-    koth_steps s
-WHERE
-    s.name = 'start_turn'
-EOD;
-        $this->query($query);
-        $idGame = $this->getQuotedValue( 0 + $this->getInsertId() );
-
-        // Decide randomly who is starting
-        $heroRank     = rand(1, 2);
-        $opponentRank = 3 - $heroRank;
-
-        $heroRank     = $this->getQuotedValue($heroRank);
-        $opponentRank = $this->getQuotedValue($opponentRank);
-
-        // Create hero for user
-        $query = <<<EOD
-INSERT INTO
-    koth_players (id_user, id_game, id_hero, level, current_mp, current_hp, current_xp, rank )
-SELECT
-    {$this->idUser},
-    $idGame,
-    h.id,
-    hl.level,
-    hl.start_mp,
-    hl.start_hp,
-    hl.start_xp,
-    $heroRank
-FROM
-    koth_heroes h
-    INNER JOIN koth_heroes_levels hl ON
-        hl.id_hero = h.id
-    AND hl.level   = $heroLevel
-WHERE
-    h.name = $heroName
-EOD;
-        $this->query($query);
-        
-        // Create opponent for AI
-        $query = <<<EOD
-INSERT INTO
-    koth_players (id_user, id_game, id_opponent, level, current_mp, current_hp, current_xp, rank )
-SELECT
-    0,
-    $idGame,
-    id,
-    level,
-    start_mp,
-    start_hp,
-    start_xp,
-    $opponentRank
-FROM
-    koth_opponents
-WHERE
-    name = $opponentName
-EOD;
-        $this->query($query);
-
-        // Update game with active player
-        $query = <<<EOD
-UPDATE
-    koth_games g
-    INNER JOIN koth_players p ON
-        p.id_game = g.id
-    AND p.rank    = 1
-SET
-    g.id_active_player = p.id
-WHERE
-    g.id = $idGame;
-EOD;
-        $this->query($query);
-
-        // Insert starting dice for active player
-        $query = <<<EOD
-INSERT INTO
-    koth_players_dice (
-        id_player,
-        id_die_type,
-        keep,
-        value
-    )
-SELECT
-    p.id,
-    dt.id,
-    0,
-    0
-FROM
-    koth_players p
-    INNER JOIN koth_die_types dt ON
-        dt.name = 'unknown'
-WHERE
-    p.rank    = 1
-AND p.id_game = $idGame
-EOD;
-        for ( $i = 0; $i < floor( KOTH_STARTING_DICE / 2 ); $i++ )
-        {
-            $this->query($query);
-        }
-
-        // Insert starting dice for non-active player
-        $query = <<<EOD
-INSERT INTO
-    koth_players_dice (
-        id_player,
-        id_die_type,
-        keep,
-        value
-    )
-SELECT
-    p.id,
-    dt.id,
-    0,
-    0
-FROM
-    koth_players p
-    INNER JOIN koth_die_types dt ON
-        dt.name = 'unknown'
-WHERE
-    p.rank    = 2
-AND p.id_game = $idGame
+AND p.id_game = {$this->idGame}
 EOD;
         for ( $i = 0; $i < KOTH_STARTING_DICE; $i++ )
         {
@@ -504,7 +424,7 @@ EOD;
         }
 
         // Update this object fields
-        $this->computeIds( $idGame );
+        $this->computeIds();
     }
 
     public function roll( $isAI = false )
@@ -519,9 +439,9 @@ SELECT
     o.max_experience   max_experience,
     o.max_magic        max_magic
 FROM
-    koth_opponents o
+    koth_monsters o
     INNER JOIN koth_players p ON
-        p.id_opponent = o.id
+        p.id_monster = o.id
     AND p.id          = {$this->idActivePlayer}
 EOD;
         }
@@ -628,9 +548,9 @@ SELECT
     o.max_experience    experience,
     o.max_magic         magic
 FROM
-    koth_opponents o
+    koth_monsters o
     INNER JOIN koth_players p ON
-        p.id_opponent = o.id
+        p.id_monster = o.id
     AND p.id          = {$this->idActivePlayer}
 EOD;
         $this->query($query);
@@ -647,11 +567,64 @@ EOD;
         // AI level 1 : Sort distrib from worst to best by value
         usort($distribution, function( $a, $b ) { return $a['value'] > $b['value']; } );
 
+        // Remove wrong victory condition
         if ( $this->getAILevel() >= 2 )
         {
-            // TBD: Health management : high => worst, low => best
-            // TBD: Xp management: get a die => good, early game => good, late game => bad, more dice => bad
-            // TBD: oriented attack/magic, rush, etc...
+            // Remove magic from possible victory
+            if ( $maxes->magic == 3 && $maxes->attack > 3 )
+            {
+                // Get bad dice
+                $tmp = array();
+                foreach ( $distribution as $key => $value )
+                {
+                    if ( $value['type'] == 'magic' )
+                    {
+                        $tmp[] = $value;
+                        unset( $distribution[$key] );
+                    }
+                }
+
+                // Reverse order to shift values from bigger to lower
+                $tmp = array_reverse($tmp);
+
+                // Add bad elements at the start of the array
+                foreach ( $tmp as $element )
+                {
+                    array_unshift($distribution, $element);
+                }
+            }
+
+            // Remove attack from possible victory
+            if ( $maxes->attack == 3 && $maxes->magic > 3 )
+            {
+                // Get bad dice
+                $tmp = array();
+                foreach ( $distribution as $key => $value )
+                {
+                    if ( $value['type'] == 'attack' )
+                    {
+                        $tmp[] = $value;
+                        unset( $distribution[$key] );
+                    }
+                }
+
+                // Reverse order to shift values from bigger to lower
+                $tmp = array_reverse($tmp);
+
+                // Add bad elements at the start of the array
+                foreach ( $tmp as $element )
+                {
+                    array_unshift($distribution, $element);
+                }
+            }
+        }
+
+        // TBD: Health management : high => worst, low => best
+        // TBD: Xp management: get a die => good, early game => good, late game => bad, more dice => bad
+        // TBD: oriented rush, remove 3rd type if low?
+        if ( $this->getAILevel() >= 3 )
+        {
+            Log_LIB::trace('TBD');
         }
 
         $diceToReroll = array_slice( $distribution, 0, $diceNumberToReroll );

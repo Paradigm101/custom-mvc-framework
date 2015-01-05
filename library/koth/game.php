@@ -132,16 +132,29 @@ abstract class Koth_LIB_Game
         static::getModel()->setGameForScore();
     }
 
-    static public function isQueuedPvP( $idUser, $idHero )
+    static public function isQueuedInHeroPvP( $idUser, $idHero )
     {
-        return static::getModel()->isQueuedPvP( $idUser, $idHero );
+        return static::getModel()->isQueuedInHeroPvP( $idUser, $idHero );
     }
 
-    static public function queuePvP( $idUser, $idHero )
+    static public function isQueuedInRandomPvP( $idUser )
     {
-        if ( !static::isQueuedPvP( $idUser, $idHero ) )
+        return static::getModel()->isQueuedInRandomPvP( $idUser );
+    }
+
+    static public function queueRandomPvP( $idUser )
+    {
+        if ( !static::isQueuedInRandomPvP( $idUser ) )
         {
-            static::getModel()->queuePvP( $idUser, $idHero );
+            static::getModel()->queueRandomPvP( $idUser );
+        }
+    }
+
+    static public function queueHeroPvP( $idUser, $idHero )
+    {
+        if ( !static::isQueuedInHeroPvP( $idUser, $idHero ) )
+        {
+            static::getModel()->queueHeroPvP( $idUser, $idHero );
         }
     }
 
@@ -150,34 +163,57 @@ abstract class Koth_LIB_Game
         return static::getModel()->isPlayingPvP( $idUser );
     }
 
-    static public function playPvP( $idUser, $idHero )
+    static public function removeFromPvPQueue( $idUser )
+    {
+        return static::getModel()->removeFromPvPQueue( $idUser );
+    }
+
+    static public function playHeroPvP( $idUser, $idHero )
     {
         if ( !static::isPlayingPvP( $idUser ) )
         {
-            if ( $opponent = static::getModel()->isOpponentInQueuePvP( $idUser, $idHero ) )
+            if ( $opponent = static::getModel()->getOpponentInHeroPvPQueue( $idUser, $idHero ) )
             {
-                static::getModel()->removeFromPvPQueue( $opponent['idUser'] );
-                static::getModel()->removeFromPvPQueue( $idUser );
+                static::removeFromPvPQueue( $opponent->idUser );
+                static::removeFromPvPQueue( $idUser );
 
-                static::startGame(array( 'id' => $idHero, 'idUser' => $idUser ), $opponent );
+                static::startGame( $idUser, $idHero, $opponent->idUser, $opponent->idHero );
             }
             else
             {
-                static::queuePvP( $idUser, $idHero );
+                static::queueHeroPvP( $idUser, $idHero );
             }
         }
     }
 
-    static public function startGame( $firstHero, $secondHero )
+    static public function playRandomPvP( $idUser )
     {
-        static::getModel()->startGame( $firstHero, $secondHero );
+        if ( !static::isPlayingPvP( $idUser ) )
+        {
+            if ( $idOpponent = static::getModel()->getOpponentInRandomPvPQueue() )
+            {
+                static::removeFromPvPQueue( $idOpponent );
+                static::removeFromPvPQueue( $idUser );
+
+                static::startGame( $idUser, rand(1, 6), $idOpponent, rand(1, 6), rand(1, 7), rand(1, 7) );
+            }
+            else
+            {
+                static::queueRandomPvP( $idUser );
+            }
+        }
+    }
+
+    static public function startGame( $idUser1, $idHeroMonster1, $idUser2, $idHeroMonster2, $level1 = 0, $level2 = 0 )
+    {
+        static::getModel()->startGame( $idUser1, $idHeroMonster1, $idUser2, $idHeroMonster2, $level1, $level2 );
 
         if ( static::getModel()->isActiveAI()
          && !static::getModel()->isEve() )
         {
             static::playAI();
         }
-        
+
         if ( static::getModel()->isEve() )
         {
             while( !static::getModel()->isGameCompleted() )
@@ -258,11 +294,11 @@ abstract class Koth_LIB_Game
             // Active player won the game, Close game
             static::getModel()->activeWinGame();
 
-            // Close game for EvE as there will be no human action
-            if ( static::getModel()->isEvE() )
-            {
-                static::closeGame();
-            }
+//            // Close game for EvE as there will be no human action
+//            if ( static::getModel()->isEvE() )
+//            {
+//                static::closeGame();
+//            }
 
             // Nothing else to do
             return;
@@ -282,7 +318,6 @@ abstract class Koth_LIB_Game
     }
 
     // Player acknowledges end game scores
-    // TBD: manage PvP
     static public function closeGame( $idGame )
     {
         static::getModel()->closeGame( $idGame );

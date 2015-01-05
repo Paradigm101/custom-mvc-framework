@@ -15,39 +15,48 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
 <hr/>
 
 <!-- User's heroes -->
+<div class="row">
 <?
     foreach ( $heroes as $hero )
     {
 ?>
-<div class="row">
-    <div class="col-xs-1">
-        <strong><?= $hero->label ?></strong><br/>
-        Level <?= $hero->level ?>
+    <div class="col-xs-6">
+        <div class="row">
+            <div class="col-xs-2">
+                <strong><?= $hero->label ?></strong><br/>
+                Level <?= $hero->level ?>
+            </div>
+            <div class="col-xs-1">
+                <?php if ( !Koth_LIB_Game::isQueuedInHeroPvP( Session_LIB::getUserId(), $hero->id ) ) { ?>
+                    <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_hero_pvp">PvP</button>
+                <?php } ?>
+            </div>
+            <div class="col-xs-9"></div>
+        </div>
+        <div style="margin-bottom:20px;" class="progress" title="<?= $hero->experience . '/' . $hero->next_level_xp ?> Xp">
+            <div class="progress-bar" style="width: <?= floor( $hero->experience / $hero->next_level_xp * 100 ) ?>%;">
+                <?= $hero->experience . '/' . $hero->next_level_xp ?>
+            </div>
+        </div>
     </div>
-    <div class="col-xs-1">
-        <?php if ( !Koth_LIB_Game::isQueuedPvP( Session_LIB::getUserId(), $hero->id ) ) { ?>
-            <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_hero_pvp">PvP</button>
-        <?php } ?>
-    </div>
-    <div class="col-xs-10"></div>
-</div>
-<div style="margin-bottom:30px;" class="progress" title="<?= $hero->experience . '/' . $hero->next_level_xp ?> Xp">
-    <div class="progress-bar" style="width: <?= floor( $hero->experience / $hero->next_level_xp * 100 ) ?>%;">
-        <?= $hero->experience . '/' . $hero->next_level_xp ?>
-    </div>
-</div>
 <?
     }
 ?>
+</div>
+
+<!--------------------------------------------------------------- DEBUG --------------------------------------------------------------->
+<div class="text-center">
+    <button type="button" class="btn btn-default" id="koth_btn_random_pve">Random PvE</button>
+    <?php if ( !Koth_LIB_Game::isQueuedInRandomPvP( Session_LIB::getUserId() ) ) { ?>
+        <button type="button" class="btn btn-default" id="koth_btn_random_pvp">Random PvP</button>
+    <?php } ?>
+</div>
 
 <!-- Margin -->
 <hr/>
 
 <div class="row">
 <!--------------------------------------------------------------- Hero 1 --------------------------------------------------------------->
-
-    <!-- Margin -->
-    <div class="col-xs-1"></div>
 
     <!-- Hero selector -->
     <div class="col-xs-2">
@@ -85,9 +94,6 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
 
 <!--------------------------------------------------------------- Hero 2 --------------------------------------------------------------->
 
-    <!-- Margin -->
-    <div class="col-xs-1"></div>
-
     <!-- Hero selector -->
     <div class="col-xs-2">
         <div class="dropup" style="float: left">
@@ -123,7 +129,7 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
     </div>
 
     <!-- Margin -->
-    <div class="col-xs-2"></div>
+    <div class="col-xs-5"></div>
 
 </div><!-- End of row -->
 
@@ -256,10 +262,9 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
 <!-- Margin -->
 <br/>
 
-<!--------------------------------------------------------------- Starts --------------------------------------------------------------->
+<!--------------------------------------------------------------- DEBUG --------------------------------------------------------------->
 <div class="text-center">
-    <button type="button" class="btn btn-default" id="koth_btn_start">Start PvE</button>
-    <button type="button" class="btn btn-default" id="koth_btn_start_eve">Start EvE</button>
-    <button type="button" class="btn btn-default" id="koth_btn_start_pvp">Start PvP</button>
+    <button type="button" class="btn btn-default" id="koth_btn_debug_pve">Debug PvE</button>
+    <button type="button" class="btn btn-default" id="koth_btn_debug_eve">Debug EvE</button>
+    <button type="button" class="btn btn-default" id="koth_btn_debug_pvp">Debug PvP</button>
 </div>
-

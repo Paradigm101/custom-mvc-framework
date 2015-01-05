@@ -1,4 +1,130 @@
 
+// Random PvE
+$('#koth_btn_random_pve').click( function (event)
+{
+    event.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:     REQUEST_TYPE_AJAX,
+            rn:     'koth_random_pve'
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Random PvP
+$('#koth_btn_random_pvp').click( function (event)
+{
+    event.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:     REQUEST_TYPE_AJAX,
+            rn:     'koth_random_pvp'
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Debug PvE
+$('#koth_btn_debug_pve').click( function (event)
+{
+    event.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:         REQUEST_TYPE_AJAX,
+            rn:         'koth_debug_pve',
+            id_hero:    $('#heroBtn1').val(),
+            level:      $('#heroLvLBtn1').val(),
+            id_monster: $('#opBtn1').val()
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Debug EvE
+$('#koth_btn_debug_eve').click( function (event)
+{
+    event.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:             REQUEST_TYPE_AJAX,
+            rn:             'koth_debug_eve',
+            id_monster1:    $('#opBtn1').val(),
+            id_monster2:    $('#opBtn2').val(),
+            occurence:      $('#eveOcBtn').val()
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Debug PvP
+$('#koth_btn_debug_pvp').click( function (event)
+{
+    event.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:         REQUEST_TYPE_AJAX,
+            rn:         'koth_debug_pvp',
+            id_hero1:   $('#heroBtn1').val(),
+            level1:     $('#heroLvLBtn1').val(),
+            id_hero2:   $('#heroBtn2').val(),
+            level2:     $('#heroLvLBtn2').val(),
+            iduser2:    2   // DEBUG
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Hero PvP
+$('[name=koth_btn_hero_pvp]').click(function(event)
+{
+    event.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:         REQUEST_TYPE_AJAX,
+            rn:         'koth_hero_pvp',
+            id_hero:    $(this).attr('id')
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
 // Refresh monster selector 1
 var refresh_monsters1 = function()
 {
@@ -101,96 +227,4 @@ $('a[name=aiLvLLia2]').click(function(event)
     event.preventDefault();
     
     refresh_monsters2();
-});
-
-$('[name=koth_btn_hero_pvp]').click(function()
-{
-    // Launch ajax that start new game
-    $.ajax({
-        type: "POST",
-        url: "",
-        data: {
-            rt:         REQUEST_TYPE_AJAX,      // request type
-            rn:         'koth_queue_pvp',       // request name
-            id_hero:    $(this).attr('id')
-        },
-        success: function()
-        {
-            location.reload();
-        }
-    });
-});
-
-// Button start new game vs AI
-$('#koth_btn_start').click( function (event)
-{
-    // No mess-up!
-    event.preventDefault();
-
-    // Launch ajax that start new game
-    $.ajax({
-        type: "POST",
-        url: "",
-        data: {
-            rt:         REQUEST_TYPE_AJAX,  // request type
-            rn:         'koth_start',       // request name
-            id_hero:    $('#heroBtn1').val(),
-            level:      $('#heroLvLBtn1').val(),
-            id_monster: $('#opBtn1').val()
-        },
-        success: function()
-        {
-            location.reload();
-        }
-    });
-});
-
-// Button start new game AI vs AI (EvE)
-$('#koth_btn_start_eve').click( function (event)
-{
-    // No mess-up!
-    event.preventDefault();
-
-    // Launch ajax that start new game
-    $.ajax({
-        type: "POST",
-        url: "",
-        data: {
-            rt:             REQUEST_TYPE_AJAX,  // request type
-            rn:             'koth_start_eve',       // request name
-            id_monster1:    $('#opBtn1').val(),
-            id_monster2:    $('#opBtn2').val(),
-            occurence:      $('#eveOcBtn').val()
-        },
-        success: function()
-        {
-            location.reload();
-        }
-    });
-});
-
-// Button start new game PvP
-$('#koth_btn_start_pvp').click( function (event)
-{
-    // No mess-up!
-    event.preventDefault();
-
-    // Launch ajax that start new game
-    $.ajax({
-        type: "POST",
-        url: "",
-        data: {
-            rt:         REQUEST_TYPE_AJAX,      // request type
-            rn:         'koth_start_pvp',       // request name
-            id_hero1:   $('#heroBtn1').val(),
-            level1:     $('#heroLvLBtn1').val(),
-            id_hero2:   $('#heroBtn2').val(),
-            level2:     $('#heroLvLBtn2').val(),
-            iduser2:    2   // DEBUG
-        },
-        success: function()
-        {
-            location.reload();
-        }
-    });
 });

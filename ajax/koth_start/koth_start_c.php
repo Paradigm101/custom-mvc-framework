@@ -7,11 +7,10 @@ abstract class Koth_Start_AJA_C extends Base_AJA_C
     {
         if ( Koth_LIB_Game::getStatus() == KOTH_STATUS_NOT_STARTED )
         {
-            Koth_LIB_Game::startGame( array( 'name'   => Url_LIB::getRequestParam('name') ? : 'cleric',
+            Koth_LIB_Game::startGame( array( 'id'     => Url_LIB::getRequestParam('id_hero') ? : 3,
                                              'level'  => Url_LIB::getRequestParam('level') ? : 3,
                                              'idUser' => Session_LIB::getUserId() ),
-                                      array( 'name'   => Url_LIB::getRequestParam('monster') ? : '5_3_3_3_2',
-                                             'level'  => 0,
+                                      array( 'id'     => Url_LIB::getRequestParam('id_monster') ? : 19,
                                              'idUser' => 0 ) );
         }
     }

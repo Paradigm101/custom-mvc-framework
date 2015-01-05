@@ -9,10 +9,10 @@ abstract class Koth_Start_Eve_AJA_C extends Base_AJA_C
 
         for( $i = 0; $i < $num ; $i++ )
         {
-            Koth_LIB_Game::startGame( array( 'name'   => Url_LIB::getRequestParam('monster1') ? : '5_3_3_3_2',
+            Koth_LIB_Game::startGame( array( 'id'     => Url_LIB::getRequestParam('id_monster1') ? : 19,
                                              'level'  => 0,
                                              'idUser' => 0 ),
-                                      array( 'name'   => Url_LIB::getRequestParam('monster2') ? : '3_3_3_5_2',
+                                      array( 'id'     => Url_LIB::getRequestParam('id_monster2') ? : 23,
                                              'level'  => 0,
                                              'idUser' => 0 ) );
         }

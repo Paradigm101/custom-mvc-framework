@@ -9,6 +9,7 @@ class Koth_Get_Monsters_AJA_M extends Base_AJA_M
 
         $query = <<<EOD
 SELECT
+    id,
     name,
     label
 FROM

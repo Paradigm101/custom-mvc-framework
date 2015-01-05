@@ -132,6 +132,42 @@ abstract class Koth_LIB_Game
         static::getModel()->setGameForScore();
     }
 
+    static public function isQueuedPvP( $idUser, $idHero )
+    {
+        return static::getModel()->isQueuedPvP( $idUser, $idHero );
+    }
+
+    static public function queuePvP( $idUser, $idHero )
+    {
+        if ( !static::isQueuedPvP( $idUser, $idHero ) )
+        {
+            static::getModel()->queuePvP( $idUser, $idHero );
+        }
+    }
+
+    static public function isPlayingPvP( $idUser )
+    {
+        return static::getModel()->isPlayingPvP( $idUser );
+    }
+
+    static public function playPvP( $idUser, $idHero )
+    {
+        if ( !static::isPlayingPvP( $idUser ) )
+        {
+            if ( $opponent = static::getModel()->isOpponentInQueuePvP( $idUser, $idHero ) )
+            {
+                static::getModel()->removeFromPvPQueue( $opponent['idUser'] );
+                static::getModel()->removeFromPvPQueue( $idUser );
+
+                static::startGame(array( 'id' => $idHero, 'idUser' => $idUser ), $opponent );
+            }
+            else
+            {
+                static::queuePvP( $idUser, $idHero );
+            }
+        }
+    }
+
     static public function startGame( $firstHero, $secondHero )
     {
         static::getModel()->startGame( $firstHero, $secondHero );

@@ -283,6 +283,108 @@ EOD;
         }
     }
 
+    public function isPlayingPvP( $idUser )
+    {
+        $idUser = $this->getQuotedValue($idUser + 0);
+
+        // Check user not already playing pvp
+        $query = <<<EOD
+SELECT
+    COUNT(1) is_playing
+FROM
+    koth_players p
+    INNER JOIN koth_games g ON
+        g.id           = p.id_game
+    AND g.is_completed = 0
+        INNER JOIN koth_players p2 ON
+            p2.id_game = g.id
+        AND p2.id_user != $idUser
+        AND p2.id_user != 0
+WHERE
+    p.id_user = $idUser
+EOD;
+        $this->query($query);
+        return ( $this->fetchNext()->is_playing ? true : false );
+    }
+
+    public function isQueuedPvP( $idUser, $idHero )
+    {
+        $idUser = $this->getQuotedValue( $idUser + 0 );
+        $idHero = $this->getQuotedValue( $idHero + 0 );
+
+        $query = <<<EOD
+SELECT
+    COUNT(1)    is_queued
+FROM
+    koth_pvp_queue
+WHERE
+    id_hero = $idHero
+AND id_user = $idUser
+EOD;
+        $this->query($query);
+        return ( $this->fetchNext()->is_queued ? true : false );
+    }
+
+    // TBD: find best level match first
+    public function isOpponentInQueuePvP( $idUser, $idHero )
+    {
+        $idUser = $this->getQuotedValue( $idUser + 0 );
+        $idHero = $this->getQuotedValue( $idHero );
+
+        $query = <<<EOD
+SELECT
+    pq.id_hero     id_hero,
+    pq.id_user     id_user
+FROM
+    koth_pvp_queue pq
+    INNER JOIN koth_users_heroes uh1 ON
+        uh1.id_user = pq.id_user
+    AND uh1.id_hero = pq.id_hero
+        INNER JOIN koth_users_heroes uh2 ON
+            ABS( uh2.level - uh1.level ) < 4
+        AND uh2.id_user = $idUser
+        AND uh2.id_hero = $idHero
+WHERE
+    pq.id_user != $idUser
+ORDER BY
+    ABS( uh2.level - uh1.level )
+EOD;
+        $this->query($query);
+        $result = $this->fetchNext();
+
+        if ( !$result )
+        {
+            return null;
+        }
+
+        return array( 'id' => $result->id_hero, 'idUser' => $result->id_user );
+    }
+
+    public function queuePvP( $idUser, $idHero )
+    {
+        $idUser = $this->getQuotedValue($idUser + 0);
+        $idHero = $this->getQuotedValue(0 + $idHero);
+
+        $query = <<<EOD
+INSERT INTO
+    koth_pvp_queue (
+        id_user,
+        id_hero
+    )
+SELECT
+    $idUser,
+    $idHero
+EOD;
+        $this->query($query);
+    }
+
+    public function removeFromPvPQueue( $idUser )
+    {
+        $idUser = $this->getQuotedValue( 0 + $idUser );
+
+        $this->query("DELETE FROM koth_pvp_queue WHERE id_user = $idUser");
+    }
+
     public function startGame( $firstPlayer, $secondPlayer )
     {
         // Create game
@@ -315,18 +417,20 @@ EOD;
 
         foreach ( array( $firstPlayer, $secondPlayer ) as $player )
         {
-            $rank        = $this->getQuotedValue( $player['rank'] + 0 );
-            $diceNumber  = $this->getQuotedValue( floor( $player['rank'] * KOTH_STARTING_DICE / 2 ) + 0 );
-            $playerName  = $this->getQuotedValue( $player['name'] );
+            $rank          = $this->getQuotedValue( $player['rank'] + 0 );
+            $diceNumber    = $this->getQuotedValue( floor( $player['rank'] * KOTH_STARTING_DICE / 2 ) + 0 );
+            $idHeroMonster = $this->getQuotedValue( 0 + $player['id'] );
 
             // Human user
             // TBD: remove hero level (only debug)
             if ( $player['idUser'] )
             {
                 $idUser    = $this->getQuotedValue( $player['idUser'] + 0 );
-                $heroLevel = $this->getQuotedValue( $player['level'] + 0 );
+                $heroLevel = $this->getQuotedValue( 0 + ( array_key_exists('level', $player) ? $player['level'] : 0 ) );
 
-                $query = <<<EOD
+                if ( $heroLevel )
+                {
+                    $query = <<<EOD
 INSERT INTO
     koth_players (
         id_user,
@@ -355,8 +459,46 @@ FROM
         hl.id_hero = h.id
     AND hl.level   = $heroLevel
 WHERE
-    h.name = $playerName
+    h.id = $idHeroMonster
 EOD;
+                }
+                else
+                {
+                    $query = <<<EOD
+INSERT INTO
+    koth_players (
+        id_user,
+        id_game,
+        id_hero,
+        level,
+        current_mp,
+        current_hp,
+        current_xp,
+        rank,
+        dice_number
+    )
+SELECT
+    $idUser,
+    {$this->idGame},
+    h.id,
+    hl.level,
+    hl.start_mp,
+    hl.start_hp,
+    hl.start_xp,
+    $rank,
+    $diceNumber
+FROM
+    koth_heroes h
+    INNER JOIN koth_users_heroes uh ON
+        uh.id_hero = h.id
+    AND uh.id_user = $idUser
+        INNER JOIN koth_heroes_levels hl ON
+            hl.level   = uh.level
+        AND hl.id_hero = uh.id_hero
+WHERE
+    h.id = $idHeroMonster
+EOD;
+                }
             }
             // AI
             else
@@ -387,10 +529,10 @@ SELECT
 FROM
     koth_monsters
 WHERE
-    name = $playerName
+    id = $idHeroMonster
 EOD;
             }
-            
+
             $this->query($query);
         }
 

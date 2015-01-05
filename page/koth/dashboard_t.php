@@ -25,7 +25,9 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
         Level <?= $hero->level ?>
     </div>
     <div class="col-xs-1">
-        <button type="button" class="btn btn-default" id="<?= $hero->name ?>" name="koth_btn_hero_pvp">PvP</button>
+        <?php if ( !Koth_LIB_Game::isQueuedPvP( Session_LIB::getUserId(), $hero->id ) ) { ?>
+            <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_hero_pvp">PvP</button>
+        <?php } ?>
     </div>
     <div class="col-xs-10"></div>
 </div>
@@ -57,7 +59,7 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
             <?php
                 foreach ( $heroes as $hero )
                 {
-                    echo '<li><a href="#" data-value="' . $hero->name . '">' . $hero->label . ' 1</a></li>' . "\n";
+                    echo '<li><a href="#" data-value="' . $hero->id . '">' . $hero->label . ' 1</a></li>' . "\n";
                 }
             ?>
             </ul>
@@ -68,7 +70,7 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
     <div class="col-xs-2">
         <div class="dropup" style="float: left">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="heroLvLBtn1">
-                Hero2 Lvl&nbsp;<span class="caret"></span>
+                Hero1 Lvl&nbsp;<span class="caret"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-change-label">
             <?php
@@ -96,7 +98,7 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
             <?php
                 foreach ( $heroes as $hero )
                 {
-                    echo '<li><a href="#" data-value="' . $hero->name . '">' . $hero->label . ' 2</a></li>' . "\n";
+                    echo '<li><a href="#" data-value="' . $hero->id . '">' . $hero->label . ' 2</a></li>' . "\n";
                 }
             ?>
             </ul>

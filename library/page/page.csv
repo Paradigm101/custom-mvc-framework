@@ -6,4 +6,7 @@ commands,       m, 1, Co<strong>m</strong>mands,            Allow user the send 
 probabilities,  i, 1, Probab<strong>i</strong>lities,       Hearthstone probabilities
 game,           g, 1, <strong>G</strong>ame,                Testing page for games: drag-and-drop, switch images, ...
 koth,           k, 1, <strong>K</strong>ing of the Hill,    King of the hill game!
+koth_dashboard, d, 1, Koth - <strong>D</strong>ashboard,    Dashboard for Koth
+koth_pve,       e, 1, Koth - Pv<strong>E</strong>,          Koth - PvE
+koth_pvp,       f, 1, Koth - PvP,                           Koth - PvP
 about,          o, 1, Ab<strong>o</strong>ut,               About page : my resume

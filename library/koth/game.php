@@ -127,81 +127,9 @@ abstract class Koth_LIB_Game
         return static::getModel()->getIdInactivePlayer();
     }
 
-    static public function setGameForScore()
+    static public function setGame( $idUser, $isPvP = true, $isForScore = false )
     {
-        static::getModel()->setGameForScore();
-    }
-
-    static public function isQueuedInHeroPvP( $idUser, $idHero )
-    {
-        return static::getModel()->isQueuedInHeroPvP( $idUser, $idHero );
-    }
-
-    static public function isQueuedInRandomPvP( $idUser )
-    {
-        return static::getModel()->isQueuedInRandomPvP( $idUser );
-    }
-
-    static public function queueRandomPvP( $idUser )
-    {
-        if ( !static::isQueuedInRandomPvP( $idUser ) )
-        {
-            static::getModel()->queueRandomPvP( $idUser );
-        }
-    }
-
-    static public function queueHeroPvP( $idUser, $idHero )
-    {
-        if ( !static::isQueuedInHeroPvP( $idUser, $idHero ) )
-        {
-            static::getModel()->queueHeroPvP( $idUser, $idHero );
-        }
-    }
-
-    static public function isPlayingPvP( $idUser )
-    {
-        return static::getModel()->isPlayingPvP( $idUser );
-    }
-
-    static public function removeFromPvPQueue( $idUser )
-    {
-        return static::getModel()->removeFromPvPQueue( $idUser );
-    }
-
-    static public function playHeroPvP( $idUser, $idHero )
-    {
-        if ( !static::isPlayingPvP( $idUser ) )
-        {
-            if ( $opponent = static::getModel()->getOpponentInHeroPvPQueue( $idUser, $idHero ) )
-            {
-                static::removeFromPvPQueue( $opponent->idUser );
-                static::removeFromPvPQueue( $idUser );
-
-                static::startGame( $idUser, $idHero, $opponent->idUser, $opponent->idHero );
-            }
-            else
-            {
-                static::queueHeroPvP( $idUser, $idHero );
-            }
-        }
-    }
-
-    static public function playRandomPvP( $idUser )
-    {
-        if ( !static::isPlayingPvP( $idUser ) )
-        {
-            if ( $idOpponent = static::getModel()->getOpponentInRandomPvPQueue() )
-            {
-                static::removeFromPvPQueue( $idOpponent );
-                static::removeFromPvPQueue( $idUser );
-
-                static::startGame( $idUser, rand(1, 6), $idOpponent, rand(1, 6), rand(1, 7), rand(1, 7) );
-            }
-            else
-            {
-                static::queueRandomPvP( $idUser );
-            }
-        }
+        static::getModel()->setGame( $idUser, $isPvP, $isForScore );
     }
 
     static public function startGame( $idUser1, $idHeroMonster1, $idUser2, $idHeroMonster2, $level1 = 0, $level2 = 0 )
@@ -322,4 +250,101 @@ abstract class Koth_LIB_Game
     {
         static::getModel()->closeGame( $idGame );
     }
+    
+    /******************************************************************* PvP *******************************************************************/
+    
+    static public function isPlayingPvP( $idUser )
+    {
+        return static::getModel()->isPlayingPvP( $idUser );
+    }
+
+    static public function removeFromPvPQueue( $idUser )
+    {
+        return static::getModel()->removeFromPvPQueue( $idUser );
+    }
+
+    /*************************** Random ****************************/
+    
+    static public function isQueuedInRandomPvP( $idUser )
+    {
+        return static::getModel()->isQueuedInRandomPvP( $idUser );
+    }
+
+    static public function queueRandomPvP( $idUser )
+    {
+        if ( !static::isQueuedInRandomPvP( $idUser ) )
+        {
+            static::getModel()->queueRandomPvP( $idUser );
+        }
+    }
+
+    static public function playRandomPvP( $idUser )
+    {
+        if ( !static::isPlayingPvP( $idUser ) )
+        {
+            if ( $idOpponent = static::getModel()->getOpponentInRandomPvPQueue() )
+            {
+                static::removeFromPvPQueue( $idOpponent );
+                static::removeFromPvPQueue( $idUser );
+
+                static::startGame( $idUser, rand(1, 6), $idOpponent, rand(1, 6), rand(1, 7), rand(1, 7) );
+            }
+            else
+            {
+                static::queueRandomPvP( $idUser );
+            }
+        }
+    }
+
+    /*************************** Hero ****************************/
+    
+    static public function isQueuedInHeroPvP( $idUser, $idHero )
+    {
+        return static::getModel()->isQueuedInHeroPvP( $idUser, $idHero );
+    }
+
+    static public function queueHeroPvP( $idUser, $idHero )
+    {
+        if ( !static::isQueuedInHeroPvP( $idUser, $idHero ) )
+        {
+            static::getModel()->queueHeroPvP( $idUser, $idHero );
+        }
+    }
+
+    static public function playHeroPvP( $idUser, $idHero )
+    {
+        if ( !static::isPlayingPvP( $idUser ) )
+        {
+            if ( $opponent = static::getModel()->getOpponentInHeroPvPQueue( $idUser, $idHero ) )
+            {
+                static::removeFromPvPQueue( $opponent->idUser );
+                static::removeFromPvPQueue( $idUser );
+
+                static::startGame( $idUser, $idHero, $opponent->idUser, $opponent->idHero );
+            }
+            else
+            {
+                static::queueHeroPvP( $idUser, $idHero );
+            }
+        }
+    }
+
+    /******************************************************************* PvE *******************************************************************/
+    
+    static public function isPlayingPvE( $idUser )
+    {
+        return static::getModel()->isPlayingPvE( $idUser );
+    }
+
+    static public function playRandomPvE( $idUser )
+    {
+        if ( !static::isPlayingPvE( $idUser ) )
+        {
+            $heroLevel = rand(1, 7);
+            $idMonster = static::getModel()->getRandomMonster( $heroLevel );
+
+            static::startGame( $idUser, rand(1, 6), 0, $idMonster, $heroLevel );
+        }
+    }
+
 }

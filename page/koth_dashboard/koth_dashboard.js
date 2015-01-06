@@ -8,8 +8,10 @@ $('#koth_btn_random_pve').click( function (event)
         type: "POST",
         url: "",
         data: {
-            rt:     REQUEST_TYPE_AJAX,
-            rn:     'koth_random_pve'
+            rt:         REQUEST_TYPE_AJAX,
+            rn:         'koth_play',
+            isRandom:   1,
+            isPvE:      1
         },
         success: function()
         {
@@ -27,8 +29,10 @@ $('#koth_btn_random_pvp').click( function (event)
         type: "POST",
         url: "",
         data: {
-            rt:     REQUEST_TYPE_AJAX,
-            rn:     'koth_random_pvp'
+            rt:         REQUEST_TYPE_AJAX,
+            rn:         'koth_play',
+            isRandom:   1,
+            isPvP:      1
         },
         success: function()
         {
@@ -47,7 +51,9 @@ $('#koth_btn_debug_pve').click( function (event)
         url: "",
         data: {
             rt:         REQUEST_TYPE_AJAX,
-            rn:         'koth_debug_pve',
+            rn:         'koth_play',
+            isDebug:    1,
+            isPvE:      1,
             id_hero:    $('#heroBtn1').val(),
             level:      $('#heroLvLBtn1').val(),
             id_monster: $('#opBtn1').val()
@@ -69,7 +75,9 @@ $('#koth_btn_debug_eve').click( function (event)
         url: "",
         data: {
             rt:             REQUEST_TYPE_AJAX,
-            rn:             'koth_debug_eve',
+            rn:             'koth_play',
+            isDebug:        1,
+            isEvE:          1,
             id_monster1:    $('#opBtn1').val(),
             id_monster2:    $('#opBtn2').val(),
             occurence:      $('#eveOcBtn').val()
@@ -91,12 +99,13 @@ $('#koth_btn_debug_pvp').click( function (event)
         url: "",
         data: {
             rt:         REQUEST_TYPE_AJAX,
-            rn:         'koth_debug_pvp',
+            rn:         'koth_play',
+            isDebug:    1,
+            isPvP:      1,
             id_hero1:   $('#heroBtn1').val(),
             level1:     $('#heroLvLBtn1').val(),
             id_hero2:   $('#heroBtn2').val(),
-            level2:     $('#heroLvLBtn2').val(),
-            iduser2:    2   // DEBUG
+            level2:     $('#heroLvLBtn2').val()
         },
         success: function()
         {
@@ -115,7 +124,9 @@ $('[name=koth_btn_hero_pvp]').click(function(event)
         url: "",
         data: {
             rt:         REQUEST_TYPE_AJAX,
-            rn:         'koth_hero_pvp',
+            rn:         'koth_play',
+            isPvP:      1,
+            isHero:     1,
             id_hero:    $(this).attr('id')
         },
         success: function()

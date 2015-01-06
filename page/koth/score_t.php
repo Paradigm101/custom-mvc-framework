@@ -1,8 +1,5 @@
 <?php
 
-// Set game to show
-Koth_LIB_Game::setGameForScore();
-
 // Player display order
 $idFirstPlayer  = Koth_LIB_Game::getIdUserPlayer();
 $idSecondPlayer = Koth_LIB_Game::getIdOtherPlayer();
@@ -65,7 +62,7 @@ $message .= ( $experience ? ALL_EOL . 'Experience points won : ' . $experience .
 <!-- close button -->
 <div class="text-center">
     <button type="button" class="btn btn-default" id="koth_btn_close_game" id_game="<?= $gameResults->idGame ?>" >
-        <i class="glyphicon glyphicon-check"></i>&nbsp;Go back to dashboard
+        <i class="glyphicon glyphicon-check"></i>&nbsp;Acknowledge scores
     </button>
 </div>
 

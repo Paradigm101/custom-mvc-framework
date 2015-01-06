@@ -3,9 +3,10 @@
 // SITE_ROOT is the webserver for redirection
 define( 'SITE_ROOT' , 'http://127.0.0.1/<your_website_name>' );      // Customize
 
-// Environment
-define('ENVIRONMENT', 'test');
-//define('ENVIRONMENT', 'production');
+// Environments
+define('ENV_TEST', 'test');
+define('ENV_PROD', 'production');
+define('ENV', ENV_TEST);
 
 /* Options in case a page is not found
  *      redirect: redirect user to default page

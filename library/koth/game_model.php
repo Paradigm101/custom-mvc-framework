@@ -236,48 +236,105 @@ EOD;
         return ( $this->fetchNext()->is_victory ? true : false );
     }
 
-    // Game is finished and user has to acknowledge the score
-    public function isGameScoreForUser()
+    // Game is finished and user has to acknowledge the scores
+    public function isGameInScores()
     {
-        $idUser = $this->getQuotedValue( 0 + Session_LIB::getUserId() );
-
-        $this->query("SELECT g.id FROM koth_games g INNER JOIN koth_players p ON p.id_user = $idUser AND p.id_game = g.id AND p.ack_score = 0 WHERE g.is_completed = 1");
-        $result = $this->fetchNext();
-        
-        return ( $result ? true : false );
+        $query = <<<EOD
+SELECT
+    p.id
+FROM
+    koth_players p
+    INNER JOIN koth_games g ON
+        g.id           = p.id_game
+    AND g.is_completed = 1
+WHERE
+    p.id_user   = {$this->idUser}
+AND p.id_game   = {$this->idGame}
+AND p.ack_score = 0
+EOD;
+        $this->query($query);
+        return ( $this->fetchNext() ? true : false );
     }
 
-    public function isGameActiveForUser()
+    public function isGameRunning()
     {
-        return $this->idGame;
+        $query = <<<EOD
+SELECT
+    p.id
+FROM
+    koth_players p
+    INNER JOIN koth_games g ON
+        g.id           = p.id_game
+    AND g.is_completed = 0
+WHERE
+    p.id_user   = {$this->idUser}
+AND p.id_game   = {$this->idGame}
+AND p.ack_score = 0
+EOD;
+        $this->query($query);
+        return ( $this->fetchNext() ? true : false );
     }
 
-    public function setGame( $idUser, $isPvP = true, $isForScore = false )
+    // Set game PvP or PvE for user
+    // Display scores first
+    public function setGame( $idUser, $isPvP = true )
     {
         $this->idUser = $this->getQuotedValue( 0 + $idUser );
+        $pvpCdt       = ' p2.id_user ' . ( $isPvP ? '!' : '' ) . '= 0 ';
 
-        $scoreCdt = ' g.is_completed = ' . ( $isForScore ? '1' : '0' ) . ' ';
-        $pvpCdt   = ' p2.id_user ' . ( $isPvP ? '!' : '' ) . '= 0 ';
-
+        // First let's get scores
         $query = <<<EOD
 SELECT
     g.id
 FROM
     koth_games g
     INNER JOIN koth_players p ON
-        p.id_user = $idUser
+        p.id_user = {$this->idUser}
     AND p.id_game = g.id
     AND p.ack_score = 0
     INNER JOIN koth_players p2 ON
-        p2.id_user != $idUser
+        p2.id_user != {$this->idUser}
     AND p2.id_game = g.id
     AND $pvpCdt
 WHERE
-    $scoreCdt
+    g.is_completed = 1
 EOD;
         $this->query($query);
         $result = $this->fetchNext();
 
+        // Scores it is!
+        if ( $result )
+        {
+            $this->idGame = $result->id;
+
+            // Update this object fields
+            $this->computeIds();
+            
+            // Nothing else to do
+            return;
+        }
+        
+        // No scores, let's try and find a running game
+        $query = <<<EOD
+SELECT
+    g.id
+FROM
+    koth_games g
+    INNER JOIN koth_players p ON
+        p.id_user = {$this->idUser}
+    AND p.id_game = g.id
+    AND p.ack_score = 0
+    INNER JOIN koth_players p2 ON
+        p2.id_user != {$this->idUser}
+    AND p2.id_game = g.id
+    AND $pvpCdt
+WHERE
+    g.is_completed = 0
+EOD;
+        $this->query($query);
+        $result = $this->fetchNext();
+
+        // Running game
         if ( $result )
         {
             $this->idGame = $result->id;
@@ -1093,7 +1150,7 @@ EOD;
 
         return $result;
     }
-
+    
     /******************************************************************* PvE *******************************************************************/
     // PvE if not EvE and not PvP (and an active game is running)
     public function isPvE()
@@ -1130,6 +1187,4 @@ EOD;
     {
         return $this->idActiveUser == 0 && $this->idInactiveUser == 0;
     }
-
-    
 }

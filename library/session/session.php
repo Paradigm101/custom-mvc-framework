@@ -12,7 +12,8 @@ abstract class Session_LIB {
     static private $idUser;
 
     // Starting the session, should be done before the page creation (like in the index...)
-    static public function initSession() {
+    static public function initSession()
+    {
 
         // Set starting time of page processing now!
         Page_LIB::setStartingTime();
@@ -28,14 +29,14 @@ abstract class Session_LIB {
     }
 
     // Start session for user (log-in, ...)
-    static public function startUserSession( $idUser ) {
-
+    static public function startUserSession( $idUser )
+    {
         self::$model->startUserSession( $idUser, session_id() );
     }
 
     // Close user session (for log-out, ...)
-    static public function closeUserSession( $idUser = null ) {
-
+    static public function closeUserSession( $idUser = null )
+    {
         // No user => assume current user
         if ( !$idUser ) {
 
@@ -46,14 +47,14 @@ abstract class Session_LIB {
     }
 
     // Get user id for this session (if exists)
-    static public function getUserId() {
-
+    static public function getUserId()
+    {
         return static::$idUser;
     }
 
     // Return current active session id for any user
-    static public function getSession( $idUser = null, $is_active = true ) {
-
+    static public function getSession( $idUser = null, $is_active = true )
+    {
         // No user => assume current user
         if ( !$idUser ) {
 
@@ -73,8 +74,8 @@ abstract class Session_LIB {
     }
 
     // Check if user is logged in
-    static public function isUserLoggedIn() {
-
+    static public function isUserLoggedIn()
+    {
         return ( static::$idUser ? true : false );
     }
 
@@ -85,8 +86,8 @@ abstract class Session_LIB {
     }
     
     // Getting user's IP address
-    static public function getUserIP() {
-
+    static public function getUserIP()
+    {
         return getenv('HTTP_CLIENT_IP')?:
                getenv('HTTP_X_FORWARDED_FOR')?:
                getenv('HTTP_X_FORWARDED')?:
@@ -96,8 +97,8 @@ abstract class Session_LIB {
     }
 
     // Security check
-    static public function hasAccess( $requestName, $requestTypeCode = REQUEST_TYPE_PAGE ) {
-
+    static public function hasAccess( $requestName, $requestTypeCode = REQUEST_TYPE_PAGE )
+    {
         // Getting class Name
         $className = $requestName . '_' . convertRequestCodeToClass( $requestTypeCode ) . '_C';
 

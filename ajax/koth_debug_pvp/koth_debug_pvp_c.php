@@ -7,7 +7,7 @@ abstract class Koth_Debug_Pvp_AJA_C extends Base_AJA_C
         $idUser1 = Session_LIB::getUserId();
         $idUser2 = Url_LIB::getRequestParam('iduser2') ? : 2;
 
-        if ( ( ENVIRONMENT == 'test' )
+        if ( ( ENV == ENV_TEST )
            &&( !Koth_LIB_Game::isPlayingPvP( $idUser1 ) )
            &&( !Koth_LIB_Game::isPlayingPvP( $idUser2 ) ) )
         {

@@ -147,8 +147,7 @@
 
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                  <span class="sr-only">Toggle navigation</span>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-menu">
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
@@ -159,19 +158,21 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="header-menu">
 
-              <!-- Menu -->
-              <ul class="nav navbar-nav">
-                  <?php foreach (Page_LIB::getUserPages() as $page ) {
-                        echo '<li><a href="' . Url_LIB::getUrlForRequest($page['fileName']) . '">' . $page['headerTitle'] . '</a></li>' . "\n";
-                    } ?>
-              </ul>
+                <!-- Menu -->
+                <ul class="nav navbar-nav">
+                    <?php foreach (Page_LIB::getUserPages() as $page ) {
+                          echo '<li class="' . ( $page['fileName'] == Url_LIB::getRequestParam('rn') ? 'active' : '' ) . '">'
+                                  . '<a href="' . Url_LIB::getUrlForRequest($page['fileName']) . '">' . $page['headerTitle'] . '</a>'
+                            . '</li>' . "\n";
+                      } ?>
+                </ul>
 
-              <!-- Sign up/Log in OR Account management / Notification -->
-              <ul class="nav navbar-nav navbar-right">
+                <!-- Sign up/Log in OR Account management / Notification -->
+                <ul class="nav navbar-nav navbar-right">
 
-                <?php if ( !Session_LIB::isUserLoggedIn() ) { ?>
+                    <?php if ( !Session_LIB::isUserLoggedIn() ) { ?>
 
                     <!-- Sign-up modal -->
                     <li><a href="#signupModal" data-toggle="modal"><span class="glyphicon glyphicon-user"></span> Sign up</a></li>
@@ -179,25 +180,26 @@
                     <!-- Log-in modal -->
                     <li><a href="#loginModal" data-toggle="modal"><span class="glyphicon glyphicon-ok"></span> Log In</a></li>
 
-                <?php } else { ?>
+                    <?php } else { ?>
 
                     <!-- Account Management -->
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-home"></span> My Account <strong class="caret"></strong></a>
                         <ul class="dropdown-menu">
                             <li><a href="<?= Url_LIB::getUrlForRequest('settings') ?>"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                          <li><a href="<?= Url_LIB::getUrlForRequest('profile') ?>"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
-                          <li><a href="<?= Url_LIB::getUrlForRequest('inbox') ?>"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
-                          <li class="divider"></li>
-                          <li><a id="logoutButton" href="#"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
+                            <li><a href="<?= Url_LIB::getUrlForRequest('profile') ?>"><span class="glyphicon glyphicon-pencil"></span> Update profile</a></li>
+                            <li><a href="<?= Url_LIB::getUrlForRequest('inbox') ?>"><span class="glyphicon glyphicon-inbox"></span> Inbox</a></li>
+                            <li class="divider"></li>
+                            <li><a id="logoutButton" href="#"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
                         </ul>
                     </li>
 
-                    <!-- Notification -->
+                      <!-- Notification -->
                     <li><a href="<?= Url_LIB::getUrlForRequest('notification') ?>"><span class="glyphicon glyphicon-globe"></span></a></li>
-                <?php } ?>
+                    
+                  <?php } ?>
 
-              </ul>
+                </ul><!-- End Menu -->
 
             </div><!-- end navbar-collapse -->
           </div><!-- end container-fluid -->

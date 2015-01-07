@@ -76,3 +76,7 @@ $message .= ( $experience ? ALL_EOL . 'Experience points won : ' . $experience .
 
 <!-- margin -->
 <br/>
+
+<script type="text/javascript">
+    var isPvP = <?= Koth_LIB_Game::isInScorePvP() ? 1 : 0 ?>;
+</script>

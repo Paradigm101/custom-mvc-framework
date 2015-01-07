@@ -1,4 +1,27 @@
 
+// Dungoen PvE
+$('#koth_btn_dongeon_pve').click( function (event)
+{
+    event.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:         REQUEST_TYPE_AJAX,
+            rn:         'koth_play',
+            isPvE:      1,
+            isDungeon:  1,
+            id_hero:    $('#heroDungBtn').val(),
+            id_dungeon: $('#dungBtn').val()
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
 // Random PvE
 $('#koth_btn_random_pve').click( function (event)
 {
@@ -128,6 +151,28 @@ $('[name=koth_btn_hero_pvp]').click(function(event)
             isPvP:      1,
             isHero:     1,
             id_hero:    $(this).attr('id')
+        },
+        success: function()
+        {
+            location.reload();
+        }
+    });
+});
+
+// Adventure PvE
+$('[name=koth_btn_adventure_pve]').click(function(event)
+{
+    event.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        url: "",
+        data: {
+            rt:             REQUEST_TYPE_AJAX,
+            rn:             'koth_play',
+            isPvE:          1,
+            isAdventure:    1,
+            id_hero:        $(this).attr('id')
         },
         success: function()
         {

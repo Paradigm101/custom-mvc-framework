@@ -94,3 +94,7 @@ if ( !Koth_LIB_Game::isUserActive() )
 <div style="float:right;">
     <button type="button" class="btn btn-default" id="koth_btn_concede"><i class="glyphicon glyphicon-new-window"></i>&nbsp;Concede</button>
 </div>
+
+<script type="text/javascript">
+    var isPvP = <?= Koth_LIB_Game::isPlayingPvP() ? 1 : 0 ?>;
+</script>

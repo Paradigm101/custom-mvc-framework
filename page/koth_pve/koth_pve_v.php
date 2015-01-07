@@ -17,6 +17,10 @@ class Koth_PvE_PAG_V extends Base_PAG_V
 
             // Game score
             case KOTH_STATUS_SCORE:
+        
+                // Need URL_LIB javascript
+                Page_LIB::subscribeClassForJavascript('Url_LIB');
+                
                 return array('../koth/score');
 
             // No game

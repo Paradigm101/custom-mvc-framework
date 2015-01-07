@@ -9,13 +9,13 @@ $('#koth_btn_close_game').click( function (e)
         type: "POST",
         url: "",
         data: {
-            rt:         REQUEST_TYPE_AJAX,  // request type
-            rn:         'koth_close_game',  // request name
-            id_game:    $(this).attr('id_game')
+            rt:     REQUEST_TYPE_AJAX,  // request type
+            rn:     'koth_close_game',  // request name
+            isPvP:  isPvP
         },
         success: function()
         {
-            location.reload();
+            $(location).attr('href', getURL( 'koth_dashboard' ) );
         }
     });
 });

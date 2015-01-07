@@ -99,6 +99,22 @@ abstract class Session_LIB {
     // Security check
     static public function hasAccess( $requestName, $requestTypeCode = REQUEST_TYPE_PAGE )
     {
+        // Specific Koth
+        if (  ( $requestName == 'koth_pve' )
+            &&( $requestTypeCode == REQUEST_TYPE_PAGE )
+            &&( !Koth_LIB_Game::isPlayingPvE( Session_LIB::getUserId() ) )
+            &&( !Koth_LIB_Game::isInScorePvE( Session_LIB::getUserId() ) )  )
+        {
+            return false;
+        }
+        if (  ( $requestName == 'koth_pvp' )
+            &&( $requestTypeCode == REQUEST_TYPE_PAGE )
+            &&( !Koth_LIB_Game::isPlayingPvP( Session_LIB::getUserId() ) )
+            &&( !Koth_LIB_Game::isInScorePvP( Session_LIB::getUserId() ) )  )
+        {
+            return false;
+        }
+
         // Getting class Name
         $className = $requestName . '_' . convertRequestCodeToClass( $requestTypeCode ) . '_C';
 

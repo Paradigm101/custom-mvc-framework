@@ -23,7 +23,7 @@ abstract class Koth_LIB_Game
     {
         if ( !static::$model )
         {
-            static::$model = new Koth_LIB_Game_Model( Session_LIB::getUserId() );
+            static::$model = new Koth_LIB_Game_Model();
         }
 
         return static::$model;
@@ -140,6 +140,8 @@ abstract class Koth_LIB_Game
         {
             while( !static::getModel()->isGameCompleted() )
             {
+                // security
+                if( $i++ > 5) break;
                 static::playAI();
                 static::processEndTurn();
             }
@@ -154,19 +156,19 @@ abstract class Koth_LIB_Game
     static private function playAI()
     {
         // First roll
-        static::roll( true /* $isAI */ );
+        static::roll();
 
         // AI keep dice
         static::getModel()->keepDiceAI( 2 /* 2 rolls left */ );
         
         // Second roll
-        static::roll( true /* $isAI */ );
+        static::roll();
 
         // AI keep dice
         static::getModel()->keepDiceAI( 1 /* 2 rolls left */ );
         
         // Third roll
-        static::roll( true /* $isAI */ );
+        static::roll();
 
         // After AI plays, process end of turn
         if ( !static::getModel()->isEve() )
@@ -176,10 +178,10 @@ abstract class Koth_LIB_Game
     }
 
     // Roll for active player
-    static public function roll( $isAI = false )
+    static public function roll()
     {
         // Roll and update dice
-        static::getModel()->roll( $isAI );
+        static::getModel()->roll();
 
         // Last roll, store results
         if ( static::getStep() == KOTH_STEP_END_OF_TURN )
@@ -238,16 +240,21 @@ abstract class Koth_LIB_Game
     }
 
     // Player acknowledges end game scores
-    static public function closeGame( $idGame )
+    static public function closeGame()
     {
-        static::getModel()->closeGame( $idGame );
+        static::getModel()->closeGame();
     }
 
     /******************************************************************* PvP *******************************************************************/
     
-    static public function isPlayingPvP( $idUser )
+    static public function isPlayingPvP( $idUser = null )
     {
         return static::getModel()->isPlayingPvP( $idUser );
+    }
+
+    static public function isInScorePvP( $idUser = null )
+    {
+        return static::getModel()->isInScorePvP( $idUser );
     }
 
     static public function removeFromPvPQueue( $idUser )
@@ -353,9 +360,14 @@ abstract class Koth_LIB_Game
         }
     }
 
-    static public function isPlayingPvE( $idUser )
+    static public function isPlayingPvE( $idUser = null )
     {
         return static::getModel()->isPlayingPvE( $idUser );
+    }
+
+    static public function isInScorePvE( $idUser = null )
+    {
+        return static::getModel()->isInScorePvE( $idUser );
     }
 
     // TBD
@@ -377,7 +389,7 @@ abstract class Koth_LIB_Game
             $heroLevel = rand(1, 7);
             $idMonster = static::getModel()->getRandomMonster( $heroLevel );
 
-            static::startGame( $idUser, rand(1, 6), 0, $idMonster, $heroLevel );
+            static::startGame( $idUser, rand(1, 6), 0 /* idUser2 */ , $idMonster, $heroLevel );
         }
     }
 

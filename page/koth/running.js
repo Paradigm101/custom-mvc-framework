@@ -8,8 +8,9 @@ $('#koth_btn_roll').click( function (e)
         type: "POST",
         url: "",
         data: {
-            rt: REQUEST_TYPE_AJAX,  // request type
-            rn: 'koth_roll'         // request name
+            rt:     REQUEST_TYPE_AJAX,
+            rn:     'koth_roll',
+            isPvP:  isPvP
         },
         success: function()
         {
@@ -27,8 +28,9 @@ $('#koth_btn_ack_eot').click( function (e)
         type: "POST",
         url: "",
         data: {
-            rt: REQUEST_TYPE_AJAX,  // request type
-            rn: 'koth_ack_end'          // request name
+            rt:     REQUEST_TYPE_AJAX,
+            rn:     'koth_ack_end',
+            isPvP:  isPvP
         },
         success: function()
         {
@@ -46,8 +48,9 @@ $('#koth_btn_concede').click( function (e)
         type: "POST",
         url: "",
         data: {
-            rt: REQUEST_TYPE_AJAX,  // request type
-            rn: 'koth_concede'      // request name
+            rt:     REQUEST_TYPE_AJAX,
+            rn:     'koth_concede',
+            isPvP:  isPvP
         },
         success: function()
         {

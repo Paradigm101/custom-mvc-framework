@@ -23,13 +23,18 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
                     <strong><?= $hero->label ?></strong><br/>
                     Level <?= $hero->level ?>
                 </div>
-                <div class="col-xs-1">
+                <div class="col-xs-2">
                     <?php if ( ( !Koth_LIB_Game::isQueuedInHeroPvP( Session_LIB::getUserId(), $hero->id ) )
                              &&( !Koth_LIB_Game::isPlayingPvP( Session_LIB::getUserId() ) ) ) { ?>
-                        <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_hero_pvp">PvP</button>
+                        <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_hero_pvp">Hero PvP</button>
                     <?php } ?>
                 </div>
-                <div class="col-xs-9"></div>
+                <div class="col-xs-1">
+                    <?php if ( !Koth_LIB_Game::isPlayingPvE( Session_LIB::getUserId() ) ) { ?>
+                        <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_adventure_pve">Adventure PvE</button>
+                    <?php } ?>
+                </div>
+                <div class="col-xs-7"></div>
             </div>
             <div style="margin-bottom:20px;" class="progress" title="<?= $hero->experience . '/' . $hero->next_level_xp ?> Xp">
                 <div class="progress-bar" style="width: <?= floor( $hero->experience / $hero->next_level_xp * 100 ) ?>%;">
@@ -59,19 +64,57 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
     </div>
     <div class="col-xs-1"></div>
     <div class="col-xs-1">
+        <?php if ( !Koth_LIB_Game::isPlayingPvE( Session_LIB::getUserId() ) ) { ?>
+            <div class="dropup">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="dungBtn">
+                    Dungeon&nbsp;<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-change-label">
+                    <li><a href="#" data-value="1">Dung. 1</a></li>
+                    <li><a href="#" data-value="2">Dung. 2</a></li>
+                    <li><a href="#" data-value="3">Dung. 3</a></li>
+                </ul>
+            </div>
+        <?php } ?>
+    </div>
+    <div class="col-xs-1">
+        <?php if ( !Koth_LIB_Game::isPlayingPvE( Session_LIB::getUserId() ) ) { ?>
+            <div class="dropup">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="heroDungBtn">
+                    Hero&nbsp;<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-change-label">
+                <?php
+                    foreach ( $heroes as $hero )
+                    {
+                        echo '<li><a href="#" data-value="' . $hero->id . '">' . $hero->label . '</a></li>' . "\n";
+                    }
+                ?>
+                </ul>
+            </div>
+        <?php } ?>
+    </div>
+    <div class="col-xs-1">
     <?php if ( !Koth_LIB_Game::isPlayingPvE( Session_LIB::getUserId() ) ) { ?>
+        <button type="button" class="btn btn-default" id="koth_btn_dongeon_pve">Dongeon PvE</button>
+    <?php } ?>
+    </div>
+    <div class="col-xs-1"></div>
+    <div class="col-xs-1">
+    <?php if ( !Koth_LIB_Game::isPlayingPvE( Session_LIB::getUserId() ) && ( ENV == ENV_TEST ) ) { ?>
         <button type="button" class="btn btn-default" id="koth_btn_debug_pve">Debug PvE</button>
     <?php } ?>
     </div>
     <div class="col-xs-1">
-    <?php if ( !Koth_LIB_Game::isPlayingPvP( Session_LIB::getUserId() ) ) { ?>
+    <?php if ( !Koth_LIB_Game::isPlayingPvP( Session_LIB::getUserId() ) && ( ENV == ENV_TEST ) ) { ?>
         <button type="button" class="btn btn-default" id="koth_btn_debug_pvp">Debug PvP</button>
     <?php } ?>
     </div>
     <div class="col-xs-1">
+    <?php if ( ENV == ENV_TEST ) { ?>
         <button type="button" class="btn btn-default" id="koth_btn_debug_eve">Debug EvE</button>
+    <?php } ?>
     </div>
-    <div class="col-xs-5"></div>
 </div>
 
 <!-- Margin -->

@@ -17,7 +17,7 @@ $('#koth_btn_dongeon_pve').click( function (event)
         },
         success: function()
         {
-            location.reload();
+            $(location).attr('href', getURL( 'koth_pve' ) );
         }
     });
 });
@@ -38,7 +38,7 @@ $('#koth_btn_random_pve').click( function (event)
         },
         success: function()
         {
-            location.reload();
+            $(location).attr('href', getURL( 'koth_pve' ) );
         }
     });
 });
@@ -83,7 +83,7 @@ $('#koth_btn_debug_pve').click( function (event)
         },
         success: function()
         {
-            location.reload();
+            $(location).attr('href', getURL( 'koth_pve' ) );
         }
     });
 });
@@ -132,7 +132,7 @@ $('#koth_btn_debug_pvp').click( function (event)
         },
         success: function()
         {
-            location.reload();
+            $(location).attr('href', getURL( 'koth_pvp' ) );
         }
     });
 });
@@ -176,7 +176,7 @@ $('[name=koth_btn_adventure_pve]').click(function(event)
         },
         success: function()
         {
-            location.reload();
+            $(location).attr('href', getURL( 'koth_pve' ) );
         }
     });
 });

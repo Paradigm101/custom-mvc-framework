@@ -46,7 +46,7 @@ abstract class Koth_Play_AJA_C extends Base_AJA_C
                                              Url_LIB::getRequestParam('id_monster') );
             }
 
-            if ( $isPvP )
+            else if ( $isPvP )
             {
                 // Debug: id_user 1 plays against id_user 2
                 $idUser1 = Session_LIB::getUserId();
@@ -60,7 +60,7 @@ abstract class Koth_Play_AJA_C extends Base_AJA_C
                                              Url_LIB::getRequestParam('level2') );
             }
 
-            if ( $isEvE )
+            else if ( $isEvE )
             {
                 Koth_LIB_Game::playDebugEvE( Url_LIB::getRequestParam('id_monster1'),
                                              Url_LIB::getRequestParam('id_monster2'),
@@ -78,22 +78,19 @@ abstract class Koth_Play_AJA_C extends Base_AJA_C
             {
                 Koth_LIB_Game::playRandomPvE( Session_LIB::getUserId() );
             }
-            //DEBUG
-            return;
-
-            if ( $isPvP && $isRandom )
+            else if ( $isPvP && $isRandom )
             {
                 Koth_LIB_Game::playRandomPvP( Session_LIB::getUserId() );
             }
-            if ( $isPvP && $isHero )
+            else if ( $isPvP && $isHero )
             {
                 Koth_LIB_Game::playHeroPvP( Session_LIB::getUserId(), Url_LIB::getRequestParam('id_hero') );
             }
-            if ( $isPvE && $isDungeon )
+            else if ( $isPvE && $isDungeon )
             {
                 Koth_LIB_Game::playHeroPvE( Session_LIB::getUserId(), Url_LIB::getRequestParam('id_hero'), Url_LIB::getRequestParam('id_dungeon') );
             }
-            if ( $isPvE && $isAdventure )
+            else if ( $isPvE && $isAdventure )
             {
                 Koth_LIB_Game::playAdventurePvE( Session_LIB::getUserId(), Url_LIB::getRequestParam('id_hero') );
             }

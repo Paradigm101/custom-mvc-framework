@@ -5,13 +5,25 @@ class Koth_LIB_Game_Model extends Base_LIB_Model
     // private data
     private $idGame           = 0;
     private $idUser           = 0;
-    private $idOtherUser      = null;
-    private $idActiveUser     = null;
-    private $idInactiveUser   = null;
-    private $idUserPlayer     = null;
-    private $idOtherPlayer    = null;
-    private $idActivePlayer   = null;
-    private $idInactivePlayer = null;
+    private $idOtherUser      = 0;
+    private $idActiveUser     = 0;
+    private $idInactiveUser   = 0;
+    private $idUserPlayer     = 0;
+    private $idOtherPlayer    = 0;
+    private $idActivePlayer   = 0;
+    private $idInactivePlayer = 0;
+
+    public function getMaxLevelHero()
+    {
+        $this->query("SELECT MAX(level) max_level_hero FROM koth_heroes_levels");
+        return $this->fetchNext()->max_level_hero;
+    }
+
+    public function getMaxLevelMonster()
+    {
+        $this->query("SELECT MAX(level) max_level_monster FROM koth_monsters");
+        return $this->fetchNext()->max_level_monster;
+    }
 
     private function computeIds()
     {
@@ -66,10 +78,10 @@ EOD;
 
         if ( $result )
         {
-            $this->idActivePlayer   = $result->id_active_player;
-            $this->idInactivePlayer = $result->id_inactive_player;
-            $this->idActiveUser     = $result->id_active_user;
-            $this->idInactiveUser   = $result->id_inactive_user;
+            $this->idActivePlayer   = $this->getQuotedValue( 0 + $result->id_active_player );
+            $this->idInactivePlayer = $this->getQuotedValue( 0 + $result->id_inactive_player );
+            $this->idActiveUser     = $this->getQuotedValue( 0 + $result->id_active_user );
+            $this->idInactiveUser   = $this->getQuotedValue( 0 + $result->id_inactive_user );
         }
 
         // Get ids for user/other
@@ -92,9 +104,9 @@ EOD;
 
         if ( $result )
         {
-            $this->idUserPlayer  = $result->id_user_player;
-            $this->idOtherPlayer = $result->id_other_player;
-            $this->idOtherUser   = $result->id_other_user;
+            $this->idUserPlayer  = $this->getQuotedValue( 0 + $result->id_user_player );
+            $this->idOtherPlayer = $this->getQuotedValue( 0 + $result->id_other_player );
+            $this->idOtherUser   = $this->getQuotedValue( 0 + $result->id_other_user );
         }
     }
 
@@ -336,12 +348,13 @@ EOD;
 
     public function getRandomMonster( $heroLevel )
     {
-        $monsterLevel = $this->getQuotedValue( rand(-3, 3) + $heroLevel );
+        $diff = $this->getMaxLevelMonster() - $this->getMaxLevelHero();
+        $monsterLevel = $this->getQuotedValue( rand(-$diff, $diff) + $heroLevel );
 
-        $this->query("SELECT id FROM koth_monsters WHERE level = $monsterLevel LIMIT 1");
+        $this->query("SELECT id FROM koth_monsters WHERE level = $monsterLevel ORDER BY RAND() LIMIT 1");
         return 0 + $this->fetchNext()->id;
     }
-    
+
     public function startGame( $idUser1, $idHeroMonster1, $idUser2, $idHeroMonster2, $level1 = 0, $level2 = 0 )
     {
         $firstPlayer  = array( 'idUser' => $idUser1,
@@ -1001,10 +1014,33 @@ EOD;
     }
 
     /******************************************************************* PvP *******************************************************************/
-    // PvP if two users
-    public function isPvP()
+    // is game PvP
+    public function isPvP( $idGame = null )
     {
-        return $this->idActiveUser && $this->idInactiveUser;
+        // Current game
+        if ( !$idGame )
+        {
+            return $this->idActiveUser && $this->idInactiveUser;
+        }
+
+        $idGame = $this->getQuotedValue( 0 + $idGame );
+        
+        // Check specific game
+        $query = <<<EOD
+SELECT
+    1
+FROM
+    koth_players p1,
+    koth_players p2
+WHERE
+    p1.id_game = $idGame
+AND p2.id_game = $idGame
+AND p1.id != p2.id
+AND p1.id_user != 0
+AND p2.id_user != 0
+EOD;
+        $this->query($query);
+        return ( $this->fetchNext() ? true : false );
     }
 
     public function isPlayingPvP( $idUser = null )
@@ -1014,7 +1050,7 @@ EOD;
         // Check user not already playing pvp
         $query = <<<EOD
 SELECT
-    COUNT(1) is_playing
+    1
 FROM
     koth_players p
     INNER JOIN koth_games g ON
@@ -1025,10 +1061,11 @@ FROM
         AND p2.id_user != $idUser
         AND p2.id_user != 0
 WHERE
-    p.id_user = $idUser
+    p.id_user   = $idUser
+AND p.ack_score = 0
 EOD;
         $this->query($query);
-        return ( $this->fetchNext()->is_playing ? true : false );
+        return ( $this->fetchNext() ? true : false );
     }
 
     public function isInScorePvP( $idUser = null )
@@ -1038,7 +1075,7 @@ EOD;
         // Check user not already playing pvp
         $query = <<<EOD
 SELECT
-    COUNT(1) is_playing
+    1
 FROM
     koth_players p
     INNER JOIN koth_games g ON
@@ -1053,7 +1090,7 @@ WHERE
 AND p.ack_score = 0
 EOD;
         $this->query($query);
-        return ( $this->fetchNext()->is_playing ? true : false );
+        return ( $this->fetchNext() ? true : false );
     }
 
     public function removeFromPvPQueue( $idUser )
@@ -1164,12 +1201,35 @@ EOD;
 
         return $result;
     }
-    
+
     /******************************************************************* PvE *******************************************************************/
-    // PvE if not EvE and not PvP (and an active game is running)
-    public function isPvE()
+    // is game PvE
+    public function isPvE( $idGame = null )
     {
-        return !$this->isPvP() && !$this->isEvE();
+        // Current game
+        if ( !$idGame )
+        {
+            return ( $this->idActiveUser == 0 && $this->idInactiveUser ) || ( $this->idActiveUser && $this->idInactiveUser == 0 );
+        }
+
+        $idGame = $this->getQuotedValue( 0 + $idGame );
+        
+        // Check specific game
+        $query = <<<EOD
+SELECT
+    1
+FROM
+    koth_players p1,
+    koth_players p2
+WHERE
+    p1.id_game = $idGame
+AND p2.id_game = $idGame
+AND p1.id != p2.id
+AND p1.id_user  = 0
+AND p2.id_user != 0
+EOD;
+        $this->query($query);
+        return ( $this->fetchNext() ? true : false );
     }
 
     public function isPlayingPvE( $idUser = null )
@@ -1178,7 +1238,7 @@ EOD;
 
         $query = <<<EOD
 SELECT
-    COUNT(1) is_playing
+    1
 FROM
     koth_players p
     INNER JOIN koth_games g ON
@@ -1189,10 +1249,11 @@ FROM
         AND p2.id_user != $idUser
         AND p2.id_user  = 0
 WHERE
-    p.id_user = $idUser
+    p.id_user   = $idUser
+AND p.ack_score = 0
 EOD;
         $this->query($query);
-        return ( $this->fetchNext()->is_playing ? true : false );
+        return ( $this->fetchNext() ? true : false );
     }
 
     public function isInScorePvE( $idUser = null )
@@ -1201,7 +1262,7 @@ EOD;
 
         $query = <<<EOD
 SELECT
-    COUNT(1) is_playing
+    1
 FROM
     koth_players p
     INNER JOIN koth_games g ON
@@ -1216,13 +1277,36 @@ WHERE
 AND p.ack_score = 0
 EOD;
         $this->query($query);
-        return ( $this->fetchNext()->is_playing ? true : false );
+        return ( $this->fetchNext() ? true : false );
     }
 
     /******************************************************************* EvE *******************************************************************/
-    // EvE if no users (and an active game is running)
-    public function isEvE()
+    // is game EvE
+    public function isEvE( $idGame = null )
     {
-        return $this->idActiveUser == 0 && $this->idInactiveUser == 0;
+        // Current game
+        if ( !$idGame )
+        {
+            return $this->idActiveUser == 0 && $this->idInactiveUser == 0;
+        }
+        
+        $idGame = $this->getQuotedValue( 0 + $idGame );
+        
+        // Check specific game
+        $query = <<<EOD
+SELECT
+    1
+FROM
+    koth_players p1,
+    koth_players p2
+WHERE
+    p1.id_game = $idGame
+AND p2.id_game = $idGame
+AND p1.id != p2.id
+AND p1.id_user = 0
+AND p2.id_user = 0
+EOD;
+        $this->query($query);
+        return ( $this->fetchNext() ? true : false );
     }
 }

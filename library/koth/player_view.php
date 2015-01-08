@@ -21,6 +21,7 @@ class Koth_LIB_Player_View extends Base_LIB_View
         $experiencePercent = min( array( floor( ( $player->currentXP % Koth_LIB_Game::getXpDicePrice() ) * 100 / Koth_LIB_Game::getXpDicePrice() ), 100 ) );
 
         $toDiplay .= '<div style="background-color:AliceBlue ;font-size: 20px;' . $border . ';border-radius: 10px;padding: 10px;">' . PHP_EOL
+                        . '<img src="http://placehold.it/70" class="img-thumbnail pull-left" style="margin-right:10px;">'
                         . "<strong>{$player->userName}</strong> ({$player->userLevel}) - {$player->heroName} ({$player->heroLevel}) " . "- {$player->diceNumber} dice"
                         . '<span style="float:right"
                                  title="Click to see distribution"
@@ -28,6 +29,11 @@ class Koth_LIB_Player_View extends Base_LIB_View
                                  class="glyphicon glyphicon-question-sign"></span>'
                         . ALL_EOL
                         . ALL_EOL
+                        . '<div class="progress" title="Experience ' . $player->currentXP % Koth_LIB_Game::getXpDicePrice() . '/' . Koth_LIB_Game::getXpDicePrice() . '">'
+                                . '<div class="progress-bar" style="background-image:none;background-color:#8D198D;width: ' . $experiencePercent . '%;">'
+                                    . $player->currentXP % Koth_LIB_Game::getXpDicePrice() . '/' . Koth_LIB_Game::getXpDicePrice()
+                                . '</div>'
+                        . '</div>'
                         . '<div class="progress" title="Health ' . max( $player->currentHP, 0 ) . '/' . $player->maxHP . '">'
                                 . '<div class="progress-bar" style="background-image:none;background-color:#E60000;width: ' . $healthPercent . '%;">'
                                     . max( $player->currentHP, 0 ) . '/' . $player->maxHP
@@ -36,11 +42,6 @@ class Koth_LIB_Player_View extends Base_LIB_View
                         . '<div class="progress" title="Magic ' . min( $player->currentMP, Koth_LIB_Game::getMagicThreshold() ) . '/' . Koth_LIB_Game::getMagicThreshold() . '">'
                                 . '<div class="progress-bar" style="background-image:none;background-color:DeepSkyBlue;width:' . $magicPercent . '%;">'
                                     . min( $player->currentMP, Koth_LIB_Game::getMagicThreshold() ) . '/' . Koth_LIB_Game::getMagicThreshold()
-                                . '</div>'
-                        . '</div>'
-                        . '<div class="progress" title="Experience ' . $player->currentXP % Koth_LIB_Game::getXpDicePrice() . '/' . Koth_LIB_Game::getXpDicePrice() . '">'
-                                . '<div class="progress-bar" style="background-image:none;background-color:#8D198D;width: ' . $experiencePercent . '%;">'
-                                    . $player->currentXP % Koth_LIB_Game::getXpDicePrice() . '/' . Koth_LIB_Game::getXpDicePrice()
                                 . '</div>'
                         . '</div>'
                     . '</div>';

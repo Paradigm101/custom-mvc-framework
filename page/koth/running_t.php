@@ -96,5 +96,5 @@ if ( !Koth_LIB_Game::isUserActive() )
 </div>
 
 <script type="text/javascript">
-    var isPvP = <?= Koth_LIB_Game::isPlayingPvP() ? 1 : 0 ?>;
+    var isPvP = <?= Koth_LIB_Game::isPvP() ? 1 : 0 ?>;
 </script>

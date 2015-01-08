@@ -22,7 +22,7 @@ class Table_LIB_Koth_Monsters extends Table_LIB_Origin
                         array( 'experience' => 'primary', 'magic'      => 'secondary', 'attack'     => 'ternary', 'health' => 'fournary' ) );
 
         $bonuses = array();
-        foreach ( range(0, 7) as $primary )
+        foreach ( range(0, 15) as $primary )
         {
             foreach ( range(0, max( $primary - 1, 0 ) ) as $secondary )
             {
@@ -30,17 +30,20 @@ class Table_LIB_Koth_Monsters extends Table_LIB_Origin
                 {
                     foreach ( range(0, max( $ternary - 1, 0 ) ) as $fournary )
                     {
-                        $amounts = array( 'primary'   => $primary,
-                                          'secondary' => $secondary,
-                                          'ternary'   => $ternary,
-                                          'fournary'  => $fournary );
-
-                        foreach ( $types as $type )
+                        if ( $primary + $secondary + $ternary + $fournary < 16 )
                         {
-                            $bonuses[] = array( 'attack'     => $amounts[$type['attack']],
-                                                'health'     => $amounts[$type['health']],
-                                                'experience' => $amounts[$type['experience']],
-                                                'magic'      => $amounts[$type['magic']] );
+                            $amounts = array( 'primary'   => $primary,
+                                              'secondary' => $secondary,
+                                              'ternary'   => $ternary,
+                                              'fournary'  => $fournary );
+
+                            foreach ( $types as $type )
+                            {
+                                $bonuses[] = array( 'attack'     => $amounts[$type['attack']],
+                                                    'health'     => $amounts[$type['health']],
+                                                    'experience' => $amounts[$type['experience']],
+                                                    'magic'      => $amounts[$type['magic']] );
+                            }
                         }
                     }
                 }
@@ -59,10 +62,10 @@ class Table_LIB_Koth_Monsters extends Table_LIB_Origin
             {
                 $name           = $this->getQuotedValue( ( 3 + $bonus['attack'] ) . '_' . ( 3 + $bonus['health'] ) . '_' . ( 3 + $bonus['experience'] ) . '_' . ( 3 + $bonus['magic'] ) . '_' . $ai_level );
                 $label          = $this->getQuotedValue( ( 3 + $bonus['attack'] ) . '_' . ( 3 + $bonus['health'] ) . '_' . ( 3 + $bonus['experience'] ) . '_' . ( 3 + $bonus['magic'] ) . '_' . $ai_level );
-                $picture        = $this->getQuotedValue( 'monster_no_pic' );
+                $picture        = $this->getQuotedValue( $name . '_pic' );
                 $level          = $this->getQuotedValue( 1 + array_sum( $bonus ) );
                 $ai_level       = $this->getQuotedValue( 0 + $ai_level );
-                $start_hp       = $this->getQuotedValue( 70 + 35 * array_sum( $bonus ) );
+                $start_hp       = $this->getQuotedValue( 15 + 40 * array_sum( $bonus ) );
                 $max_attack     = $this->getQuotedValue( 3 + $bonus['attack'] );
                 $max_health     = $this->getQuotedValue( 3 + $bonus['health'] );
                 $max_experience = $this->getQuotedValue( 3 + $bonus['experience'] );

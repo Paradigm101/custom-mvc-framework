@@ -1,4 +1,5 @@
 <?php
+
 $user   = Koth_LIB_User::getData( Session_LIB::getUserId() );
 $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
 ?>
@@ -6,39 +7,56 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
 <br/>
 
 <!-- User -->
-<strong><?= $user->name ?></strong> - Level <?= $user->level ?>
-<div class="progress" title="<?= $user->experience . '/' . $user->next_level_xp ?> Xp">
-    <div class="progress-bar" style="width: <?= floor( $user->experience / $user->next_level_xp * 100 ) ?>%;">
-        <?= $user->experience . '/' . $user->next_level_xp ?>
+<div class="media">
+    <div class="media-left">
+        <a href="#"><img src="http://placehold.it/100" class="img-thumbnail pull-left"></a>
+    </div>
+    <div class="media-body">
+        <strong><?= $user->name ?></strong><br>
+        Level <?= $user->level ?>
+        <div class="progress" style="width:700px;" title="<?= $user->experience . '/' . $user->next_level_xp ?> Xp">
+            <div class="progress-bar" style="width: <?= floor( $user->experience / $user->next_level_xp * 100 ) ?>%;">
+                <?= $user->experience . '/' . $user->next_level_xp ?>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Margin -->
 <hr/>
 
 <!-- User's heroes -->
 <div class="row">
     <?php foreach ( $heroes as $hero ) { ?>
         <div class="col-xs-6">
-            <div class="row">
-                <div class="col-xs-2">
-                    <strong><?= $hero->label ?></strong><br/>
-                    Level <?= $hero->level ?>
+            <div class="media" style="margin-bottom:15px;">
+                <div class="media-left">
+                    <a href="#"><img src="http://placehold.it/64" class="img-thumbnail pull-left"></a>
                 </div>
-                <div class="col-xs-2">
-                    <?php if ( ( !Koth_LIB_Game::isQueuedInHeroPvP( Session_LIB::getUserId(), $hero->id ) )
-                             &&( !Koth_LIB_Game::isPlayingPvP( Session_LIB::getUserId() ) ) ) { ?>
-                        <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_hero_pvp">Hero PvP</button>
-                    <?php } ?>
-                </div>
-                <div class="col-xs-1">
-                    <?php if ( !Koth_LIB_Game::isPlayingPvE( Session_LIB::getUserId() ) ) { ?>
-                        <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_adventure_pve">Adventure PvE</button>
-                    <?php } ?>
-                </div>
-                <div class="col-xs-7"></div>
-            </div>
-            <div style="margin-bottom:20px;" class="progress" title="<?= $hero->experience . '/' . $hero->next_level_xp ?> Xp">
-                <div class="progress-bar" style="width: <?= floor( $hero->experience / $hero->next_level_xp * 100 ) ?>%;">
-                    <?= $hero->experience . '/' . $hero->next_level_xp ?>
+                <div class="media-body">
+                    <div class="row" style="margin-bottom:10px;">
+                        <div class="col-xs-3">
+                            <strong><?= $hero->label ?></strong>
+                            Level <?= $hero->level ?>
+                        </div>
+                        <div class="col-xs-3">
+                            <?php if ( ( !Koth_LIB_Game::isQueuedInHeroPvP( Session_LIB::getUserId(), $hero->id ) )
+                                     &&( !Koth_LIB_Game::isPlayingPvP( Session_LIB::getUserId() ) ) ) { ?>
+                                <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_hero_pvp">Hero PvP</button>
+                            <?php } ?>
+                        </div>
+                        <div class="col-xs-3">
+                            <?php if ( !Koth_LIB_Game::isPlayingPvE( Session_LIB::getUserId() ) ) { ?>
+                                <button type="button" class="btn btn-default" id="<?= $hero->id ?>" name="koth_btn_adventure_pve">Adventure PvE</button>
+                            <?php } ?>
+                        </div>
+                        <div class="col-xs-3"></div>
+                    </div>
+                    <div style="width:350px;" class="progress" title="<?= $hero->label . ' ' . $hero->experience . '/' . $hero->next_level_xp ?> Xp">
+                        <div class="progress-bar" style="width: <?= floor( $hero->experience / $hero->next_level_xp * 100 ) ?>%;">
+                            <?= $hero->experience . '/' . $hero->next_level_xp ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

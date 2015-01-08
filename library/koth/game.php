@@ -29,6 +29,16 @@ abstract class Koth_LIB_Game
         return static::$model;
     }
 
+    static public function getMaxLevelHero()
+    {
+        return static::getModel()->getMaxLevelHero();
+    }
+
+    static public function getMaxLevelMonster()
+    {
+        return static::getModel()->getMaxLevelMonster();
+    }
+
     static public function getStatus()
     {
         // User is not logged in: can't play
@@ -63,7 +73,7 @@ abstract class Koth_LIB_Game
     {
         $levels = static::getModel()->getLevels();
 
-        return 80 + 20 * $levels;
+        return 50 + 16 * $levels;
     }
 
     // TBD: playtest, Xp dice seems to be too pricy 15->10
@@ -138,10 +148,11 @@ abstract class Koth_LIB_Game
 
         if ( static::getModel()->isEve() )
         {
-            while( !static::getModel()->isGameCompleted() )
+            // security
+            $i = 0;
+            while( !static::getModel()->isGameCompleted() && $i++ < 30 )
             {
                 // security
-                if( $i++ > 5) break;
                 static::playAI();
                 static::processEndTurn();
             }
@@ -247,6 +258,11 @@ abstract class Koth_LIB_Game
 
     /******************************************************************* PvP *******************************************************************/
     
+    static public function isPvP( $idGame = null )
+    {
+        return static::getModel()->isPvP( $idGame );
+    }
+
     static public function isPlayingPvP( $idUser = null )
     {
         return static::getModel()->isPlayingPvP( $idUser );
@@ -262,6 +278,8 @@ abstract class Koth_LIB_Game
         return static::getModel()->removeFromPvPQueue( $idUser );
     }
 
+    /*************************** Debug ****************************/
+    
     static public function playDebugPvP( $idUser1, $idHero1, $idUser2, $idHero2, $level1, $level2 )
     {
         $idHero1 = $idHero1 ? : 3;
@@ -274,7 +292,7 @@ abstract class Koth_LIB_Game
         {
             static::removeFromPvPQueue( $idUser1 );
             static::removeFromPvPQueue( $idUser2 );
-
+            
             static::startGame( $idUser1, $idHero1, $idUser2, $idHero2, $level1, $level2 );
         }
     }
@@ -303,7 +321,7 @@ abstract class Koth_LIB_Game
                 static::removeFromPvPQueue( $idOpponent );
                 static::removeFromPvPQueue( $idUser );
 
-                static::startGame( $idUser, rand(1, 6), $idOpponent, rand(1, 6), rand(1, 7), rand(1, 7) );
+                static::startGame( $idUser, rand(1, 6), $idOpponent, rand(1, 6), rand(1, static::getMaxLevelHero()), rand(1, static::getMaxLevelHero()) );
             }
             else
             {
@@ -347,17 +365,9 @@ abstract class Koth_LIB_Game
 
     /******************************************************************* PvE *******************************************************************/
 
-    // TBD
-    static public function playDebugPvE( $idUser, $idHero, $level, $idMonster )
+    static public function isPvE( $idGame = null )
     {
-        $idHero    = $idHero    ? : 3;
-        $level     = $level     ? : 3;
-        $idMonster = $idMonster ? : 19;
-
-        if ( !static::isPlayingPvE($idUser) )
-        {
-            static::startGame( $idUser, $idHero, 0 /* idUser2 */, $idMonster, $level );
-        }
+        return static::getModel()->isPve( $idGame );
     }
 
     static public function isPlayingPvE( $idUser = null )
@@ -370,23 +380,43 @@ abstract class Koth_LIB_Game
         return static::getModel()->isInScorePvE( $idUser );
     }
 
+    /*************************** Debug ****************************/
+    
+    static public function playDebugPvE( $idUser, $idHero, $level, $idMonster )
+    {
+        $idHero    = $idHero    ? : 3;
+        $level     = $level     ? : 3;
+        $idMonster = $idMonster ? : 19;
+
+        if ( !static::isPlayingPvE($idUser) )
+        {
+            static::startGame( $idUser, $idHero, 0 /* idUser2 */, $idMonster, $level );
+        }
+    }
+
+    /*************************** Hero ****************************/
+    
     // TBD
-    static public function playHeroPvE( $idUser, $idHero )
+    static public function playHeroPvE( $idUser, $idHero, $idDungeon )
     {
         return;
     }
 
+    /*************************** Adventure ****************************/
+
     // TBD
-    static public function playAdventurePvE( $idUser )
+    static public function playAdventurePvE( $idUser, $idHero )
     {
         return;
     }
 
+    /*************************** Random ****************************/
+    
     static public function playRandomPvE( $idUser )
     {
         if ( !static::isPlayingPvE( $idUser ) )
         {
-            $heroLevel = rand(1, 7);
+            $heroLevel = rand(1, static::getMaxLevelHero());
             $idMonster = static::getModel()->getRandomMonster( $heroLevel );
 
             static::startGame( $idUser, rand(1, 6), 0 /* idUser2 */ , $idMonster, $heroLevel );
@@ -395,12 +425,23 @@ abstract class Koth_LIB_Game
 
     /******************************************************************* EvE *******************************************************************/
 
+    static public function isEvE( $idGame = null )
+    {
+        return static::getModel()->isEve( $idGame );
+    }
+
     static public function playDebugEvE( $idMonster1, $idMonster2, $occurence )
     {
         $idMonster1 = $idMonster1 ? : 19;
         $idMonster2 = $idMonster2 ? : 23;
         $occurence  = $occurence  ? : 2;
         
+        // Safe mecanism
+        if ( $idMonster1 == $idMonster2 )
+        {
+            return;
+        }
+
         for( $i = 0; $i < $occurence; $i ++ )
         {
             static::startGame( 0 /* user 1 */, $idMonster1, 0 /* user 2 */ , $idMonster2 );

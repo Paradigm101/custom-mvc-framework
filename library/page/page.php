@@ -68,7 +68,7 @@ abstract class Page_LIB {
     }
 
     // List of abstract classes with javascript for all pages
-    static private $classWithJavascript = array();
+    static private $classWithJavascript = array( 'Url_LIB' );
 
     // Add an abstract class for its Javascript
     // class needs to have static method getJavascript implemented

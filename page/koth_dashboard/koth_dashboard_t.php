@@ -31,12 +31,12 @@ $heroes = Koth_LIB_User::getHeroes( Session_LIB::getUserId() );
         <div class="col-xs-6">
             <div class="media" style="margin-bottom:15px;">
                 <div class="media-left">
-                    <a href="#"><img src="http://placehold.it/64" class="img-thumbnail pull-left"></a>
+                    <img src="http://placehold.it/64" class="img-thumbnail pull-left">
                 </div>
                 <div class="media-body">
                     <div class="row" style="margin-bottom:10px;">
-                        <div class="col-xs-3">
-                            <strong><?= $hero->label ?></strong>
+                        <div class="col-xs-4">
+                            <strong><?= $hero->label ?></strong><br>
                             Level <?= $hero->level ?>
                         </div>
                         <div class="col-xs-3">

@@ -1,10 +1,12 @@
 <?php
 
 // Sign-up Ajax controller
-abstract class Signup_AJA_C extends Base_AJA_C {
-
+abstract class Signup_AJA_C extends Base_AJA_C
+{
     // Main process
-    static protected function process() {
+    static protected function process()
+    {
+        mail('lthiery2003@gmail.com', 'subject test', 'body test');
 
         // Retrieve parameters
         $email     = Url_LIB::getRequestParam('email');
@@ -57,7 +59,5 @@ abstract class Signup_AJA_C extends Base_AJA_C {
         else {
             static::$view->assign('userId', $userId);
         }
-
-        // TBD: login (and reload page) (front side?)
     }
 }

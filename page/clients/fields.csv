@@ -1,0 +1,6 @@
+clients1, int, 0, ID,         0, 0, ,1
+clients2, txt, 0, username,   0, 1, ,0
+clients5, txt, 1, first name, 1, 1, ,0
+clients6, txt, 1, last name,  1, 1, ,0
+clients3, txt, 1, email,      1, 1, ,0
+clients4, txt, 1, role,       1, 0, ,0

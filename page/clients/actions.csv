@@ -1,0 +1,7 @@
+modify user,     clients_edit_item,     pencil, 1, 0, 0
+delete,          clients_delete_item,   remove, 1, 0, 0
+change role for, clients_modify_batch,        , 0, 1, 0
+export,          clients_export_batch,        , 0, 1, 0
+delete,          clients_delete_batch,        , 0, 1, 0
+export,          clients_export_all,          , 0, 0, 1
+delete,          clients_delete_all,          , 0, 0, 1

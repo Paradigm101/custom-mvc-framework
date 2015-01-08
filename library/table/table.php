@@ -15,6 +15,7 @@ abstract class Table_LIB {
                                     'surnames',
                                     'roles',
                                     'users',
+                                    'clients',
                                     'sessions',
                                     'koth_die_types',
                                     'koth_hero_xp_level',

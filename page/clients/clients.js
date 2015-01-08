@@ -1,11 +1,11 @@
 
 /************************************ Single actions ************************************/
-var users_edit_item = function( id_item )
+var clients_edit_item = function( id_item )
 {
-    alert('users_edit_item : ' + id_item);
+    alert('clients_edit_item : ' + id_item);
 }
 
-var users_delete_item = function( id_item )
+var clients_delete_item = function( id_item )
 {
     $.ajax({
         type: "POST",
@@ -13,7 +13,7 @@ var users_delete_item = function( id_item )
         data:
         {
             rt: REQUEST_TYPE_AJAX,      // request type
-            rn: 'users_delete_item',    // request name
+            rn: 'clients_delete_item',    // request name
             id: id_item
         },
         success: function()
@@ -53,7 +53,7 @@ $('#roleForm').submit( function(e)
         url: "",
         data: {
             rt:         REQUEST_TYPE_AJAX,      // request type
-            rn:         'users_modify_batch',   // request name
+            rn:         'clients_modify_batch',   // request name
             role:       $('#roleDropdownBtn').val(),
             table_name: $('#roleForm').attr('tmp_table')
         },
@@ -72,25 +72,25 @@ $('#roleForm').submit( function(e)
     });
 });
 
-var users_modify_batch = function( table_name )
+var clients_modify_batch = function( table_name )
 {
     $('#roleForm').attr('tmp_table', table_name);
     $('#roleModal').modal('show');
 }
 
-var users_export_batch = function()
+var clients_export_batch = function()
 {
-    alert('users_export_batch');
+    alert('clients_export_batch');
 }
 
-var users_delete_batch = function( tmp_table_name )
+var clients_delete_batch = function( tmp_table_name )
 {
     $.ajax({
         type: "POST",
         url: "",
         data: {
             rt:             REQUEST_TYPE_AJAX,      // request type
-            rn:             'users_delete_batch',   // request name
+            rn:             'clients_delete_batch',   // request name
             table_name:     tmp_table_name
         },
         success: function()
@@ -101,19 +101,19 @@ var users_delete_batch = function( tmp_table_name )
 }
 
 /************************************ Global actions ************************************/
-var users_export_all = function()
+var clients_export_all = function()
 {
-    alert('users_export_all');
+    alert('clients_export_all');
 }
 
-var users_delete_all = function( tmp_table_name )
+var clients_delete_all = function( tmp_table_name )
 {
     $.ajax({
         type: "POST",
         url: "",
         data: {
             rt:             REQUEST_TYPE_AJAX,      // request type
-            rn:             'users_delete_all',     // request name
+            rn:             'clients_delete_all',     // request name
             table_name:     tmp_table_name
         },
         success: function()
